@@ -1,0 +1,74 @@
+---
+import Base from "../../layouts/Base.astro";
+import Card from "../../components/Card.astro";
+import { CATEGORIES, REACTIONS } from "../../data/categories.js";
+import data from "../../data/published.json";
+
+export function getStaticPaths() {
+  return data.items.map((item) => ({
+    params: { id: item.id },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const cat = CATEGORIES[item.category] ?? { label: item.category, color: "#8ea0c9" };
+
+function hexToRgba(hex, a) {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+const badgeBg = hexToRgba(cat.color, 0.14);
+const badgeBorder = hexToRgba(cat.color, 0.32);
+
+const related = data.items
+  .filter((i) => i.category === item.category && i.id !== item.id)
+  .slice(0, 2);
+
+const pageTitle = `${item.title} — americawhat`;
+---
+<Base title={pageTitle} description={item.comment}>
+  <a href="/" class="back-link">&larr; back to feed</a>
+
+  <article class="detail" data-id={item.id}>
+    <div class="detail-top">
+      <span class="badge" style={`background:${badgeBg};color:${cat.color};border:1px solid ${badgeBorder}`}>{cat.label}</span>
+      <span class="detail-date">{item.date}</span>
+    </div>
+
+    <h1 class="detail-title">{item.title}</h1>
+
+    <p class="detail-comment">{item.comment}</p>
+
+    {item.body && <p class="detail-body">{item.body}</p>}
+
+    <div class="detail-source">
+      Source: {item.source_url
+        ? <a href={item.source_url} target="_blank" rel="noopener noreferrer">{item.source_name}</a>
+        : item.source_name}
+    </div>
+
+    <div class="reactions detail-reactions" data-id={item.id}>
+      {REACTIONS.map((r) => (
+        <button class="react-btn" data-reaction={r.key} title={r.hint} aria-label={`${r.label}: ${r.hint}`}>
+          {r.label}
+          <span class="react-count" data-count={r.key}>0</span>
+        </button>
+      ))}
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="related">
+      <h2 class="related-head">More <span style={`color:${cat.color}`}>{cat.label}</span></h2>
+      <div class="feed">
+        {related.map((r) => <Card item={r} />)}
+      </div>
+    </section>
+  )}
+
+  <script src="../../scripts/tracking.js"></script>
+</Base>

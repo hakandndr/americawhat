@@ -1,0 +1,97 @@
+{
+  "items": [
+    {
+      "id": "aw-0001",
+      "title": "Florida man arrested after arguing with a bag of frozen peas",
+      "comment": "Police report describes the peas as \"unresponsive.\" The peas have not commented.",
+      "body": "According to the report, the disagreement began in the frozen aisle and escalated in the parking lot, where the peas reportedly \"refused to de-escalate.\" No charges were filed against the peas, who were released on their own recognizance and are now, presumably, thawed.",
+      "category": "florida-man",
+      "source_url": "https://example.com/source-1",
+      "source_name": "Local Affiliate",
+      "date": "2026-07-07"
+    },
+    {
+      "id": "aw-0002",
+      "title": "DMV requires an appointment to schedule an appointment",
+      "comment": "There is no appointment available to schedule the appointment. The system is working exactly as designed.",
+      "body": "A spokesperson clarified that walk-ins are welcome, but only to receive a pamphlet explaining that walk-ins are not welcome. The pamphlet is available by appointment.",
+      "category": "bureaucracy",
+      "source_url": "https://example.com/source-2",
+      "source_name": "Public Records Desk",
+      "date": "2026-07-07"
+    },
+    {
+      "id": "aw-0003",
+      "title": "Man steals an entire ATM, realizes he can't open it",
+      "comment": "He now owns a very heavy, very locked box and a great deal of time to reflect.",
+      "category": "crime-weird",
+      "source_url": "https://example.com/source-3",
+      "source_name": "Police Blotter",
+      "date": "2026-07-06"
+    },
+    {
+      "id": "aw-0004",
+      "title": "Gas station sells a single egg for $4.99, calls it \"artisan\"",
+      "comment": "It is one (1) egg. There is nothing artisan about it. And yet.",
+      "category": "late-stage",
+      "source_url": "https://example.com/source-4",
+      "source_name": "Roadside Report",
+      "date": "2026-07-06"
+    },
+    {
+      "id": "aw-0005",
+      "title": "HOA fines resident $200 for a doormat that says \"Welcome\"",
+      "comment": "The board found the tone \"aggressively inviting\" and \"not in keeping with community standards.\"",
+      "body": "The resident was given 30 days to replace the mat with one expressing \"a more neutral sentiment.\" The board's preferred alternatives include a plain mat, no mat, or a mat that says nothing at all, which is, when you think about it, the most honest option.",
+      "category": "bureaucracy",
+      "source_url": "https://example.com/source-5",
+      "source_name": "Neighborhood Watch",
+      "date": "2026-07-06"
+    },
+    {
+      "id": "aw-0006",
+      "title": "Town votes to ban a word, then can't agree how to announce it",
+      "comment": "The announcement, when it eventually comes, will not contain the word. Probably.",
+      "category": "wait-what",
+      "source_url": "https://example.com/source-6",
+      "source_name": "Town Hall Minutes",
+      "date": "2026-07-05"
+    },
+    {
+      "id": "aw-0007",
+      "title": "City installs a crosswalk to nowhere, then a sign warning about it",
+      "comment": "Two departments. Zero conversations. One perfect monument to process.",
+      "category": "only-in-america",
+      "source_url": "https://example.com/source-7",
+      "source_name": "City Desk",
+      "date": "2026-07-05"
+    },
+    {
+      "id": "aw-0008",
+      "title": "Subscription mattress adds a monthly fee to keep lying on it",
+      "comment": "Miss a payment and it doesn't repossess the mattress. It just quietly stops being comfortable.",
+      "category": "late-stage",
+      "source_url": "https://example.com/source-8",
+      "source_name": "Consumer Wire",
+      "date": "2026-07-04"
+    },
+    {
+      "id": "aw-0009",
+      "title": "Florida man calls 911 to report that his own party is too loud",
+      "comment": "He wanted the noise complaint on record before the neighbors beat him to it. Strategic.",
+      "category": "florida-man",
+      "source_url": "https://example.com/source-9",
+      "source_name": "Dispatch Log",
+      "date": "2026-07-03"
+    },
+    {
+      "id": "aw-0010",
+      "title": "Highway sign warns drivers about the highway sign ahead",
+      "comment": "That sign warns about traffic. This sign warns about that sign. We are nesting now.",
+      "category": "only-in-america",
+      "source_url": "https://example.com/source-10",
+      "source_name": "Department of Transportation",
+      "date": "2026-07-02"
+    }
+  ]
+}

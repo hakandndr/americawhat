@@ -1,0 +1,75 @@
+---
+import Base from "../layouts/Base.astro";
+import Card from "../components/Card.astro";
+import { CATEGORIES } from "../data/categories.js";
+import data from "../data/published.json";
+
+const items = [...data.items].sort((a, b) => (a.date < b.date ? 1 : -1));
+const cats = Object.entries(CATEGORIES);
+---
+<Base>
+  <section class="hero" aria-label="americawhat" slot="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">A running feed of the deeply American</div>
+      <h1 class="hero-title">
+        <span class="hero-america">America,</span>
+        <span class="hero-second">
+          <span class="hero-rot" id="hero-rot" aria-label="what">
+            <span class="on">what</span><span>wait—</span><span>excuse me</span><span>hold on</span><span>huh</span><span>come again</span>
+          </span><span class="hero-q">?</span>
+        </span>
+      </h1>
+      <p class="hero-lede">The strange, the everyday, the unbelievable. Curated for the moments that make you stop and go <em>wait, what.</em></p>
+    </div>
+  </section>
+
+  <nav class="cat-bar" aria-label="Filter by category">
+    <button class="cat-chip active" data-filter="all">All</button>
+    {cats.map(([key, c]) => (
+      <button class="cat-chip" data-filter={key}>{c.label}</button>
+    ))}
+  </nav>
+
+  <section class="feed" id="feed">
+    {items.map((item) => <Card item={item} />)}
+  </section>
+
+  <p class="empty" id="empty" style="display:none">Nothing here in this category yet. Check back soon.</p>
+
+  <script>
+    // ── Category filter (feed page only) ──
+    const chips = document.querySelectorAll(".cat-chip");
+    const cards = Array.from(document.querySelectorAll(".card"));
+    const emptyEl = document.getElementById("empty");
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        chips.forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        const f = chip.getAttribute("data-filter");
+        let visible = 0;
+        cards.forEach((card) => {
+          const show = f === "all" || card.getAttribute("data-category") === f;
+          card.style.display = show ? "" : "none";
+          if (show) visible++;
+        });
+        if (emptyEl) emptyEl.style.display = visible === 0 ? "block" : "none";
+      });
+    });
+
+    // ── Hero rotating word ──
+    (function () {
+      const reduce = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+      if (reduce) return;
+      const items = document.querySelectorAll("#hero-rot span");
+      if (!items.length) return;
+      let i = 0;
+      setInterval(() => {
+        items[i].classList.remove("on");
+        i = (i + 1) % items.length;
+        items[i].classList.add("on");
+      }, 2100);
+    })();
+  </script>
+
+  <script src="../scripts/tracking.js"></script>
+</Base>

@@ -1,0 +1,44 @@
+---
+const { title = "americawhat — wait, what", description = "The strange, the everyday, the deeply American. A curated feed of things that make you go wait, what." } = Astro.props;
+import "../styles/global.css";
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://americawhat.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,500&display=swap"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,500&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <header class="site-head">
+    <div class="site-head-inner">
+      <a href="/" class="logo">america<b>what</b></a>
+      <span class="tagline">wait, what.</span>
+    </div>
+  </header>
+  <slot name="hero" />
+  <main class="wrap">
+    <slot />
+  </main>
+  <footer class="site-foot">
+    <b>americawhat.com</b> — something's coming. probably confusing.<br />
+    Got a "wait, what" of your own? <a href="mailto:hello@americawhat.com" style="color:var(--red-hot)">hello@americawhat.com</a>
+  </footer>
+</body>
+</html>
