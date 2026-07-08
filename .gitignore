@@ -4,3 +4,4 @@ dist/
 .env
 .env.*
 .ftp-deploy-sync-state.json
+public/admin/config.php
