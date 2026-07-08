@@ -328,6 +328,15 @@ a{color:inherit;text-decoration:none}
 .form-input:focus,.form-textarea:focus{outline:none;border-color:var(--red)}
 .form-input::placeholder,.form-textarea::placeholder{color:var(--dim-2)}
 .form-textarea{resize:vertical;min-height:130px;line-height:1.6}
+.form-row{display:flex;gap:14px;flex-wrap:wrap}
+.form-row .form-field{flex:1;min-width:140px}
+.form-opt{color:var(--dim-2);font-weight:400;text-transform:none;letter-spacing:0}
+select.form-input{appearance:none;-webkit-appearance:none;cursor:pointer}
+.form-note{
+  font-size:13px;color:var(--dim);line-height:1.55;
+  padding:12px 14px;border-radius:10px;
+  background:var(--night-2);border:1px solid var(--line);margin:0;
+}
 .form-submit{
   align-self:flex-start;
   font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.06em;

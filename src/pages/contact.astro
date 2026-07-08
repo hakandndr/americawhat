@@ -5,20 +5,20 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/xaqgzbwy";
 ---
 <Base
   title="Contact — americawhat"
-  description="Got a wait, what of your own? Send it our way."
+  description="Saw something that made you go wait, what? Send us the link, receipt, sign, or story."
   canonicalPath="/contact/"
 >
   <a href="/" class="back-link">&larr; back to feed</a>
 
   <header class="page-head">
-    <div class="page-eyebrow">Contact</div>
+    <div class="page-eyebrow">Submit</div>
     <h1 class="page-title">Got a wait, what?</h1>
   </header>
 
   <article class="page-card">
     <p class="page-prose" style="margin-bottom:24px">
-      Saw something that made you do a double take? A news item, a receipt, a sign,
-      a form that shouldn't exist? Send it over. The stranger, the better.
+      Saw something that made you go <em>wait, what?</em> Send us the link, receipt, sign,
+      screenshot, or story. Weird is good. Verifiable is better.
     </p>
 
     <form class="form" id="contact-form" data-endpoint={FORMSPREE_ENDPOINT} novalidate>
@@ -33,9 +33,43 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/xaqgzbwy";
       </div>
 
       <div class="form-field">
-        <label class="form-label" for="message">Your "wait, what"</label>
-        <textarea class="form-textarea" id="message" name="message" placeholder="Tell us what happened. Link it if you've got one." required></textarea>
+        <label class="form-label" for="link">Link / source <span class="form-opt">(optional, but it helps)</span></label>
+        <input class="form-input" type="url" id="link" name="link" placeholder="https://…" />
       </div>
+
+      <div class="form-field">
+        <label class="form-label" for="message">What happened?</label>
+        <textarea class="form-textarea" id="message" name="message" placeholder="The sign, the fee, the form, the rule — tell us what made you stop." required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label" for="city">City <span class="form-opt">(optional)</span></label>
+          <input class="form-input" type="text" id="city" name="city" autocomplete="address-level2" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="state">State <span class="form-opt">(optional)</span></label>
+          <input class="form-input" type="text" id="state" name="state" autocomplete="address-level1" />
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="photo">Screenshot / photo link <span class="form-opt">(optional)</span></label>
+        <input class="form-input" type="url" id="photo" name="photo" placeholder="Imgur, Drive, etc." />
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="canPublish">Can we publish this?</label>
+        <select class="form-input" id="canPublish" name="canPublish">
+          <option value="yes">Yes — you can publish it</option>
+          <option value="no">No — just letting you know</option>
+        </select>
+      </div>
+
+      <p class="form-note">
+        Please don't send private personal information, full addresses, license plates,
+        medical records, or anything you don't have permission to share.
+      </p>
 
       <button class="form-submit" type="submit">Send it</button>
 
@@ -65,11 +99,16 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/xaqgzbwy";
       const data = {
         name: form.name.value.trim(),
         email: form.email.value.trim(),
+        link: form.link.value.trim(),
         message: form.message.value.trim(),
+        city: form.city.value.trim(),
+        state: form.state.value.trim(),
+        photo: form.photo.value.trim(),
+        canPublish: form.canPublish.value,
       };
 
       if (!data.name || !data.email || !data.message) {
-        setStatus("Fill in all three fields and try again.", "err");
+        setStatus("Name, email, and what happened are required.", "err");
         return;
       }
 
