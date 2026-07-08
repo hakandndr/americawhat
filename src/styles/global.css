@@ -37,6 +37,7 @@ a{color:inherit;text-decoration:none}
 }
 .logo{font-family:'Archivo';font-weight:800;font-size:19px;letter-spacing:-.02em}
 .logo b{color:var(--red-hot)}
+.logo-q{color:var(--star);margin-left:1px}
 .head-right{display:flex;align-items:center;gap:18px}
 .site-nav{display:flex;gap:16px}
 .site-nav a{

@@ -13,6 +13,10 @@ const canonical = new URL(canonicalPath, Astro.site);
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.svg" />
+  <link rel="mask-icon" href="/favicon.svg" color="#ff5468" />
+  <meta name="theme-color" content="#0b1120" />
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
@@ -38,7 +42,7 @@ const canonical = new URL(canonicalPath, Astro.site);
 <body>
   <header class="site-head">
     <div class="site-head-inner">
-      <a href="/" class="logo">america<b>what</b></a>
+      <a href="/" class="logo">america<b>what</b><span class="logo-q">?</span></a>
       <div class="head-right">
         <nav class="site-nav" aria-label="Primary">
           <a href="/about/">About</a>
