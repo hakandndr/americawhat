@@ -20,13 +20,17 @@ require $cfg; // GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, PANEL_P
 
 // Kategoriler — categories.js ile aynı tutun.
 $CATS = [
-  'florida-man'     => 'Florida Man',
   'bureaucracy'     => 'Bureaucracy',
+  'florida-man'     => 'Florida Man',
+  'hoa-housing'     => 'HOA & Housing',
+  'fine-print'      => 'Fine Print',
   'only-in-america' => 'Only in America',
-  'late-stage'      => 'Late Stage',
-  'wait-what'       => 'Wait, What',
+  'food-crime'      => 'Food Crime',
   'crime-weird'     => 'Crime & Weird',
 ];
+$STATUSES = ['REAL', 'SUBMITTED', 'UNVERIFIED'];
+$DEFAULT_CAT = 'bureaucracy';
+$VOTES_PATH = __DIR__ . '/../analytics/aw_votes.json';
 
 const PUB_PATH = 'src/data/published.json';
 const PEND_PATH = 'src/data/pending.json';
@@ -118,13 +122,26 @@ function item_from_post($id) {
     'id'          => $id,
     'title'       => trim($_POST['title'] ?? ''),
     'comment'     => trim($_POST['comment'] ?? ''),
-    'category'    => $_POST['category'] ?? 'wait-what',
+    'category'    => $_POST['category'] ?? 'bureaucracy',
     'source_url'  => trim($_POST['source_url'] ?? ''),
     'source_name' => trim($_POST['source_name'] ?? ''),
     'date'        => trim($_POST['date'] ?? date('Y-m-d')),
   ];
+  // status: gecerli degilse kaynaga gore turet
+  $status = $_POST['status'] ?? '';
+  if (!in_array($status, ['REAL', 'SUBMITTED', 'UNVERIFIED'], true)) {
+    $status = $item['source_url'] !== '' ? 'REAL' : 'UNVERIFIED';
+  }
+  $item['status'] = $status;
+  // opsiyonel alanlar (bossa eklenmez)
   $body = trim($_POST['body'] ?? '');
   if ($body !== '') $item['body'] = $body;
+  $why = trim($_POST['whyAmericaWhat'] ?? '');
+  if ($why !== '') $item['whyAmericaWhat'] = $why;
+  $city = trim($_POST['city'] ?? '');
+  if ($city !== '') $item['city'] = $city;
+  $state = trim($_POST['state'] ?? '');
+  if ($state !== '') $item['state'] = $state;
   return $item;
 }
 
@@ -165,8 +182,10 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['appr
     foreach ($items as &$it) {
       if (($it['id'] ?? '') === $id) {
         $new = item_from_post($id);
-        // body boşsa alanı tamamen kaldır
-        if (!isset($new['body'])) unset($it['body']);
+        // boş opsiyonel alanları tamamen kaldır
+        foreach (['body', 'whyAmericaWhat', 'city', 'state'] as $opt) {
+          if (!isset($new[$opt])) unset($it[$opt]);
+        }
         $it = array_merge($it, $new);
         $found = true;
         break;
@@ -245,6 +264,13 @@ function cat_options($cats, $selected) {
   }
   return $out;
 }
+function status_options($statuses, $selected) {
+  $out = '<option value=""' . ($selected === '' ? ' selected' : '') . '>— otomatik —</option>';
+  foreach ($statuses as $st) {
+    $out .= '<option value="' . h($st) . '"' . ($st === $selected ? ' selected' : '') . '>' . h($st) . '</option>';
+  }
+  return $out;
+}
 ?>
 <!doctype html>
 <html lang="tr">
@@ -284,6 +310,11 @@ function cat_options($cats, $selected) {
   .meta{ color:var(--muted); font-size:12px; }
   .empty{ color:var(--muted); font-style:italic; padding:8px 0; }
   .login{ max-width:360px; margin:12vh auto; }
+  table.votes{ width:100%; border-collapse:collapse; font-size:14px; }
+  table.votes th, table.votes td{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  table.votes th{ font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+  table.votes td:not(:first-child), table.votes th:not(:first-child){ text-align:center; width:64px; }
+  table.votes tbody tr:hover{ background:var(--panel2); }
 </style>
 </head>
 <body>
@@ -306,6 +337,7 @@ function cat_options($cats, $selected) {
   <div class="meta">
     <a href="https://americawhat.com" target="_blank">site</a> &nbsp;·&nbsp;
     <a href="https://github.com/<?= h(GITHUB_OWNER) ?>/<?= h(GITHUB_REPO) ?>/actions" target="_blank">actions</a> &nbsp;·&nbsp;
+    <a href="#analytics">analytics</a> &nbsp;·&nbsp;
     <a href="?action=logout">cikis</a>
   </div>
 </header>
@@ -342,6 +374,13 @@ function cat_options($cats, $selected) {
           <div><label>Kaynak URL</label><input type="text" name="source_url" value="<?= h($it['source_url'] ?? '') ?>"></div>
           <div><label>Tarih</label><input type="text" name="date" value="<?= h($it['date'] ?? date('Y-m-d')) ?>"></div>
         </div>
+        <div class="row">
+          <div><label>Durum</label><select name="status"><?= status_options($STATUSES, $it['status'] ?? '') ?></select></div>
+          <div><label>Sehir</label><input type="text" name="city" value="<?= h($it['city'] ?? '') ?>"></div>
+          <div><label>Eyalet</label><input type="text" name="state" value="<?= h($it['state'] ?? '') ?>"></div>
+        </div>
+        <label>Neden americawhat? (opsiyonel)</label>
+        <textarea name="whyAmericaWhat"><?= h($it['whyAmericaWhat'] ?? '') ?></textarea>
         <div class="actions">
           <button class="btn-red" type="submit" name="action" value="approve">Onayla → yayınla</button>
           <button class="btn-ghost" type="submit" name="action" value="reject" onclick="return confirm('Reddedilsin mi?')">Reddet</button>
@@ -370,6 +409,13 @@ function cat_options($cats, $selected) {
         <div><label>Kaynak URL</label><input type="text" name="source_url"></div>
         <div><label>Tarih</label><input type="text" name="date" value="<?= date('Y-m-d') ?>"></div>
       </div>
+      <div class="row">
+        <div><label>Durum</label><select name="status"><?= status_options($STATUSES, '') ?></select></div>
+        <div><label>Sehir</label><input type="text" name="city"></div>
+        <div><label>Eyalet</label><input type="text" name="state"></div>
+      </div>
+      <label>Neden americawhat? (opsiyonel)</label>
+      <textarea name="whyAmericaWhat"></textarea>
       <div class="actions"><button class="btn-red" type="submit">Ekle → yayınla</button></div>
     </form>
   </div>
@@ -401,6 +447,13 @@ function cat_options($cats, $selected) {
           <div><label>Kaynak URL</label><input type="text" name="source_url" value="<?= h($it['source_url'] ?? '') ?>"></div>
           <div><label>Tarih</label><input type="text" name="date" value="<?= h($it['date'] ?? '') ?>"></div>
         </div>
+        <div class="row">
+          <div><label>Durum</label><select name="status"><?= status_options($STATUSES, $it['status'] ?? '') ?></select></div>
+          <div><label>Sehir</label><input type="text" name="city" value="<?= h($it['city'] ?? '') ?>"></div>
+          <div><label>Eyalet</label><input type="text" name="state" value="<?= h($it['state'] ?? '') ?>"></div>
+        </div>
+        <label>Neden americawhat? (opsiyonel)</label>
+        <textarea name="whyAmericaWhat"><?= h($it['whyAmericaWhat'] ?? '') ?></textarea>
         <div class="actions">
           <button class="btn-red" type="submit" name="action" value="edit">Kaydet</button>
           <button class="btn-ghost" type="submit" name="action" value="delete" onclick="return confirm('Silinsin mi? <?= h($id) ?>')">Sil</button>
@@ -408,6 +461,45 @@ function cat_options($cats, $selected) {
       </form>
     </details>
   <?php endforeach; endif; ?>
+
+  <!-- ANALYTICS (oylar) -->
+  <h2 id="analytics">Analytics — oylar</h2>
+  <?php
+    $votes = [];
+    if (is_readable($VOTES_PATH)) {
+      $votes = json_decode((string)file_get_contents($VOTES_PATH), true) ?: [];
+    }
+    $titleMap = [];
+    foreach ($pubItems as $__it) { $titleMap[$__it['id'] ?? ''] = $__it['title'] ?? ''; }
+    $voteRows = [];
+    foreach ($votes as $vid => $v) {
+      $w = (int)($v['wat'] ?? 0); $l = (int)($v['lol'] ?? 0);
+      $sm = (int)($v['same'] ?? 0); $d = (int)($v['dead'] ?? 0);
+      $voteRows[] = ['id' => $vid, 'wat' => $w, 'lol' => $l, 'same' => $sm, 'dead' => $d, 'total' => $w + $l + $sm + $d];
+    }
+    usort($voteRows, fn($a, $b) => $b['total'] <=> $a['total']);
+  ?>
+  <?php if (!$voteRows): ?>
+    <div class="empty">Henüz oy yok. (aw_votes.json bos veya okunamiyor — canli sunucuda dolar.)</div>
+  <?php else: ?>
+    <div class="card">
+      <table class="votes">
+        <thead><tr><th>Item</th><th>WAT</th><th>LOL</th><th>SAME</th><th>DEAD</th><th>Toplam</th></tr></thead>
+        <tbody>
+        <?php foreach ($voteRows as $r): ?>
+          <tr>
+            <td><?= h($titleMap[$r['id']] ?? $r['id']) ?><div class="meta"><?= h($r['id']) ?></div></td>
+            <td><?= (int)$r['wat'] ?></td>
+            <td><?= (int)$r['lol'] ?></td>
+            <td><?= (int)$r['same'] ?></td>
+            <td><?= (int)$r['dead'] ?></td>
+            <td><strong><?= (int)$r['total'] ?></strong></td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  <?php endif; ?>
 
 </div>
 <?php endif; ?>
