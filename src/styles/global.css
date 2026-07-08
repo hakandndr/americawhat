@@ -137,12 +137,18 @@ a{color:inherit;text-decoration:none}
 .feed{padding:22px 0 70px;display:flex;flex-direction:column;gap:22px}
 
 .card{
+  position:relative;
   background:var(--card);
   border:1px solid var(--line);
   border-radius:16px;
   padding:28px 32px;
   transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
 }
+/* Whole-card click via stretched title link */
+.title-link.stretch::after{
+  content:"";position:absolute;inset:0;z-index:1;border-radius:16px;
+}
+.badge-link,.card-date,.unverified,.source,.reactions{position:relative;z-index:2}
 .card:hover{
   border-color:var(--line-strong);
   transform:translateY(-3px);
@@ -153,7 +159,13 @@ a{color:inherit;text-decoration:none}
   font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   padding:4px 10px;border-radius:6px;
 }
-.card-date{font-size:12px;color:var(--dim-2);margin-left:auto}
+.card-date{font-size:12.5px;color:var(--dim);font-weight:500;letter-spacing:.02em;margin-left:auto}
+.unverified{
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:5px;
+  color:var(--star);background:rgba(244,241,230,.10);
+  border:1px solid rgba(244,241,230,.28);
+}
 .card-title{
   font-family:'Anton',sans-serif;font-weight:400;
   font-size:26px;line-height:1.18;letter-spacing:.01em;
@@ -162,11 +174,12 @@ a{color:inherit;text-decoration:none}
 .card-comment{font-size:15.5px;color:var(--dim);line-height:1.65;margin-bottom:22px}
 .card-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:4px}
 .source{
-  font-size:12px;color:var(--dim-2);
+  font-size:12.5px;color:var(--dim);
   display:inline-flex;align-items:center;gap:5px;
 }
-.source a{color:var(--dim);border-bottom:1px solid var(--line-strong)}
-.source a:hover{color:var(--red-hot)}
+.source a{color:var(--ink);font-weight:500;border-bottom:1px solid var(--line-strong)}
+.source a:hover{color:var(--red-hot);border-bottom-color:var(--red-hot)}
+.source-none{color:var(--dim-2);font-style:italic}
 
 /* ── Reactions ── */
 .reactions{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap}

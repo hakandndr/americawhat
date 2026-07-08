@@ -13,23 +13,25 @@ function hexToRgba(hex, a) {
 const badgeBg = hexToRgba(cat.color, 0.14);
 const badgeBorder = hexToRgba(cat.color, 0.32);
 const href = `/item/${item.slug}/`;
+const verified = !!item.source_url;
 ---
 <article class="card" data-category={item.category} data-id={item.id}>
   <div class="card-top">
     <a href={href} class="badge-link">
       <span class="badge" style={`background:${badgeBg};color:${cat.color};border:1px solid ${badgeBorder}`}>{cat.label}</span>
     </a>
+    {!verified && <span class="unverified" title="No source link">UNVERIFIED</span>}
     <span class="card-date">{item.date}</span>
   </div>
   <h2 class="card-title">
-    <a href={href} class="title-link">{item.title}</a>
+    <a href={href} class="title-link stretch">{item.title}</a>
   </h2>
   <p class="card-comment">{item.comment}</p>
   <div class="card-foot">
     <span class="source">
-      via {item.source_url
-        ? <a href={item.source_url} target="_blank" rel="noopener noreferrer">{item.source_name}</a>
-        : item.source_name}
+      {verified
+        ? <a href={item.source_url} target="_blank" rel="noopener noreferrer">Source: {item.source_name} ↗</a>
+        : <span class="source-none">Source: {item.source_name} · unverified</span>}
     </span>
     <div class="reactions" data-id={item.id}>
       {REACTIONS.map((r) => (
