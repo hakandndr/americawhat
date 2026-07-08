@@ -1,0 +1,52 @@
+{
+  "minScore": 2,
+  "recencyDays": 10,
+  "maxPerSource": 12,
+  "scoreKeywords": {
+    "florida man": 5,
+    "hoa": 5,
+    "homeowners association": 5,
+    "fined": 4,
+    "fine": 3,
+    "dmv": 4,
+    "permit": 3,
+    "appointment": 3,
+    "ordinance": 3,
+    "bureaucracy": 4,
+    "paperwork": 3,
+    "loophole": 3,
+    "fee": 3,
+    "subscription": 3,
+    "bizarre": 3,
+    "weird": 3,
+    "unusual": 3,
+    "absurd": 3,
+    "only in america": 4,
+    "lawsuit": 2,
+    "banned": 2,
+    "arrested": 2
+  },
+  "excludeKeywords": [
+    "killed", "dead", "death", "dies", "died", "fatal", "murder", "homicide",
+    "shooting", "shot", "stabbed", "rape", "sexual", "assault", "molest",
+    "child abuse", "children", "kids killed", "suicide", "overdose",
+    "war", "terror", "hostage", "kidnap", "trafficking", "genocide", "massacre"
+  ],
+  "categoryHints": {
+    "florida man": "florida-man",
+    "hoa": "hoa-housing",
+    "homeowners association": "hoa-housing",
+    "landlord": "hoa-housing",
+    "tenant": "hoa-housing",
+    "dmv": "bureaucracy",
+    "permit": "bureaucracy",
+    "city council": "bureaucracy",
+    "ordinance": "bureaucracy",
+    "restaurant": "food-crime",
+    "food truck": "food-crime",
+    "health code": "food-crime",
+    "subscription": "fine-print",
+    "hidden fee": "fine-print",
+    "terms of service": "fine-print"
+  }
+}

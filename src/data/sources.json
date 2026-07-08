@@ -1,0 +1,46 @@
+{
+  "sources": [
+    {
+      "name": "Google News — Florida Man",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=%22Florida%20man%22%20arrested%20OR%20charged&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "florida-man",
+      "enabled": true
+    },
+    {
+      "name": "Google News — HOA & Housing",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=%22homeowners%20association%22%20fine%20OR%20lawsuit%20OR%20fined&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "hoa-housing",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Bureaucracy",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=(DMV%20OR%20permit%20OR%20%22city%20council%22)%20ordinance%20OR%20absurd%20OR%20backlog&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "bureaucracy",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Only in America",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=%22only%20in%20America%22&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "only-in-america",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Food Crime",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=restaurant%20fined%20health%20OR%20%22food%20truck%22%20ban%20OR%20%22health%20code%22&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "food-crime",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Weird",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=bizarre%20OR%20%22weird%20news%22%20police%20OR%20unusual&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "crime-weird",
+      "enabled": true
+    }
+  ]
+}
