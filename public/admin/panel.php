@@ -282,6 +282,8 @@ function status_options($statuses, $selected) {
 <style>
   :root{ --bg:#0a0e1a; --panel:#111726; --panel2:#0d1320; --line:#1e293b; --txt:#e2e8f0; --muted:#94a3b8; --red:#ff5468; --red2:#e23e52; }
   *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  h2[id]{ scroll-margin-top:80px; }
   body{ margin:0; background:var(--bg); color:var(--txt); font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; }
   a{ color:var(--red); }
   header{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:5; }
@@ -345,6 +347,52 @@ function status_options($statuses, $selected) {
 <div class="wrap">
   <?php if ($flash): ?><div class="flash <?= h($flash['type']) ?>"><?= h($flash['msg']) ?></div><?php endif; ?>
   <?php if ($loadErr): ?><div class="flash err"><?= h($loadErr) ?></div><?php endif; ?>
+
+  <!-- ANALYTICS (oylar) — dashboard -->
+  <h2 id="analytics">Analytics — oylar</h2>
+  <?php
+    $votes = [];
+    if (is_readable($VOTES_PATH)) {
+      $votes = json_decode((string)file_get_contents($VOTES_PATH), true) ?: [];
+    }
+    $voteRows = []; $usedIds = [];
+    foreach ($pubItems as $__it) {          // once tum yayindakiler (0 oy dahil)
+      $vid = $__it['id'] ?? '';
+      $v = $votes[$vid] ?? [];
+      $w=(int)($v['wat']??0);$l=(int)($v['lol']??0);$sm=(int)($v['same']??0);$d=(int)($v['dead']??0);
+      $voteRows[] = ['id'=>$vid,'title'=>$__it['title']??$vid,'wat'=>$w,'lol'=>$l,'same'=>$sm,'dead'=>$d,'total'=>$w+$l+$sm+$d];
+      $usedIds[$vid] = true;
+    }
+    foreach ($votes as $vid => $v) {        // yayinda olmayan ama oyu olanlar
+      if (isset($usedIds[$vid])) continue;
+      $w=(int)($v['wat']??0);$l=(int)($v['lol']??0);$sm=(int)($v['same']??0);$d=(int)($v['dead']??0);
+      $voteRows[] = ['id'=>$vid,'title'=>$vid,'wat'=>$w,'lol'=>$l,'same'=>$sm,'dead'=>$d,'total'=>$w+$l+$sm+$d];
+    }
+    usort($voteRows, fn($a,$b) => $b['total'] <=> $a['total']);
+    $voteTotal = array_sum(array_map(fn($r)=>$r['total'], $voteRows));
+  ?>
+  <?php if (!$voteRows): ?>
+    <div class="empty">Henuz icerik/oy yok.</div>
+  <?php else: ?>
+    <div class="card">
+      <table class="votes">
+        <thead><tr><th>Item</th><th>WAT</th><th>LOL</th><th>SAME</th><th>DEAD</th><th>Toplam</th></tr></thead>
+        <tbody>
+        <?php foreach ($voteRows as $r): ?>
+          <tr>
+            <td><?= h($r['title']) ?><div class="meta"><?= h($r['id']) ?></div></td>
+            <td><?= (int)$r['wat'] ?></td>
+            <td><?= (int)$r['lol'] ?></td>
+            <td><?= (int)$r['same'] ?></td>
+            <td><?= (int)$r['dead'] ?></td>
+            <td><strong><?= (int)$r['total'] ?></strong></td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+      <div class="meta" style="margin-top:10px">Toplam oy: <?= (int)$voteTotal ?> &middot; <?= count($voteRows) ?> item</div>
+    </div>
+  <?php endif; ?>
 
   <!-- PENDING KUYRUĞU -->
   <h2>Pending (<?= count($pendItems) ?>)</h2>
@@ -461,45 +509,6 @@ function status_options($statuses, $selected) {
       </form>
     </details>
   <?php endforeach; endif; ?>
-
-  <!-- ANALYTICS (oylar) -->
-  <h2 id="analytics">Analytics — oylar</h2>
-  <?php
-    $votes = [];
-    if (is_readable($VOTES_PATH)) {
-      $votes = json_decode((string)file_get_contents($VOTES_PATH), true) ?: [];
-    }
-    $titleMap = [];
-    foreach ($pubItems as $__it) { $titleMap[$__it['id'] ?? ''] = $__it['title'] ?? ''; }
-    $voteRows = [];
-    foreach ($votes as $vid => $v) {
-      $w = (int)($v['wat'] ?? 0); $l = (int)($v['lol'] ?? 0);
-      $sm = (int)($v['same'] ?? 0); $d = (int)($v['dead'] ?? 0);
-      $voteRows[] = ['id' => $vid, 'wat' => $w, 'lol' => $l, 'same' => $sm, 'dead' => $d, 'total' => $w + $l + $sm + $d];
-    }
-    usort($voteRows, fn($a, $b) => $b['total'] <=> $a['total']);
-  ?>
-  <?php if (!$voteRows): ?>
-    <div class="empty">Henüz oy yok. (aw_votes.json bos veya okunamiyor — canli sunucuda dolar.)</div>
-  <?php else: ?>
-    <div class="card">
-      <table class="votes">
-        <thead><tr><th>Item</th><th>WAT</th><th>LOL</th><th>SAME</th><th>DEAD</th><th>Toplam</th></tr></thead>
-        <tbody>
-        <?php foreach ($voteRows as $r): ?>
-          <tr>
-            <td><?= h($titleMap[$r['id']] ?? $r['id']) ?><div class="meta"><?= h($r['id']) ?></div></td>
-            <td><?= (int)$r['wat'] ?></td>
-            <td><?= (int)$r['lol'] ?></td>
-            <td><?= (int)$r['same'] ?></td>
-            <td><?= (int)$r['dead'] ?></td>
-            <td><strong><?= (int)$r['total'] ?></strong></td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
-  <?php endif; ?>
 
 </div>
 <?php endif; ?>
