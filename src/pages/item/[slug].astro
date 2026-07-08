@@ -24,6 +24,12 @@ function hexToRgba(hex, a) {
 const badgeBg = hexToRgba(cat.color, 0.14);
 const badgeBorder = hexToRgba(cat.color, 0.32);
 
+const sourceUrl = item.sourceUrl ?? item.source_url ?? "";
+const sourceName = item.sourceName ?? item.source_name ?? "";
+const status = item.status ?? (sourceUrl ? "REAL" : "UNVERIFIED");
+const why = item.whyAmericaWhat ?? "";
+const place = [item.city, item.state].filter(Boolean).join(", ");
+
 const related = items
   .filter((i) => i.category === item.category && i.id !== item.id)
   .slice(0, 2);
@@ -43,6 +49,9 @@ const canonicalPath = `/item/${item.slug}/`;
   <article class="detail" data-id={item.id}>
     <div class="detail-top">
       <span class="badge" style={`background:${badgeBg};color:${cat.color};border:1px solid ${badgeBorder}`}>{cat.label}</span>
+      {status === "UNVERIFIED" && <span class="unverified" title="No source link">UNVERIFIED</span>}
+      {status === "SUBMITTED" && <span class="submitted" title="Reader submission">SUBMITTED</span>}
+      {place && <span class="detail-place">{place}</span>}
       <span class="detail-date">{item.date}</span>
     </div>
 
@@ -52,10 +61,14 @@ const canonicalPath = `/item/${item.slug}/`;
 
     {item.body && <p class="detail-body">{item.body}</p>}
 
+    {why && (
+      <p class="detail-why"><span class="detail-why-label">Why it's americawhat</span>{why}</p>
+    )}
+
     <div class="detail-source">
-      Source: {item.source_url
-        ? <a href={item.source_url} target="_blank" rel="noopener noreferrer">{item.source_name}</a>
-        : item.source_name}
+      {sourceUrl
+        ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Source: {sourceName} ↗</a>
+        : <span class="source-none">Source: {sourceName || "unknown"} · unverified</span>}
     </div>
 
     <div class="reactions detail-reactions" data-id={item.id}>
