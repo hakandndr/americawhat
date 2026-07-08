@@ -28,9 +28,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           if [ -n "$(git status --porcelain src/data/pending.json src/data/seen_ids.json)" ]; then
             git add src/data/pending.json src/data/seen_ids.json
-            git commit -m "chore(fetch): yeni kaynak adaylari"
+            git commit -m "chore(fetch): new source candidates"
             git pull --rebase origin main
             git push
           else
-            echo "Degisiklik yok."
+            echo "No changes."
           fi

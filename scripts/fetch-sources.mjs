@@ -1,9 +1,9 @@
 // scripts/fetch-sources.mjs
-// americawhat — Faz 6 kaynak-tabanlı besleme (bağımlılıksız)
-// sources.json'daki RSS kaynaklarını gezer, filters.json ile skorlar/eler,
-// yeni adayları src/data/pending.json'a ekler. ASLA otomatik yayınlamaz.
-// Telif: yalnızca başlık + kısa özet + link + kaynak adı alınır; tam metin/görsel ALINMAZ.
-// Node 22 global fetch kullanır — ekstra paket yok.
+// americawhat — Phase 6 source-based feed (no dependencies)
+// Crawls the RSS sources in sources.json, scores/filters with filters.json,
+// adds new candidates to src/data/pending.json. NEVER auto-publishes.
+// Copyright: only title + short excerpt + link + source name are taken; full text/images are NOT.
+// Uses Node 22 global fetch — no extra packages.
 
 import { readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -36,7 +36,7 @@ function asItems(data) {
   return [];
 }
 
-// ---- XML/RSS yardımcıları ----
+// ---- XML/RSS helpers ----
 function decodeEntities(s) {
   return String(s)
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
@@ -45,9 +45,9 @@ function decodeEntities(s) {
     .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&");
 }
 function stripTags(s) {
-  let x = decodeEntities(String(s));      // once entity coz (&lt;p&gt; -> <p>)
-  x = x.replace(/<[^>]*>/g, " ");         // sonra tag'leri temizle
-  x = x.replace(/&[a-z#0-9]+;/gi, " ");   // arta kalan entity
+  let x = decodeEntities(String(s));      // decode entities first (&lt;p&gt; -> <p>)
+  x = x.replace(/<[^>]*>/g, " ");         // then strip tags
+  x = x.replace(/&[a-z#0-9]+;/gi, " ");   // leftover entities
   return x.replace(/\s+/g, " ").trim();
 }
 function tag(block, name) {
@@ -70,7 +70,7 @@ function parseFeed(xml) {
     let link  = isAtom ? atomLink(b) : stripTags(tag(b, "link"));
     const desc = stripTags(tag(b, "description") || tag(b, "summary") || tag(b, "content"));
     const date = tag(b, "pubDate") || tag(b, "published") || tag(b, "updated") || "";
-    // Google News: <source url="...">Publisher</source> + baslikta " - Publisher" eki
+    // Google News: <source url="...">Publisher</source> + " - Publisher" suffix in title
     const src = stripTags(tag(b, "source"));
     if (src && title.endsWith(" - " + src)) title = title.slice(0, -(src.length + 3)).trim();
     if (title && link) items.push({ title, link, desc, date, publisher: src });
@@ -170,17 +170,17 @@ async function main() {
 
   fresh.sort((a, b) => b.score - a.score);
 
-  if (selftest) { console.log("SELFTEST adaylari:\n" + JSON.stringify(fresh, null, 2)); return; }
+  if (selftest) { console.log("SELFTEST candidates:\n" + JSON.stringify(fresh, null, 2)); return; }
 
   if (fresh.length === 0) {
-    console.log("Yeni aday yok.");
+    console.log("No new candidates.");
     await writeFile(SEEN, JSON.stringify([...seen], null, 2) + "\n");
     return;
   }
   const merged = [...fresh, ...pending];
   await writeFile(PENDING, JSON.stringify(merged, null, 2) + "\n");
   await writeFile(SEEN, JSON.stringify([...seen], null, 2) + "\n");
-  console.log(fresh.length + " aday -> pending.json (toplam " + merged.length + ").");
+  console.log(fresh.length + " candidates -> pending.json (total " + merged.length + ").");
 }
 
 const SELFTEST_XML = `<?xml version="1.0"?><rss><channel>

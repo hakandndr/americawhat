@@ -1,7 +1,7 @@
 // scripts/fetch-reddit.mjs
-// americawhat — Faz 2 otomatik besleme (AUTH'SUZ sürüm)
+// americawhat — Phase 2 auto feed (AUTH-LESS version) [DEPRECATED: replaced by fetch-sources.mjs]
 // Küratörlü subreddit'lerin PUBLIC .json endpoint'lerinden top gönderileri çeker,
-// yeni adayları src/data/pending.json'a ekler.
+// adds new candidates to src/data/pending.json.
 // Bağımlılık YOK, Reddit app / client_id / secret GEREKMEZ. Sadece Node fetch + iyi bir User-Agent.
 // Not: public endpoint rate-limit'e biraz hassastır; subreddit'ler arası bekleme + retry ile yumuşatıldı.
 
@@ -142,7 +142,7 @@ async function main() {
   }
 
   if (fresh.length === 0) {
-    console.log("Yeni aday yok.");
+    console.log("No new candidates.");
     await writeFile(SEEN, JSON.stringify([...seen], null, 2) + "\n");
     return;
   }
@@ -150,7 +150,7 @@ async function main() {
   const merged = [...fresh, ...pending];
   await writeFile(PENDING, JSON.stringify(merged, null, 2) + "\n");
   await writeFile(SEEN, JSON.stringify([...seen], null, 2) + "\n");
-  console.log(fresh.length + " aday eklendi -> pending.json (toplam " + merged.length + ").");
+  console.log(fresh.length + " candidates added -> pending.json (total " + merged.length + ").");
 }
 
 main().catch((e) => {
