@@ -2,12 +2,16 @@
 import Base from "../layouts/Base.astro";
 import Card from "../components/Card.astro";
 import { CATEGORIES } from "../data/categories.js";
-import data from "../data/published.json";
+import { items as allItems } from "../lib/items.js";
 
-const items = [...data.items].sort((a, b) => (a.date < b.date ? 1 : -1));
+const items = [...allItems].sort((a, b) => (a.date < b.date ? 1 : -1));
 const cats = Object.entries(CATEGORIES);
 ---
-<Base>
+<Base
+  title="americawhat — wait, what"
+  description="A curated running feed of absurd, deeply-American moments. The strange, the everyday, the unbelievable — for the times that make you stop and go wait, what."
+  canonicalPath="/"
+>
   <section class="hero" aria-label="americawhat" slot="hero">
     <div class="hero-inner">
       <div class="hero-eyebrow">A running feed of the deeply American</div>

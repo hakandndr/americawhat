@@ -2,11 +2,11 @@
 import Base from "../../layouts/Base.astro";
 import Card from "../../components/Card.astro";
 import { CATEGORIES, REACTIONS } from "../../data/categories.js";
-import data from "../../data/published.json";
+import { items } from "../../lib/items.js";
 
 export function getStaticPaths() {
-  return data.items.map((item) => ({
-    params: { id: item.id },
+  return items.map((item) => ({
+    params: { slug: item.slug },
     props: { item },
   }));
 }
@@ -24,13 +24,20 @@ function hexToRgba(hex, a) {
 const badgeBg = hexToRgba(cat.color, 0.14);
 const badgeBorder = hexToRgba(cat.color, 0.32);
 
-const related = data.items
+const related = items
   .filter((i) => i.category === item.category && i.id !== item.id)
   .slice(0, 2);
 
 const pageTitle = `${item.title} — americawhat`;
+const pageDesc = item.comment || item.title;
+const canonicalPath = `/item/${item.slug}/`;
 ---
-<Base title={pageTitle} description={item.comment}>
+<Base
+  title={pageTitle}
+  description={pageDesc}
+  canonicalPath={canonicalPath}
+  ogType="article"
+>
   <a href="/" class="back-link">&larr; back to feed</a>
 
   <article class="detail" data-id={item.id}>

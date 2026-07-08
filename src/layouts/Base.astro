@@ -1,6 +1,12 @@
 ---
-const { title = "americawhat — wait, what", description = "The strange, the everyday, the deeply American. A curated feed of things that make you go wait, what." } = Astro.props;
+const {
+  title = "americawhat — wait, what",
+  description = "The strange, the everyday, the deeply American. A curated feed of things that make you go wait, what.",
+  canonicalPath = "/",
+  ogType = "website",
+} = Astro.props;
 import "../styles/global.css";
+const canonical = new URL(canonicalPath, Astro.site);
 ---
 <!doctype html>
 <html lang="en">
@@ -9,10 +15,14 @@ import "../styles/global.css";
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:type" content={ogType} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://americawhat.com" />
+  <meta property="og:url" content={canonical} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link

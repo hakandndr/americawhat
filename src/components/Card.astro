@@ -12,7 +12,7 @@ function hexToRgba(hex, a) {
 }
 const badgeBg = hexToRgba(cat.color, 0.14);
 const badgeBorder = hexToRgba(cat.color, 0.32);
-const href = `/item/${item.id}/`;
+const href = `/item/${item.slug}/`;
 ---
 <article class="card" data-category={item.category} data-id={item.id}>
   <div class="card-top">
