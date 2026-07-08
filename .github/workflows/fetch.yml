@@ -1,4 +1,4 @@
-name: Fetch Reddit → pending
+name: Fetch sources → pending
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: fetch-reddit
+  group: fetch-sources
   cancel-in-progress: false
 
 jobs:
@@ -21,14 +21,14 @@ jobs:
         with:
           node-version: 22
       - name: Fetch candidates
-        run: node scripts/fetch-reddit.mjs
+        run: node scripts/fetch-sources.mjs
       - name: Commit if changed
         run: |
           git config user.name  "aw-bot"
           git config user.email "actions@users.noreply.github.com"
           if [ -n "$(git status --porcelain src/data/pending.json src/data/seen_ids.json)" ]; then
             git add src/data/pending.json src/data/seen_ids.json
-            git commit -m "chore(fetch): yeni Reddit adaylari"
+            git commit -m "chore(fetch): yeni kaynak adaylari"
             git pull --rebase origin main
             git push
           else
