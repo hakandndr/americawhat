@@ -3,6 +3,9 @@ name: Deploy to Hostinger
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'src/data/pending.json'
+      - 'src/data/seen_ids.json'
   workflow_dispatch:
 
 jobs:
@@ -12,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run build
@@ -27,3 +30,4 @@ jobs:
           exclude: |
             **/.git*/**
             **/node_modules/**
+            **/aw_votes.json
