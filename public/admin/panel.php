@@ -338,8 +338,9 @@ function status_options($statuses, $selected) {
   <div class="brand">america<span>what</span> · panel</div>
   <div class="meta">
     <a href="https://americawhat.com" target="_blank">site</a> &nbsp;·&nbsp;
+    <a href="/analytics/tracker.php" target="_blank">tracker &#8599;</a> &nbsp;·&nbsp;
     <a href="https://github.com/<?= h(GITHUB_OWNER) ?>/<?= h(GITHUB_REPO) ?>/actions" target="_blank">actions</a> &nbsp;·&nbsp;
-    <a href="#analytics">analytics</a> &nbsp;·&nbsp;
+    <a href="#analytics">oylar</a> &nbsp;·&nbsp;
     <a href="?action=logout">cikis</a>
   </div>
 </header>
@@ -349,7 +350,7 @@ function status_options($statuses, $selected) {
   <?php if ($loadErr): ?><div class="flash err"><?= h($loadErr) ?></div><?php endif; ?>
 
   <!-- ANALYTICS (oylar) — dashboard -->
-  <h2 id="analytics">Analytics — oylar</h2>
+  <h2 id="analytics">Oylar — item bazli <a href="/analytics/tracker.php" target="_blank" style="font-size:12px;letter-spacing:0;text-transform:none">ziyaretci tracker &#8599;</a></h2>
   <?php
     $votes = [];
     if (is_readable($VOTES_PATH)) {
