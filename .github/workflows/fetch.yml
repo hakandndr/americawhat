@@ -1,0 +1,36 @@
+name: Fetch Reddit → pending
+
+on:
+  schedule:
+    - cron: "0 2,14,20 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-reddit
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch candidates
+        run: node scripts/fetch-reddit.mjs
+      - name: Commit if changed
+        run: |
+          git config user.name  "aw-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -n "$(git status --porcelain src/data/pending.json src/data/seen_ids.json)" ]; then
+            git add src/data/pending.json src/data/seen_ids.json
+            git commit -m "chore(fetch): yeni Reddit adaylari"
+            git pull --rebase origin main
+            git push
+          else
+            echo "Degisiklik yok."
+          fi
