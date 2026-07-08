@@ -1,11 +1,11 @@
 <?php
 /**
- * americawhat — kürasyon paneli
- * Konum (canlı): americawhat.com/admin/panel.php
- * Ne yapar: pending.json + published.json'ı GitHub API ile okur; onayladıklarını
- * published.json'a commit'ler (bu deploy'u tetikler). Elle içerik ekleme, düzenleme, silme.
+ * americawhat — curation panel
+ * Location (live): americawhat.com/admin/panel.php
+ * What it does: reads pending.json + published.json via the GitHub API; commits approved items
+ * to published.json (which triggers a deploy). Manual add, edit, delete.
  *
- * Gizli ayarlar admin/config.php içinde (repoda YOK, sunucuya elle yüklenir).
+ * Secrets live in admin/config.php (NOT in the repo, uploaded to the server manually).
  */
 
 session_start();
@@ -14,11 +14,11 @@ mb_internal_encoding('UTF-8');
 $cfg = __DIR__ . '/config.php';
 if (!file_exists($cfg)) {
   http_response_code(500);
-  exit('config.php bulunamadi. admin/config.php dosyasini FTP ile sunucuya yukleyin.');
+  exit('config.php not found. Upload admin/config.php to the server via FTP.');
 }
 require $cfg; // GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, PANEL_PASSWORD
 
-// Kategoriler — categories.js ile aynı tutun.
+// Categories — keep in sync with categories.js.
 $CATS = [
   'bureaucracy'     => 'Bureaucracy',
   'florida-man'     => 'Florida Man',
@@ -39,7 +39,7 @@ const PEND_PATH = 'src/data/pending.json';
 if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(16));
 function csrf_field() { return '<input type="hidden" name="csrf" value="' . htmlspecialchars($_SESSION['csrf']) . '">'; }
 function check_csrf() {
-  if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) { http_response_code(400); exit('CSRF hatasi'); }
+  if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) { http_response_code(400); exit('CSRF error'); }
 }
 function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 function flash($msg, $type = 'ok') { $_SESSION['flash'] = ['msg' => $msg, 'type' => $type]; }
@@ -69,14 +69,14 @@ function gh_request($method, $path, $body = null) {
   return [$code, $res, $err];
 }
 
-// 2 boşluk girintili JSON (repo stiliyle uyumlu, gereksiz diff olmasın)
+// 2-space indented JSON (matches repo style, avoids noisy diffs)
 function json_2space($data) {
   $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
   $json = preg_replace_callback('/^(?: {4})+/m', function ($m) { return str_repeat(' ', strlen($m[0]) / 2); }, $json);
   return $json . "\n";
 }
 
-// Dosyayı çek: [decodedData, sha, httpCode]
+// Fetch file: [decodedData, sha, httpCode]
 function gh_get_file($path) {
   [$code, $res] = gh_request('GET', '/contents/' . $path . '?ref=' . GITHUB_BRANCH);
   if ($code !== 200) return [null, null, $code];
@@ -85,7 +85,7 @@ function gh_get_file($path) {
   return [json_decode($content, true), $j['sha'] ?? null, 200];
 }
 
-// Dosyayı yaz (commit): [httpCode, responseBody, curlErr]
+// Write file (commit): [httpCode, responseBody, curlErr]
 function gh_put_file($path, $dataArray, $message, $sha) {
   $body = [
     'message' => $message,
@@ -96,13 +96,13 @@ function gh_put_file($path, $dataArray, $message, $sha) {
   return gh_request('PUT', '/contents/' . $path, $body);
 }
 
-// published.json -> items dizisi (obje {items:[]} bekleniyor ama esnek)
+// published.json -> items array (expects {items:[]} object but flexible)
 function pub_items($pub) {
   if (is_array($pub) && isset($pub['items']) && is_array($pub['items'])) return $pub['items'];
   if (is_array($pub)) return $pub;
   return [];
 }
-// pending.json -> dizi (bizim seed [] ama esnek)
+// pending.json -> array (our seed is [] but flexible)
 function pend_items($pend) {
   if (is_array($pend) && isset($pend['items']) && is_array($pend['items'])) return $pend['items'];
   if (is_array($pend)) return $pend;
@@ -116,7 +116,7 @@ function next_id($items) {
   return sprintf('aw-%04d', $max + 1);
 }
 
-// Formdan temiz published item kur (elle ekleme + pending onayı ortak kullanır)
+// Build a clean published item from the form (shared by manual add + pending approval)
 function item_from_post($id) {
   $item = [
     'id'          => $id,
@@ -127,13 +127,13 @@ function item_from_post($id) {
     'source_name' => trim($_POST['source_name'] ?? ''),
     'date'        => trim($_POST['date'] ?? date('Y-m-d')),
   ];
-  // status: gecerli degilse kaynaga gore turet
+  // status: derive from source if not valid
   $status = $_POST['status'] ?? '';
   if (!in_array($status, ['REAL', 'SUBMITTED', 'UNVERIFIED'], true)) {
     $status = $item['source_url'] !== '' ? 'REAL' : 'UNVERIFIED';
   }
   $item['status'] = $status;
-  // opsiyonel alanlar (bossa eklenmez)
+  // optional fields (omitted if empty)
   $body = trim($_POST['body'] ?? '');
   if ($body !== '') $item['body'] = $body;
   $why = trim($_POST['whyAmericaWhat'] ?? '');
@@ -153,7 +153,7 @@ if ($action === 'login') {
   $userOk = !defined('PANEL_USER') || hash_equals(PANEL_USER, (string)($_POST['username'] ?? ''));
   $passOk = hash_equals(PANEL_PASSWORD, (string)($_POST['password'] ?? ''));
   if ($userOk && $passOk) { $_SESSION['auth'] = true; redirect_self(); }
-  else { $loginError = 'Yanlis kullanici adi veya sifre.'; }
+  else { $loginError = 'Wrong username or password.'; }
 }
 $authed = !empty($_SESSION['auth']);
 
@@ -163,28 +163,28 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['appr
 
   if ($action === 'add') {
     [$pub, $sha] = gh_get_file(PUB_PATH);
-    if ($sha === null) { flash('published.json okunamadi (GitHub). Token/izin kontrol edin.', 'err'); redirect_self(); }
+    if ($sha === null) { flash('Could not read published.json (GitHub). Check token/permissions.', 'err'); redirect_self(); }
     $items = pub_items($pub);
     $item  = item_from_post(next_id($items));
-    if ($item['title'] === '') { flash('Baslik bos olamaz.', 'err'); redirect_self(); }
+    if ($item['title'] === '') { flash('Title cannot be empty.', 'err'); redirect_self(); }
     array_unshift($items, $item);
     $pub['items'] = $items;
-    [$code, $res] = gh_put_file(PUB_PATH, $pub, 'panel: yeni icerik ' . $item['id'], $sha);
-    if ($code >= 200 && $code < 300) flash('Eklendi: ' . $item['id'] . ' — deploy tetiklendi.');
-    else flash('GitHub commit hatasi (' . $code . '). ' . substr((string)$res, 0, 200), 'err');
+    [$code, $res] = gh_put_file(PUB_PATH, $pub, 'panel: new item ' . $item['id'], $sha);
+    if ($code >= 200 && $code < 300) flash('Added: ' . $item['id'] . ' — deploy triggered.');
+    else flash('GitHub commit error (' . $code . '). ' . substr((string)$res, 0, 200), 'err');
     redirect_self();
   }
 
   if ($action === 'edit') {
     $id = $_POST['id'] ?? '';
     [$pub, $sha] = gh_get_file(PUB_PATH);
-    if ($sha === null) { flash('published.json okunamadi.', 'err'); redirect_self(); }
+    if ($sha === null) { flash('Could not read published.json.', 'err'); redirect_self(); }
     $items = pub_items($pub);
     $found = false;
     foreach ($items as &$it) {
       if (($it['id'] ?? '') === $id) {
         $new = item_from_post($id);
-        // boş opsiyonel alanları tamamen kaldır
+        // remove empty optional fields entirely
         foreach (['body', 'whyAmericaWhat', 'city', 'state'] as $opt) {
           if (!isset($new[$opt])) unset($it[$opt]);
         }
@@ -194,23 +194,23 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['appr
       }
     }
     unset($it);
-    if (!$found) { flash('Item bulunamadi: ' . h($id), 'err'); redirect_self(); }
+    if (!$found) { flash('Item not found: ' . h($id), 'err'); redirect_self(); }
     $pub['items'] = $items;
-    [$code, $res] = gh_put_file(PUB_PATH, $pub, 'panel: duzenle ' . $id, $sha);
-    if ($code >= 200 && $code < 300) flash('Guncellendi: ' . $id . ' — deploy tetiklendi.');
-    else flash('GitHub commit hatasi (' . $code . '). ' . substr((string)$res, 0, 200), 'err');
+    [$code, $res] = gh_put_file(PUB_PATH, $pub, 'panel: edit ' . $id, $sha);
+    if ($code >= 200 && $code < 300) flash('Updated: ' . $id . ' — deploy triggered.');
+    else flash('GitHub commit error (' . $code . '). ' . substr((string)$res, 0, 200), 'err');
     redirect_self();
   }
 
   if ($action === 'delete') {
     $id = $_POST['id'] ?? '';
     [$pub, $sha] = gh_get_file(PUB_PATH);
-    if ($sha === null) { flash('published.json okunamadi.', 'err'); redirect_self(); }
+    if ($sha === null) { flash('Could not read published.json.', 'err'); redirect_self(); }
     $items = array_values(array_filter(pub_items($pub), fn($it) => ($it['id'] ?? '') !== $id));
     $pub['items'] = $items;
-    [$code, $res] = gh_put_file(PUB_PATH, $pub, 'panel: sil ' . $id, $sha);
-    if ($code >= 200 && $code < 300) flash('Silindi: ' . $id . ' — deploy tetiklendi.');
-    else flash('GitHub commit hatasi (' . $code . '). ' . substr((string)$res, 0, 200), 'err');
+    [$code, $res] = gh_put_file(PUB_PATH, $pub, 'panel: delete ' . $id, $sha);
+    if ($code >= 200 && $code < 300) flash('Deleted: ' . $id . ' — deploy triggered.');
+    else flash('GitHub commit error (' . $code . '). ' . substr((string)$res, 0, 200), 'err');
     redirect_self();
   }
 
@@ -218,29 +218,29 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['appr
     $id = $_POST['id'] ?? '';
     // pending'i çek
     [$pend, $psha] = gh_get_file(PEND_PATH);
-    if ($psha === null) { flash('pending.json okunamadi.', 'err'); redirect_self(); }
+    if ($psha === null) { flash('Could not read pending.json.', 'err'); redirect_self(); }
     $plist = pend_items($pend);
 
     if ($action === 'approve') {
       // published'a ekle
       [$pub, $usha] = gh_get_file(PUB_PATH);
-      if ($usha === null) { flash('published.json okunamadi.', 'err'); redirect_self(); }
+      if ($usha === null) { flash('Could not read published.json.', 'err'); redirect_self(); }
       $items = pub_items($pub);
       $item  = item_from_post(next_id($items));
-      if ($item['title'] === '') { flash('Baslik bos olamaz.', 'err'); redirect_self(); }
+      if ($item['title'] === '') { flash('Title cannot be empty.', 'err'); redirect_self(); }
       array_unshift($items, $item);
       $pub['items'] = $items;
-      [$c1, $r1] = gh_put_file(PUB_PATH, $pub, 'panel: onay ' . $item['id'], $usha);
-      if (!($c1 >= 200 && $c1 < 300)) { flash('published commit hatasi (' . $c1 . '). ' . substr((string)$r1, 0, 200), 'err'); redirect_self(); }
+      [$c1, $r1] = gh_put_file(PUB_PATH, $pub, 'panel: approve ' . $item['id'], $usha);
+      if (!($c1 >= 200 && $c1 < 300)) { flash('published commit error (' . $c1 . '). ' . substr((string)$r1, 0, 200), 'err'); redirect_self(); }
     }
 
     // her iki durumda da pending'den çıkar
     $newPlist = array_values(array_filter($plist, fn($it) => ($it['id'] ?? '') !== $id));
     if (is_array($pend) && isset($pend['items'])) $pend['items'] = $newPlist; else $pend = $newPlist;
-    [$c2, $r2] = gh_put_file(PEND_PATH, $pend, 'panel: pending temizle ' . $id, $psha);
-    if (!($c2 >= 200 && $c2 < 300)) { flash('pending commit hatasi (' . $c2 . '). ' . substr((string)$r2, 0, 200), 'err'); redirect_self(); }
+    [$c2, $r2] = gh_put_file(PEND_PATH, $pend, 'panel: clear pending ' . $id, $psha);
+    if (!($c2 >= 200 && $c2 < 300)) { flash('pending commit error (' . $c2 . '). ' . substr((string)$r2, 0, 200), 'err'); redirect_self(); }
 
-    flash($action === 'approve' ? ('Onaylandi — deploy tetiklendi.') : ('Reddedildi (pending temizlendi).'));
+    flash($action === 'approve' ? ('Approved — deploy triggered.') : ('Rejected (removed from pending).'));
     redirect_self();
   }
 }
@@ -267,7 +267,7 @@ function cat_options($cats, $selected) {
   return $out;
 }
 function status_options($statuses, $selected) {
-  $out = '<option value=""' . ($selected === '' ? ' selected' : '') . '>— otomatik —</option>';
+  $out = '<option value=""' . ($selected === '' ? ' selected' : '') . '>— auto —</option>';
   foreach ($statuses as $st) {
     $out .= '<option value="' . h($st) . '"' . ($st === $selected ? ' selected' : '') . '>' . h($st) . '</option>';
   }
@@ -325,7 +325,7 @@ function status_options($statuses, $selected) {
              width:34px; height:32px; cursor:pointer; font-size:16px; }
   .menu-btn:hover{ color:var(--txt); border-color:var(--red); }
   .main-title{ font-size:13px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-weight:700; }
-  .main-body{ max-width:1080px; padding:22px; }
+  .main-body{ max-width:100%; padding:22px 26px; }
 
   .sec{ display:none; }
   .sec.active{ display:block; }
@@ -370,12 +370,12 @@ function status_options($statuses, $selected) {
   .trk-filters{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
   .trk-filters input, .trk-filters select{ width:auto; min-width:120px; flex:1; max-width:170px; padding:7px 10px; font-size:12px; }
   .trk-wrap{ width:100%; overflow-x:auto; border:1px solid var(--line); border-radius:10px; }
-  table.trk{ width:100%; border-collapse:collapse; min-width:960px; font-size:12px; font-family:'Courier New',monospace; }
+  table.trk{ width:100%; border-collapse:collapse; min-width:0; font-size:12px; font-family:'Courier New',monospace; }
   table.trk th{ background:var(--panel2); color:var(--red); font-size:10px; letter-spacing:1px; text-transform:uppercase;
-                padding:9px 12px; border-bottom:2px solid #ff546822; text-align:left; white-space:nowrap; position:sticky; top:0; }
-  table.trk td{ padding:8px 12px; border-bottom:1px solid #141e34; white-space:nowrap; }
+                padding:8px 10px; border-bottom:2px solid #ff546822; text-align:left; white-space:nowrap; position:sticky; top:0; }
+  table.trk td{ padding:7px 10px; border-bottom:1px solid #141e34; white-space:nowrap; }
   table.trk tbody tr:hover{ background:#141e34; }
-  .t-ip{ color:#fff; font-weight:700; max-width:190px; overflow:hidden; text-overflow:ellipsis; }
+  .t-ip{ color:#fff; font-weight:700; white-space:nowrap; }
   .t-date{ color:var(--green); } .t-city{ color:#d946ef; font-weight:700; } .t-path{ color:var(--blue); max-width:160px; overflow:hidden; text-overflow:ellipsis; }
   .t-ref{ color:#f59e0b; } .t-dev{ color:var(--muted); max-width:170px; overflow:hidden; text-overflow:ellipsis; }
   .flag{ display:inline-block; padding:2px 8px; font-size:10px; font-weight:700; border-radius:4px; }
@@ -392,17 +392,17 @@ function status_options($statuses, $selected) {
     <?php if ($loginError): ?><div class="flash err"><?= h($loginError) ?></div><?php endif; ?>
     <form method="post">
       <input type="hidden" name="action" value="login">
-      <label>Kullanici adi</label>
+      <label>Username</label>
       <input type="text" name="username" autocomplete="username" autofocus>
-      <label>Sifre</label>
+      <label>Password</label>
       <input type="password" name="password" autocomplete="current-password">
-      <div class="actions"><button class="btn-red" type="submit">Giris</button></div>
+      <div class="actions"><button class="btn-red" type="submit">Sign in</button></div>
     </form>
   </div>
 <?php else: ?>
 
 <?php
-  // ── Ziyaretci tracker verisi: aw_panel_log.txt (ayni sunucu, panel sifresi arkasinda) ──
+  // ── Visitor tracker data: aw_panel_log.txt (same server, behind the panel password) ──
   $LOG_PATH = __DIR__ . '/../analytics/aw_panel_log.txt';
   $trkRows = []; $trkTop = [];
   $trkStats = ['total'=>0,'today'=>0,'uniq'=>0,'human'=>0,'bot'=>0];
@@ -461,16 +461,16 @@ function status_options($statuses, $selected) {
     <nav class="side-nav">
       <div class="side-group">Content</div>
       <a class="nav-item active" data-panel="pending">Pending <span class="badge-n<?= count($pendItems) > 0 ? ' hot' : '' ?>"><?= count($pendItems) ?></span></a>
-      <a class="nav-item" data-panel="add">Elle ekle</a>
-      <a class="nav-item" data-panel="published">Yayında <span class="badge-n"><?= count($pubItems) ?></span></a>
-      <a class="nav-item" data-panel="votes">Oylar</a>
+      <a class="nav-item" data-panel="add">Add manually</a>
+      <a class="nav-item" data-panel="published">Published <span class="badge-n"><?= count($pubItems) ?></span></a>
+      <a class="nav-item" data-panel="votes">Votes</a>
       <div class="side-group">Analytics</div>
       <a class="nav-item" data-panel="tracker">Tracker <span class="badge-n"><?= (int)$trkStats['total'] ?></span></a>
     </nav>
     <div class="side-foot">
       <a href="https://americawhat.com" target="_blank">site &#8599;</a>
       <a href="https://github.com/<?= h(GITHUB_OWNER) ?>/<?= h(GITHUB_REPO) ?>/actions" target="_blank">actions &#8599;</a>
-      <a href="?action=logout">çıkış</a>
+      <a href="?action=logout">Sign out</a>
     </div>
   </aside>
 
@@ -487,41 +487,41 @@ function status_options($statuses, $selected) {
       <section class="sec active" data-sec="pending">
         <h2>Pending (<?= count($pendItems) ?>)</h2>
         <?php if (!$pendItems): ?>
-          <div class="empty">Bekleyen aday yok. (Fetch workflow calisinca burada belirir.)</div>
+          <div class="empty">No pending candidates. (They appear here after the fetch workflow runs.)</div>
         <?php else: foreach ($pendItems as $it): $pid = $it['id'] ?? ''; ?>
           <div class="card">
             <div class="meta">
-              <?= h($it['source_name'] ?? '') ?> · skor <?= h($it['score'] ?? '?') ?>
-              <?php if (!empty($it['source_url'])): ?> · <a href="<?= h($it['source_url']) ?>" target="_blank">kaynak</a><?php endif; ?>
-              <?php if (!empty($it['external_url'])): ?> · <a href="<?= h($it['external_url']) ?>" target="_blank">orijinal</a><?php endif; ?>
+              <?= h($it['source_name'] ?? '') ?> · score <?= h($it['score'] ?? '?') ?>
+              <?php if (!empty($it['source_url'])): ?> · <a href="<?= h($it['source_url']) ?>" target="_blank">source</a><?php endif; ?>
+              <?php if (!empty($it['external_url'])): ?> · <a href="<?= h($it['external_url']) ?>" target="_blank">original</a><?php endif; ?>
             </div>
             <form method="post">
               <?= csrf_field() ?>
               <input type="hidden" name="id" value="<?= h($pid) ?>">
-              <label>Baslik</label>
+              <label>Title</label>
               <input type="text" name="title" value="<?= h($it['title'] ?? '') ?>">
-              <label>Yorum (americawhat sesi)</label>
-              <textarea name="comment" placeholder="Kısa, kuru, ironik tek-iki cümle..."><?= h($it['comment'] ?? '') ?></textarea>
-              <label>Body (opsiyonel, uzun metin)</label>
+              <label>Comment (americawhat voice)</label>
+              <textarea name="comment" placeholder="Short, dry, ironic — one or two sentences..."><?= h($it['comment'] ?? '') ?></textarea>
+              <label>Body (optional, long text)</label>
               <textarea name="body"><?= h($it['body'] ?? '') ?></textarea>
               <div class="row">
-                <div><label>Kategori</label><select name="category"><?= cat_options($CATS, $it['category'] ?? 'bureaucracy') ?></select></div>
-                <div><label>Kaynak adı</label><input type="text" name="source_name" value="<?= h($it['source_name'] ?? '') ?>"></div>
+                <div><label>Category</label><select name="category"><?= cat_options($CATS, $it['category'] ?? 'bureaucracy') ?></select></div>
+                <div><label>Source name</label><input type="text" name="source_name" value="<?= h($it['source_name'] ?? '') ?>"></div>
               </div>
               <div class="row">
-                <div><label>Kaynak URL</label><input type="text" name="source_url" value="<?= h($it['source_url'] ?? '') ?>"></div>
-                <div><label>Tarih</label><input type="text" name="date" value="<?= h($it['date'] ?? date('Y-m-d')) ?>"></div>
+                <div><label>Source URL</label><input type="text" name="source_url" value="<?= h($it['source_url'] ?? '') ?>"></div>
+                <div><label>Date</label><input type="text" name="date" value="<?= h($it['date'] ?? date('Y-m-d')) ?>"></div>
               </div>
               <div class="row">
-                <div><label>Durum</label><select name="status"><?= status_options($STATUSES, $it['status'] ?? '') ?></select></div>
-                <div><label>Sehir</label><input type="text" name="city" value="<?= h($it['city'] ?? '') ?>"></div>
-                <div><label>Eyalet</label><input type="text" name="state" value="<?= h($it['state'] ?? '') ?>"></div>
+                <div><label>Status</label><select name="status"><?= status_options($STATUSES, $it['status'] ?? '') ?></select></div>
+                <div><label>City</label><input type="text" name="city" value="<?= h($it['city'] ?? '') ?>"></div>
+                <div><label>State</label><input type="text" name="state" value="<?= h($it['state'] ?? '') ?>"></div>
               </div>
-              <label>Neden americawhat? (opsiyonel)</label>
+              <label>Why it's americawhat? (optional)</label>
               <textarea name="whyAmericaWhat"><?= h($it['whyAmericaWhat'] ?? '') ?></textarea>
               <div class="actions">
-                <button class="btn-red" type="submit" name="action" value="approve">Onayla → yayınla</button>
-                <button class="btn-ghost" type="submit" name="action" value="reject" onclick="return confirm('Reddedilsin mi?')">Reddet</button>
+                <button class="btn-red" type="submit" name="action" value="approve">Approve → publish</button>
+                <button class="btn-ghost" type="submit" name="action" value="reject" onclick="return confirm('Reject this candidate?')">Reject</button>
               </div>
             </form>
           </div>
@@ -530,42 +530,42 @@ function status_options($statuses, $selected) {
 
       <!-- ELLE EKLE -->
       <section class="sec" data-sec="add">
-        <h2>Elle içerik ekle</h2>
+        <h2>Add content manually</h2>
         <div class="card">
           <form method="post">
             <?= csrf_field() ?>
             <input type="hidden" name="action" value="add">
-            <label>Baslik</label>
+            <label>Title</label>
             <input type="text" name="title" required>
-            <label>Yorum (americawhat sesi)</label>
+            <label>Comment (americawhat voice)</label>
             <textarea name="comment"></textarea>
-            <label>Body (opsiyonel)</label>
+            <label>Body (optional)</label>
             <textarea name="body"></textarea>
             <div class="row">
-              <div><label>Kategori</label><select name="category"><?= cat_options($CATS, 'bureaucracy') ?></select></div>
-              <div><label>Kaynak adı</label><input type="text" name="source_name"></div>
+              <div><label>Category</label><select name="category"><?= cat_options($CATS, 'bureaucracy') ?></select></div>
+              <div><label>Source name</label><input type="text" name="source_name"></div>
             </div>
             <div class="row">
-              <div><label>Kaynak URL</label><input type="text" name="source_url"></div>
-              <div><label>Tarih</label><input type="text" name="date" value="<?= date('Y-m-d') ?>"></div>
+              <div><label>Source URL</label><input type="text" name="source_url"></div>
+              <div><label>Date</label><input type="text" name="date" value="<?= date('Y-m-d') ?>"></div>
             </div>
             <div class="row">
-              <div><label>Durum</label><select name="status"><?= status_options($STATUSES, '') ?></select></div>
-              <div><label>Sehir</label><input type="text" name="city"></div>
-              <div><label>Eyalet</label><input type="text" name="state"></div>
+              <div><label>Status</label><select name="status"><?= status_options($STATUSES, '') ?></select></div>
+              <div><label>City</label><input type="text" name="city"></div>
+              <div><label>State</label><input type="text" name="state"></div>
             </div>
-            <label>Neden americawhat? (opsiyonel)</label>
+            <label>Why it's americawhat? (optional)</label>
             <textarea name="whyAmericaWhat"></textarea>
-            <div class="actions"><button class="btn-red" type="submit">Ekle → yayınla</button></div>
+            <div class="actions"><button class="btn-red" type="submit">Add → publish</button></div>
           </form>
         </div>
       </section>
 
       <!-- YAYINDAKILER -->
       <section class="sec" data-sec="published">
-        <h2>Yayında (<?= count($pubItems) ?>)</h2>
+        <h2>Published (<?= count($pubItems) ?>)</h2>
         <?php if (!$pubItems): ?>
-          <div class="empty">Henüz içerik yok.</div>
+          <div class="empty">No content yet.</div>
         <?php else: foreach ($pubItems as $it): $id = $it['id'] ?? ''; ?>
           <details class="card pub-row">
             <summary>
@@ -575,30 +575,30 @@ function status_options($statuses, $selected) {
             <form method="post" style="margin-top:14px;">
               <?= csrf_field() ?>
               <input type="hidden" name="id" value="<?= h($id) ?>">
-              <label>Baslik</label>
+              <label>Title</label>
               <input type="text" name="title" value="<?= h($it['title'] ?? '') ?>">
-              <label>Yorum</label>
+              <label>Comment</label>
               <textarea name="comment"><?= h($it['comment'] ?? '') ?></textarea>
-              <label>Body (opsiyonel)</label>
+              <label>Body (optional)</label>
               <textarea name="body"><?= h($it['body'] ?? '') ?></textarea>
               <div class="row">
-                <div><label>Kategori</label><select name="category"><?= cat_options($CATS, $it['category'] ?? 'bureaucracy') ?></select></div>
-                <div><label>Kaynak adı</label><input type="text" name="source_name" value="<?= h($it['source_name'] ?? '') ?>"></div>
+                <div><label>Category</label><select name="category"><?= cat_options($CATS, $it['category'] ?? 'bureaucracy') ?></select></div>
+                <div><label>Source name</label><input type="text" name="source_name" value="<?= h($it['source_name'] ?? '') ?>"></div>
               </div>
               <div class="row">
-                <div><label>Kaynak URL</label><input type="text" name="source_url" value="<?= h($it['source_url'] ?? '') ?>"></div>
-                <div><label>Tarih</label><input type="text" name="date" value="<?= h($it['date'] ?? '') ?>"></div>
+                <div><label>Source URL</label><input type="text" name="source_url" value="<?= h($it['source_url'] ?? '') ?>"></div>
+                <div><label>Date</label><input type="text" name="date" value="<?= h($it['date'] ?? '') ?>"></div>
               </div>
               <div class="row">
-                <div><label>Durum</label><select name="status"><?= status_options($STATUSES, $it['status'] ?? '') ?></select></div>
-                <div><label>Sehir</label><input type="text" name="city" value="<?= h($it['city'] ?? '') ?>"></div>
-                <div><label>Eyalet</label><input type="text" name="state" value="<?= h($it['state'] ?? '') ?>"></div>
+                <div><label>Status</label><select name="status"><?= status_options($STATUSES, $it['status'] ?? '') ?></select></div>
+                <div><label>City</label><input type="text" name="city" value="<?= h($it['city'] ?? '') ?>"></div>
+                <div><label>State</label><input type="text" name="state" value="<?= h($it['state'] ?? '') ?>"></div>
               </div>
-              <label>Neden americawhat? (opsiyonel)</label>
+              <label>Why it's americawhat? (optional)</label>
               <textarea name="whyAmericaWhat"><?= h($it['whyAmericaWhat'] ?? '') ?></textarea>
               <div class="actions">
-                <button class="btn-red" type="submit" name="action" value="edit">Kaydet</button>
-                <button class="btn-ghost" type="submit" name="action" value="delete" onclick="return confirm('Silinsin mi? <?= h($id) ?>')">Sil</button>
+                <button class="btn-red" type="submit" name="action" value="edit">Save</button>
+                <button class="btn-ghost" type="submit" name="action" value="delete" onclick="return confirm('Delete <?= h($id) ?>')">Delete</button>
               </div>
             </form>
           </details>
@@ -607,11 +607,11 @@ function status_options($statuses, $selected) {
 
       <!-- TRACKER (gomulu ziyaretci analitigi) -->
       <section class="sec" data-sec="tracker">
-        <h2>Ziyaretçi Tracker</h2>
+        <h2>Visitor Tracker</h2>
         <?php if (!is_readable($LOG_PATH)): ?>
-          <div class="empty">Log dosyasi okunamiyor (aw_panel_log.txt). Sunucuda /analytics/ altinda olmali.</div>
+          <div class="empty">Log file not readable (aw_panel_log.txt). It must be under /analytics/ on the server.</div>
         <?php elseif (!$trkRows): ?>
-          <div class="empty">Henüz ziyaret kaydı yok. Tracker canlı — ilk ziyaretçi bekleniyor.</div>
+          <div class="empty">No visits logged yet. Tracker is live — waiting for the first visitor.</div>
         <?php else: ?>
           <div class="trk-stats">
             <div class="trk-stat"><div class="trk-num"><?= (int)$trkStats['total'] ?></div><div class="trk-lbl">All-time visits</div></div>
@@ -669,13 +669,13 @@ function status_options($statuses, $selected) {
               </tbody>
             </table>
           </div>
-          <div class="meta" style="margin-top:10px"><?= count($trkRows) ?> satir · <?= (int)$trkStats['uniq'] ?> unique IP · veri: aw_panel_log.txt</div>
+          <div class="meta" style="margin-top:10px"><?= count($trkRows) ?> rows · <?= (int)$trkStats['uniq'] ?> unique IPs · data: aw_panel_log.txt</div>
         <?php endif; ?>
       </section>
 
       <!-- OYLAR -->
       <section class="sec" data-sec="votes">
-        <h2>Oylar — item bazlı</h2>
+        <h2>Votes — per item</h2>
         <?php
           $votes = [];
           if (is_readable($VOTES_PATH)) $votes = json_decode((string)file_get_contents($VOTES_PATH), true) ?: [];
@@ -693,11 +693,11 @@ function status_options($statuses, $selected) {
           $voteTotal = array_sum(array_map(fn($r)=>$r['total'], $voteRows));
         ?>
         <?php if (!$voteRows): ?>
-          <div class="empty">Henuz icerik/oy yok.</div>
+          <div class="empty">No content/votes yet.</div>
         <?php else: ?>
           <div class="card">
             <table class="votes">
-              <thead><tr><th>Item</th><th>WAT</th><th>LOL</th><th>SAME</th><th>DEAD</th><th>Toplam</th></tr></thead>
+              <thead><tr><th>Item</th><th>WAT</th><th>LOL</th><th>SAME</th><th>DEAD</th><th>Total</th></tr></thead>
               <tbody>
               <?php foreach ($voteRows as $r): ?>
                 <tr>
@@ -708,7 +708,7 @@ function status_options($statuses, $selected) {
               <?php endforeach; ?>
               </tbody>
             </table>
-            <div class="meta" style="margin-top:10px">Toplam oy: <?= (int)$voteTotal ?> &middot; <?= count($voteRows) ?> item</div>
+            <div class="meta" style="margin-top:10px">Total votes: <?= (int)$voteTotal ?> &middot; <?= count($voteRows) ?> items</div>
           </div>
         <?php endif; ?>
       </section>
@@ -761,7 +761,7 @@ function status_options($statuses, $selected) {
                 && (!f.flag||r.dataset.flag===f.flag) && (!f.human||r.dataset.human==='true');
           r.style.display = ok?'':'none'; if(ok)vis++;
         });
-        if(cnt) cnt.textContent = vis+' / '+rows.length+' satir';
+        if(cnt) cnt.textContent = vis+' / '+rows.length+' rows';
       }
       function bind(id,key){ var el=document.getElementById(id); if(el) el.addEventListener('input',function(e){ f[key]=e.target.value.toLowerCase().trim(); apply(); }); }
       bind('tf-ip','ip'); bind('tf-country','country'); bind('tf-city','city'); bind('tf-path','path');
