@@ -48,6 +48,18 @@ async function loadJson(file, fallback) {
   }
 }
 
+
+// published.json / pending.json array de olabilir, obje de ({items:[...]} ya da id->obje).
+// Hepsini item dizisine indirger; boşsa [].
+function asItems(data) {
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === "object") {
+    if (Array.isArray(data.items)) return data.items;
+    return Object.values(data);
+  }
+  return [];
+}
+
 async function fetchSub(sub) {
   const url = "https://www.reddit.com/r/" + sub + "/top.json?t=" + TIME + "&limit=" + PER_SUB + "&raw_json=1";
   for (let attempt = 1; attempt <= MAX_RETRY; attempt++) {
@@ -111,8 +123,8 @@ async function main() {
   const published = await loadJson(PUBLISHED, []);
   const seen = new Set(await loadJson(SEEN, []));
 
-  for (const it of pending) if (it.reddit_id) seen.add(it.reddit_id);
-  for (const it of published) if (it.reddit_id) seen.add(it.reddit_id);
+  for (const it of asItems(pending)) if (it && it.reddit_id) seen.add(it.reddit_id);
+  for (const it of asItems(published)) if (it && it.reddit_id) seen.add(it.reddit_id);
 
   const fresh = [];
   for (const { sub, category } of SOURCES) {
