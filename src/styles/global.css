@@ -37,6 +37,13 @@ a{color:inherit;text-decoration:none}
 }
 .logo{font-family:'Archivo';font-weight:800;font-size:19px;letter-spacing:-.02em}
 .logo b{color:var(--red-hot)}
+.head-right{display:flex;align-items:center;gap:18px}
+.site-nav{display:flex;gap:16px}
+.site-nav a{
+  font-size:13px;color:var(--dim);letter-spacing:.02em;
+  transition:color .15s ease;
+}
+.site-nav a:hover{color:var(--red-hot)}
 .tagline{font-size:12px;color:var(--dim);letter-spacing:.02em}
 
 /* ── Hero band ── */
@@ -244,6 +251,73 @@ a{color:inherit;text-decoration:none}
 
 .empty{
   text-align:center;padding:60px 20px;color:var(--dim-2);font-size:15px;
+}
+
+/* ── Content pages (about / contact) ── */
+.page-head{margin:34px 0 18px}
+.page-eyebrow{
+  font-size:12px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;
+  display:flex;align-items:center;gap:12px;
+}
+.page-eyebrow::before{
+  content:"";width:32px;height:1px;background:var(--red);display:inline-block;
+}
+.page-title{
+  font-family:'Anton',sans-serif;font-weight:400;
+  font-size:clamp(32px,6vw,56px);line-height:1;letter-spacing:.01em;
+  text-transform:uppercase;color:var(--ink);
+}
+.page-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:30px 32px;
+  margin:0 0 50px;
+}
+.page-prose p{
+  font-size:16.5px;color:var(--dim);line-height:1.7;margin-bottom:18px;
+}
+.page-prose p:last-child{margin-bottom:0}
+.page-prose strong{color:var(--ink);font-weight:600}
+.page-prose em{color:var(--ink);font-style:italic}
+
+/* ── Contact form ── */
+.form{display:flex;flex-direction:column;gap:18px}
+.form-field{display:flex;flex-direction:column;gap:7px}
+.form-label{
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--dim);
+}
+.form-input,.form-textarea{
+  font-family:inherit;font-size:15px;color:var(--ink);
+  background:var(--night-2);border:1px solid var(--line-strong);
+  border-radius:10px;padding:12px 14px;
+  transition:border-color .15s ease;width:100%;
+}
+.form-input:focus,.form-textarea:focus{outline:none;border-color:var(--red)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--dim-2)}
+.form-textarea{resize:vertical;min-height:130px;line-height:1.6}
+.form-submit{
+  align-self:flex-start;
+  font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:12px 24px;border-radius:10px;cursor:pointer;
+  background:var(--red);border:1px solid var(--red);color:#fff;
+  transition:all .15s ease;
+}
+.form-submit:hover{background:var(--red-hot);border-color:var(--red-hot);transform:translateY(-1px)}
+.form-submit:disabled{opacity:.55;cursor:default;transform:none}
+.form-status{
+  font-size:14px;line-height:1.5;padding:12px 14px;border-radius:10px;
+  display:none;
+}
+.form-status.show{display:block}
+.form-status.ok{
+  color:#7fe0a3;background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.28);
+}
+.form-status.err{
+  color:var(--red-hot);background:rgba(226,59,78,.10);border:1px solid rgba(226,59,78,.30);
 }
 
 /* ── Responsive: tablet ── */

@@ -1,0 +1,103 @@
+---
+import Base from "../layouts/Base.astro";
+
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/REPLACE_ME";
+---
+<Base
+  title="Contact — americawhat"
+  description="Got a wait, what of your own? Send it our way."
+  canonicalPath="/contact/"
+>
+  <a href="/" class="back-link">&larr; back to feed</a>
+
+  <header class="page-head">
+    <div class="page-eyebrow">Contact</div>
+    <h1 class="page-title">Got a wait, what?</h1>
+  </header>
+
+  <article class="page-card">
+    <p class="page-prose" style="margin-bottom:24px">
+      Saw something that made you do a double take? A news item, a receipt, a sign,
+      a form that shouldn't exist? Send it over. The stranger, the better.
+    </p>
+
+    <form class="form" id="contact-form" data-endpoint={FORMSPREE_ENDPOINT} novalidate>
+      <div class="form-field">
+        <label class="form-label" for="name">Name</label>
+        <input class="form-input" type="text" id="name" name="name" autocomplete="name" required />
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="email">Email</label>
+        <input class="form-input" type="email" id="email" name="email" autocomplete="email" required />
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="message">Your "wait, what"</label>
+        <textarea class="form-textarea" id="message" name="message" placeholder="Tell us what happened. Link it if you've got one." required></textarea>
+      </div>
+
+      <button class="form-submit" type="submit">Send it</button>
+
+      <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </article>
+
+  <script>
+    const form = document.getElementById("contact-form");
+    const statusEl = document.getElementById("form-status");
+    const submitBtn = form?.querySelector(".form-submit");
+    const endpoint = form?.getAttribute("data-endpoint");
+
+    function setStatus(msg, kind) {
+      if (!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.className = "form-status show " + kind;
+    }
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!endpoint || endpoint.endsWith("REPLACE_ME")) {
+        setStatus("This form isn't wired up yet. Email hello@americawhat.com in the meantime.", "err");
+        return;
+      }
+
+      const data = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        message: form.message.value.trim(),
+      };
+
+      if (!data.name || !data.email || !data.message) {
+        setStatus("Fill in all three fields and try again.", "err");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      const original = submitBtn.textContent;
+      submitBtn.textContent = "Sending…";
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          form.reset();
+          setStatus("Got it. Thanks — we'll take a look. wait, what indeed.", "ok");
+        } else {
+          const body = await res.json().catch(() => null);
+          const msg = body?.errors?.map((x) => x.message).join(", ");
+          setStatus(msg || "Something went wrong. Try again, or email hello@americawhat.com.", "err");
+        }
+      } catch {
+        setStatus("Couldn't reach the server. Check your connection and try again.", "err");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = original;
+      }
+    });
+  </script>
+</Base>
