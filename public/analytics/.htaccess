@@ -3,3 +3,9 @@
     Order Allow,Deny
     Deny from all
 </FilesMatch>
+
+# Tracker yalnizca panel icinden — dogrudan erisim kapali
+<Files "tracker.php">
+    Order Allow,Deny
+    Deny from all
+</Files>

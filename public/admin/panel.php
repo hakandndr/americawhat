@@ -150,8 +150,10 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 if ($action === 'logout') { $_SESSION = []; session_destroy(); header('Location: panel.php'); exit; }
 $loginError = '';
 if ($action === 'login') {
-  if (hash_equals(PANEL_PASSWORD, $_POST['password'] ?? '')) { $_SESSION['auth'] = true; redirect_self(); }
-  else { $loginError = 'Yanlis sifre.'; }
+  $userOk = !defined('PANEL_USER') || hash_equals(PANEL_USER, (string)($_POST['username'] ?? ''));
+  $passOk = hash_equals(PANEL_PASSWORD, (string)($_POST['password'] ?? ''));
+  if ($userOk && $passOk) { $_SESSION['auth'] = true; redirect_self(); }
+  else { $loginError = 'Yanlis kullanici adi veya sifre.'; }
 }
 $authed = !empty($_SESSION['auth']);
 
@@ -309,6 +311,8 @@ function status_options($statuses, $selected) {
   .nav-item.active{ background:var(--blue); color:#fff; font-weight:600; }
   .badge-n{ font-size:11px; background:#00000033; padding:1px 7px; border-radius:10px; min-width:20px; text-align:center; }
   .nav-item.active .badge-n{ background:#ffffff2e; }
+  .badge-n.hot{ background:#ff54681f; color:var(--red); font-weight:800; }
+  .nav-item.active .badge-n.hot{ background:#ffffff2e; color:#fff; }
   .side-foot{ display:flex; flex-direction:column; gap:8px; padding:14px 18px 18px; border-top:1px solid var(--line); }
   .side-foot a{ font-size:12.5px; color:var(--muted); letter-spacing:.02em; }
   .side-foot a:hover{ color:var(--red); }
@@ -388,8 +392,10 @@ function status_options($statuses, $selected) {
     <?php if ($loginError): ?><div class="flash err"><?= h($loginError) ?></div><?php endif; ?>
     <form method="post">
       <input type="hidden" name="action" value="login">
+      <label>Kullanici adi</label>
+      <input type="text" name="username" autocomplete="username" autofocus>
       <label>Sifre</label>
-      <input type="password" name="password" autofocus>
+      <input type="password" name="password" autocomplete="current-password">
       <div class="actions"><button class="btn-red" type="submit">Giris</button></div>
     </form>
   </div>
@@ -454,12 +460,12 @@ function status_options($statuses, $selected) {
     </div>
     <nav class="side-nav">
       <div class="side-group">Content</div>
-      <a class="nav-item active" data-panel="pending">Pending <span class="badge-n"><?= count($pendItems) ?></span></a>
+      <a class="nav-item active" data-panel="pending">Pending <span class="badge-n<?= count($pendItems) > 0 ? ' hot' : '' ?>"><?= count($pendItems) ?></span></a>
       <a class="nav-item" data-panel="add">Elle ekle</a>
       <a class="nav-item" data-panel="published">Yayında <span class="badge-n"><?= count($pubItems) ?></span></a>
+      <a class="nav-item" data-panel="votes">Oylar</a>
       <div class="side-group">Analytics</div>
       <a class="nav-item" data-panel="tracker">Tracker <span class="badge-n"><?= (int)$trkStats['total'] ?></span></a>
-      <a class="nav-item" data-panel="votes">Oylar</a>
     </nav>
     <div class="side-foot">
       <a href="https://americawhat.com" target="_blank">site &#8599;</a>
