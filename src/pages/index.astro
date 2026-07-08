@@ -17,13 +17,9 @@ const cats = Object.entries(CATEGORIES);
       <div class="hero-eyebrow">A running feed of the deeply American</div>
       <h1 class="hero-title">
         <span class="hero-america">America,</span>
-        <span class="hero-second">
-          <span class="hero-rot" id="hero-rot" aria-label="what">
-            <span class="on">what</span><span>wait—</span><span>excuse me</span><span>hold on</span><span>huh</span><span>come again</span>
-          </span><span class="hero-q">?</span>
-        </span>
+        <span class="hero-second"><span class="hero-word">what</span><span class="hero-q">?</span></span>
       </h1>
-      <p class="hero-lede">The strange, the everyday, the unbelievable. Curated for the moments that make you stop and go <em>wait, what.</em></p>
+      <p class="hero-lede">The strange, the everyday, the unbelievably American. The moments that make you stop and go <em>wait, what.</em></p>
     </div>
   </section>
 
@@ -59,20 +55,6 @@ const cats = Object.entries(CATEGORIES);
         if (emptyEl) emptyEl.style.display = visible === 0 ? "block" : "none";
       });
     });
-
-    // ── Hero rotating word ──
-    (function () {
-      const reduce = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
-      if (reduce) return;
-      const items = document.querySelectorAll("#hero-rot span");
-      if (!items.length) return;
-      let i = 0;
-      setInterval(() => {
-        items[i].classList.remove("on");
-        i = (i + 1) % items.length;
-        items[i].classList.add("on");
-      }, 2100);
-    })();
   </script>
 
   <script src="../scripts/tracking.js"></script>
