@@ -1,9 +1,22 @@
 import data from "../data/published.json";
 import { slugify } from "./slug.js";
 
-// Enrich each published item with a unique, stable slug.
-// Prefer an explicit item.slug; otherwise derive it from the title.
-// On collision, append -2, -3, … so every URL stays unique.
+// ── Item schema (canonical fields) ───────────────────────────────
+// Required:  id, title, comment, category, date
+// Source:    sourceName / source_name, sourceUrl / source_url
+// Optional:  body, whyAmericaWhat, city, state
+// Status:    status/type ∈ { REAL, SUBMITTED, UNVERIFIED }
+//            → if omitted, derived: source present ⇒ REAL, else UNVERIFIED
+// Fetch:     score, fetchedAt, seenId  (populated by fetch-sources.mjs)
+// Runtime:   slug (added below), reactions live server-side (aw_votes.json)
+// ─────────────────────────────────────────────────────────────────
+
+// Normalize source field naming (accept both snake_case and camelCase).
+function sourceUrlOf(item) {
+  return item.sourceUrl ?? item.source_url ?? "";
+}
+
+// Enrich each published item with a unique, stable slug + derived status.
 const seen = new Map();
 export const items = data.items.map((item) => {
   let base = item.slug ? slugify(item.slug) : slugify(item.title);
@@ -12,7 +25,9 @@ export const items = data.items.map((item) => {
   const count = seen.get(base) ?? 0;
   if (count > 0) slug = `${base}-${count + 1}`;
   seen.set(base, count + 1);
-  return { ...item, slug };
+
+  const status = item.status || item.type || (sourceUrlOf(item) ? "REAL" : "UNVERIFIED");
+  return { ...item, slug, status };
 });
 
 const bySlug = new Map(items.map((item) => [item.slug, item]));

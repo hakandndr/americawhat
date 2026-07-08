@@ -1,28 +1,33 @@
 export const CATEGORIES = {
+  "bureaucracy": {
+    label: "Bureaucracy",
+    blurb: "Forms, offices, and the runaround.",
+    color: "#f2a623",
+  },
   "florida-man": {
     label: "Florida Man",
     blurb: "The state that keeps giving.",
     color: "#ff5468",
   },
-  "bureaucracy": {
-    label: "Bureaucracy",
-    blurb: "DMV, HOA, IRS, and the fine print.",
-    color: "#f2a623",
+  "hoa-housing": {
+    label: "HOA & Housing",
+    blurb: "Boards, bylaws, and doormats.",
+    color: "#2dd4bf",
+  },
+  "fine-print": {
+    label: "Fine Print",
+    blurb: "The fee beneath the fee.",
+    color: "#d4a373",
   },
   "only-in-america": {
     label: "Only in America",
     blurb: "You can't make this up.",
     color: "#4a9eff",
   },
-  "late-stage": {
-    label: "Late Stage",
-    blurb: "Capitalism, unsupervised.",
-    color: "#22c55e",
-  },
-  "wait-what": {
-    label: "Wait, What",
-    blurb: "Genuinely unclassifiable.",
-    color: "#d946ef",
+  "food-crime": {
+    label: "Food Crime",
+    blurb: "Crimes against the plate.",
+    color: "#fb923c",
   },
   "crime-weird": {
     label: "Crime & Weird",
