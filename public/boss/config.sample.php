@@ -1,9 +1,9 @@
 <?php
 /**
- * admin/config.php EXAMPLE
+ * boss/config.php EXAMPLE
  *
  * Copy this file as config.php, fill in the values, and upload it ONLY to the
- * server (public_html/admin/config.php) via FTP. config.php must NOT enter the
+ * server (public_html/boss/config.php) via FTP. config.php must NOT enter the
  * repo (.gitignore) and the deploy must NOT overwrite it (deploy.yml exclude).
  */
 
