@@ -1,6 +1,16 @@
 {
   "items": [
     {
+      "id": "aw-0020",
+      "title": "Restaurant fined under a 'no dancing' law, launches a petition",
+      "comment": "It's Footloose, except the town wins the first act. The fine for dancing is, of course, entirely real.",
+      "category": "food-crime",
+      "source_url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE1hSnVadG5IZm5WWHNCenBrODE3bnAxTTYwazNfRmJzNGY5c3FXNElwOGRRRlo4WlNDOG5EZDhORTkyOF80a2xqc1pPdDBicTZNMDFPTWVSQnVmazlSYkM1d1YteEpkMlJ0U0N6UFZPZkVudkZWcmJrMA?oc=5",
+      "source_name": "CBS News",
+      "date": "2018-03-28",
+      "status": "REAL"
+    },
+    {
       "id": "aw-0019",
       "title": "Restaurant fined for hiding its health alert behind a potted plant",
       "comment": "The violation was bad. The cover-up, one (1) houseplant, was worse.",
