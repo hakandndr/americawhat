@@ -7,7 +7,7 @@ public/og/<id>.png, plus public/og/default.png for the home page and
 non-item pages. Runs BEFORE `astro build` (see .github/workflows/deploy.yml),
 so Astro copies public/og/ into dist/og/ and it deploys with the site.
 
-Design: dark theme, left red accent, "AMERICA, WHAT?" top-left, category
+Design: dark theme, left red accent, "americawhat?" wordmark top-left, category
 chip (own colour) top-right, big auto-sizing title, prominent Source, and
 americawhat.com bottom-right. No date. Fonts are bundled under scripts/og-fonts
 (SIL OFL) so the build never depends on the network.
@@ -79,8 +79,13 @@ def render_item(item, out_path):
     src_f = ImageFont.truetype(MONO_FONT, 30)
     site_f = ImageFont.truetype(MONO_FONT, 26)
 
-    # header row
-    d.text((PAD, 52), "AMERICA, WHAT?", font=brand, fill=INK)
+    # header row — brand wordmark: white "america", red "what", white "?"
+    bx, by = PAD, 52
+    d.text((bx, by), "america", font=brand, fill=INK)
+    bx += d.textlength("america", font=brand)
+    d.text((bx, by), "what", font=brand, fill=RED)
+    bx += d.textlength("what", font=brand)
+    d.text((bx, by), "?", font=brand, fill=INK)
     cat = item.get("category", "")
     clabel, ccol = CATS.get(cat, (str(cat).upper(), DIM))
     ct = clabel.upper()
