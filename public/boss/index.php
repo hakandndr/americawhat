@@ -613,10 +613,17 @@ function status_options($statuses, $selected) {
       <!-- YAYINDAKILER -->
       <section class="sec" data-sec="published">
         <h2>Published (<?= count($pubItems) ?>)</h2>
+        <?php if ($pubItems): ?>
+        <div class="row" style="margin-bottom:14px;align-items:center">
+          <div><input type="text" id="pub-search" placeholder="Search title…"></div>
+          <div><select id="pub-cat"><option value="">All categories</option><?= cat_options($CATS, '') ?></select></div>
+          <div style="flex:0 0 auto"><span class="meta" id="pub-count"></span></div>
+        </div>
+        <?php endif; ?>
         <?php if (!$pubItems): ?>
           <div class="empty">No content yet.</div>
         <?php else: foreach ($pubItems as $it): $id = $it['id'] ?? ''; ?>
-          <details class="card pub-row">
+          <details class="card pub-row" data-title="<?= h(strtolower($it['title'] ?? '')) ?>" data-cat="<?= h($it['category'] ?? '') ?>">
             <summary>
               <span><span class="tag"><?= h($CATS[$it['category'] ?? ''] ?? ($it['category'] ?? '?')) ?></span> &nbsp; <span class="t"><?= h($it['title'] ?? '') ?></span></span>
               <span class="meta"><?= h($id) ?> · <?= h($it['date'] ?? '') ?></span>
@@ -818,6 +825,25 @@ function status_options($statuses, $selected) {
       var hu=document.getElementById('tf-human'); if(hu) hu.addEventListener('change',function(e){ f.human=e.target.checked; apply(); });
       apply();
     }
+
+    // Published: title search + category filter
+    var pubRows = Array.from(document.querySelectorAll('.pub-row'));
+    var pSearch = document.getElementById('pub-search');
+    var pCat = document.getElementById('pub-cat');
+    var pCount = document.getElementById('pub-count');
+    function pubFilter(){
+      var q = ((pSearch && pSearch.value) || '').toLowerCase().trim();
+      var c = (pCat && pCat.value) || '';
+      var vis = 0;
+      pubRows.forEach(function(r){
+        var ok = (!q || (r.dataset.title||'').indexOf(q) >= 0) && (!c || r.dataset.cat === c);
+        r.style.display = ok ? '' : 'none'; if (ok) vis++;
+      });
+      if (pCount) pCount.textContent = vis + ' / ' + pubRows.length;
+    }
+    if (pSearch) pSearch.addEventListener('input', pubFilter);
+    if (pCat) pCat.addEventListener('change', pubFilter);
+    pubFilter();
   })();
 </script>
 <?php endif; ?>
