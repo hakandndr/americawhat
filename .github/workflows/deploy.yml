@@ -8,6 +8,12 @@ on:
       - 'src/data/seen_ids.json'
   workflow_dispatch:
 
+# Only one deploy at a time; a newer push cancels older queued/running deploys
+# so the LATEST commit always wins (prevents out-of-order overwrites).
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: true
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
