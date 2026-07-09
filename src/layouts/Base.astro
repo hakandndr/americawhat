@@ -7,8 +7,13 @@ const {
   ogImage = "/og/default.png",
 } = Astro.props;
 import "../styles/global.css";
+import { items } from "../lib/items.js";
 const canonical = new URL(canonicalPath, Astro.site);
 const ogImageUrl = new URL(ogImage, Astro.site);
+const slugs = items.map((i) => i.slug);
+const randHref = slugs.length
+  ? `/item/${slugs[Math.floor(Math.random() * slugs.length)]}/`
+  : "/";
 ---
 <!doctype html>
 <html lang="en">
@@ -21,6 +26,7 @@ const ogImageUrl = new URL(ogImage, Astro.site);
   <meta name="theme-color" content="#0b1120" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="alternate" type="application/rss+xml" title="americawhat feed" href="/rss.xml" />
   <link rel="canonical" href={canonical} />
   <meta property="og:type" content={ogType} />
   <meta property="og:title" content={title} />
@@ -53,6 +59,7 @@ const ogImageUrl = new URL(ogImage, Astro.site);
         <nav class="site-nav" aria-label="Primary">
           <a href="/about/">About</a>
           <a href="/contact/">Contact</a>
+          <a href={randHref} class="nav-random" id="nav-random">Random</a>
         </nav>
         <span class="tagline">wait, what.</span>
       </div>
@@ -72,7 +79,19 @@ const ogImageUrl = new URL(ogImage, Astro.site);
       <a href="/privacy/">Privacy</a>
       <a href="/terms/">Terms</a>
       <a href="/disclaimer/">Disclaimer</a>
+      <a href="/rss.xml">RSS</a>
     </nav>
   </footer>
+  <script is:inline define:vars={{ slugs }}>
+    (function () {
+      var el = document.getElementById("nav-random");
+      if (!el || !slugs.length) return;
+      el.addEventListener("click", function (e) {
+        e.preventDefault();
+        var s = slugs[Math.floor(Math.random() * slugs.length)];
+        window.location.href = "/item/" + s + "/";
+      });
+    })();
+  </script>
 </body>
 </html>

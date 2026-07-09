@@ -37,6 +37,11 @@ const related = items
 const pageTitle = `${item.title} — americawhat`;
 const pageDesc = item.comment || item.title;
 const canonicalPath = `/item/${item.slug}/`;
+const shareUrl = new URL(canonicalPath, Astro.site).toString();
+const shareText = item.title;
+const xShare = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+const waShare = `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
+const fbShare = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
 ---
 <Base
   title={pageTitle}
@@ -80,7 +85,41 @@ const canonicalPath = `/item/${item.slug}/`;
         </button>
       ))}
     </div>
+
+    <div class="share" data-url={shareUrl}>
+      <span class="share-label">Share</span>
+      <a class="share-btn" href={xShare} target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a>
+      <a class="share-btn" href={waShare} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">WhatsApp</a>
+      <a class="share-btn" href={fbShare} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a>
+      <button class="share-btn share-copy" type="button" aria-label="Copy link to clipboard">Copy link</button>
+    </div>
   </article>
+
+  <script is:inline>
+    (function () {
+      var box = document.querySelector(".share");
+      if (!box) return;
+      var btn = box.querySelector(".share-copy");
+      var url = box.getAttribute("data-url");
+      if (!btn || !url) return;
+      btn.addEventListener("click", function () {
+        var done = function () {
+          var old = btn.textContent;
+          btn.textContent = "Copied!";
+          btn.classList.add("is-copied");
+          setTimeout(function () {
+            btn.textContent = old;
+            btn.classList.remove("is-copied");
+          }, 1400);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done, done);
+        } else {
+          done();
+        }
+      });
+    })();
+  </script>
 
   {related.length > 0 && (
     <section class="related">
