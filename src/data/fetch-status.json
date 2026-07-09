@@ -1,7 +1,68 @@
 {
-  "finishedAt": null,
-  "sourcesChecked": 0,
-  "totals": { "fetched": 0, "added": 0, "excluded": 0, "duplicate": 0, "lowScore": 0 },
-  "pendingAfter": 0,
-  "sources": []
+  "finishedAt": "2026-07-09T16:53:15.929Z",
+  "sourcesChecked": 6,
+  "totals": {
+    "fetched": 576,
+    "added": 61,
+    "excluded": 3,
+    "duplicate": 298,
+    "lowScore": 9
+  },
+  "pendingAfter": 122,
+  "sources": [
+    {
+      "name": "Google News — Florida Man",
+      "ok": true,
+      "fetched": 100,
+      "added": 12,
+      "excluded": 1,
+      "duplicate": 46,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — HOA & Housing",
+      "ok": true,
+      "fetched": 100,
+      "added": 12,
+      "excluded": 0,
+      "duplicate": 53,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Bureaucracy",
+      "ok": true,
+      "fetched": 100,
+      "added": 12,
+      "excluded": 0,
+      "duplicate": 35,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Only in America",
+      "ok": true,
+      "fetched": 100,
+      "added": 12,
+      "excluded": 0,
+      "duplicate": 48,
+      "lowScore": 9
+    },
+    {
+      "name": "Google News — Food Crime",
+      "ok": true,
+      "fetched": 76,
+      "added": 1,
+      "excluded": 0,
+      "duplicate": 75,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Weird",
+      "ok": true,
+      "fetched": 100,
+      "added": 12,
+      "excluded": 2,
+      "duplicate": 41,
+      "lowScore": 0
+    }
+  ]
 }
