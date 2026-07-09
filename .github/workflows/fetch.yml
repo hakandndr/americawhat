@@ -26,9 +26,9 @@ jobs:
         run: |
           git config user.name  "aw-bot"
           git config user.email "actions@users.noreply.github.com"
-          if [ -n "$(git status --porcelain src/data/pending.json src/data/seen_ids.json)" ]; then
-            git add src/data/pending.json src/data/seen_ids.json
-            git commit -m "chore(fetch): new source candidates"
+          if [ -n "$(git status --porcelain src/data/pending.json src/data/seen_ids.json src/data/fetch-status.json)" ]; then
+            git add src/data/pending.json src/data/seen_ids.json src/data/fetch-status.json
+            git commit -m "chore(fetch): status + candidates"
             git pull --rebase origin main
             git push
           else

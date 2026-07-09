@@ -16,6 +16,7 @@ const FILTERS  = path.join(DATA_DIR, "filters.json");
 const PENDING  = path.join(DATA_DIR, "pending.json");
 const PUBLISHED= path.join(DATA_DIR, "published.json");
 const SEEN     = path.join(DATA_DIR, "seen_ids.json");
+const STATUS   = path.join(DATA_DIR, "fetch-status.json");
 
 const UA = "americawhat-fetch/1.0 (+https://americawhat.com)";
 const EXCERPT_MAX = 220;
@@ -128,6 +129,8 @@ async function main() {
   const minScore = filters.minScore ?? 2;
   const maxPer = filters.maxPerSource ?? 12;
   const fresh = [];
+  const totals = { fetched: 0, added: 0, excluded: 0, duplicate: 0, lowScore: 0 };
+  const srcStats = [];
 
   const feeds = selftest
     ? [{ name: "SELFTEST", defaultCategory: "crime-weird", xml: SELFTEST_XML }]
@@ -135,17 +138,19 @@ async function main() {
 
   for (const s of feeds) {
     const xml = selftest ? s.xml : await fetchText(s.url);
-    if (!xml) { console.log("  " + s.name + ": bos"); continue; }
+    const st = { name: s.name, ok: !!xml, fetched: 0, added: 0, excluded: 0, duplicate: 0, lowScore: 0 };
+    if (!xml) { console.log("  " + s.name + ": empty"); srcStats.push(st); continue; }
     const items = parseFeed(xml);
+    st.fetched = items.length; totals.fetched += items.length;
     let added = 0;
     for (const raw of items) {
       if (added >= maxPer) break;
       const sid = seenIdOf(raw.link, raw.title);
-      if (seen.has(sid)) continue;
+      if (seen.has(sid)) { st.duplicate++; totals.duplicate++; continue; }
       const text = (raw.title + " " + raw.desc).toLowerCase();
-      if (isExcluded(text, filters)) { seen.add(sid); continue; }
+      if (isExcluded(text, filters)) { seen.add(sid); st.excluded++; totals.excluded++; continue; }
       const score = scoreItem(text, filters);
-      if (score < minScore) { seen.add(sid); continue; }
+      if (score < minScore) { seen.add(sid); st.lowScore++; totals.lowScore++; continue; }
       seen.add(sid);
       const excerpt = raw.desc ? raw.desc.slice(0, EXCERPT_MAX) : "";
       fresh.push({
@@ -162,15 +167,26 @@ async function main() {
         score,
         fetched_at: new Date().toISOString(),
       });
-      added++;
+      added++; st.added++; totals.added++;
     }
     console.log("  " + s.name + ": +" + added);
+    srcStats.push(st);
     if (!selftest) await sleep(1500);
   }
 
   fresh.sort((a, b) => b.score - a.score);
 
   if (selftest) { console.log("SELFTEST candidates:\n" + JSON.stringify(fresh, null, 2)); return; }
+
+  // Record run status (always — even when nothing new — so the panel can show it)
+  const status = {
+    finishedAt: new Date().toISOString(),
+    sourcesChecked: feeds.length,
+    totals,
+    pendingAfter: fresh.length + pending.length,
+    sources: srcStats,
+  };
+  await writeFile(STATUS, JSON.stringify(status, null, 2) + "\n");
 
   if (fresh.length === 0) {
     console.log("No new candidates.");
