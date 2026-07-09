@@ -1,49 +1,49 @@
 {
-  "finishedAt": "2026-07-09T20:35:42.383Z",
+  "finishedAt": "2026-07-09T21:27:46.593Z",
   "sourcesChecked": 9,
   "totals": {
-    "fetched": 801,
-    "added": 79,
-    "excluded": 2,
-    "duplicate": 362,
-    "lowScore": 100
+    "fetched": 717,
+    "added": 68,
+    "excluded": 7,
+    "duplicate": 455,
+    "lowScore": 32
   },
-  "pendingAfter": 79,
+  "pendingAfter": 68,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
       "added": 12,
-      "excluded": 0,
-      "duplicate": 58,
-      "lowScore": 4
+      "excluded": 4,
+      "duplicate": 74,
+      "lowScore": 1
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 12,
-      "excluded": 1,
-      "duplicate": 65,
-      "lowScore": 2
+      "excluded": 0,
+      "duplicate": 80,
+      "lowScore": 8
     },
     {
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 6,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 43,
-      "lowScore": 51
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 100,
-      "added": 12,
-      "excluded": 0,
-      "duplicate": 67,
+      "fetched": 16,
+      "added": 8,
+      "excluded": 1,
+      "duplicate": 0,
       "lowScore": 7
     },
     {
@@ -61,8 +61,8 @@
       "fetched": 100,
       "added": 12,
       "excluded": 1,
-      "duplicate": 53,
-      "lowScore": 2
+      "duplicate": 68,
+      "lowScore": 3
     },
     {
       "name": "Google News — Fine Print",
@@ -70,26 +70,26 @@
       "fetched": 100,
       "added": 12,
       "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 8
+      "duplicate": 20,
+      "lowScore": 9
     },
     {
       "name": "Google News — Bans & Ordinances",
       "ok": true,
       "fetched": 100,
       "added": 12,
-      "excluded": 0,
-      "duplicate": 0,
+      "excluded": 1,
+      "duplicate": 14,
       "lowScore": 2
     },
     {
       "name": "UPI Odd News",
       "ok": true,
       "fetched": 25,
-      "added": 1,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 24
+      "duplicate": 25,
+      "lowScore": 0
     }
   ]
 }
