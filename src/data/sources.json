@@ -41,6 +41,27 @@
       "url": "https://news.google.com/rss/search?q=bizarre%20OR%20%22weird%20news%22%20police%20OR%20unusual&hl=en-US&gl=US&ceid=US:en",
       "defaultCategory": "crime-weird",
       "enabled": true
+    },
+    {
+      "name": "Google News — Fine Print",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=%22hidden%20fee%22%20OR%20%22junk%20fee%22%20OR%20subscription%20OR%20%22terms%20of%20service%22%20lawsuit%20OR%20fined&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "fine-print",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Bans & Ordinances",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=(town%20OR%20city)%20(banned%20OR%20ordinance%20OR%20%22code%20enforcement%22)%20(bizarre%20OR%20absurd%20OR%20weird%20OR%20fined)&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "bureaucracy",
+      "enabled": true
+    },
+    {
+      "name": "UPI Odd News",
+      "type": "rss",
+      "url": "https://rss.upi.com/news/odd_news.rss",
+      "defaultCategory": "crime-weird",
+      "enabled": true
     }
   ]
 }

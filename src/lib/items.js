@@ -35,3 +35,18 @@ const bySlug = new Map(items.map((item) => [item.slug, item]));
 export function itemBySlug(slug) {
   return bySlug.get(slug);
 }
+
+// Publisher domain for display (e.g. "clickorlando.com"). Prefers an explicit
+// source_domain; otherwise derives it from the source URL. Returns "" for
+// Google News redirects so we never surface "news.google.com".
+export function sourceHost(item) {
+  const explicit = (item.source_domain || item.sourceDomain || "").trim();
+  if (explicit) return explicit.replace(/^www\./i, "");
+  const url = item.sourceUrl ?? item.source_url ?? "";
+  try {
+    const h = new URL(url).hostname.replace(/^www\./i, "");
+    return /(^|\.)google\.com$/i.test(h) ? "" : h;
+  } catch {
+    return "";
+  }
+}

@@ -2,7 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import Card from "../../components/Card.astro";
 import { CATEGORIES, REACTIONS } from "../../data/categories.js";
-import { items } from "../../lib/items.js";
+import { items, sourceHost } from "../../lib/items.js";
 
 export function getStaticPaths() {
   return items.map((item) => ({
@@ -27,6 +27,7 @@ const badgeBorder = hexToRgba(cat.color, 0.32);
 const sourceUrl = item.sourceUrl ?? item.source_url ?? "";
 const sourceName = item.sourceName ?? item.source_name ?? "";
 const status = item.status ?? (sourceUrl ? "REAL" : "UNVERIFIED");
+const host = sourceHost(item);
 const why = item.whyAmericaWhat ?? "";
 const place = [item.city, item.state].filter(Boolean).join(", ");
 
@@ -73,7 +74,7 @@ const fbShare = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICompone
 
     <div class="detail-source">
       {sourceUrl
-        ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Source: {sourceName} ↗</a>
+        ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Source: {sourceName}{host ? ` · ${host}` : ""} ↗</a>
         : <span class="source-none">Source: {sourceName || "unknown"} · unverified</span>}
     </div>
 

@@ -1,5 +1,6 @@
 ---
 import { CATEGORIES, REACTIONS } from "../data/categories.js";
+import { sourceHost } from "../lib/items.js";
 const { item } = Astro.props;
 const cat = CATEGORIES[item.category] ?? { label: item.category, color: "#8ea0c9" };
 
@@ -17,6 +18,7 @@ const href = `/item/${item.slug}/`;
 const sourceUrl = item.sourceUrl ?? item.source_url ?? "";
 const sourceName = item.sourceName ?? item.source_name ?? "";
 const status = item.status ?? (sourceUrl ? "REAL" : "UNVERIFIED");
+const host = sourceHost(item);
 ---
 <article class="card" data-category={item.category} data-id={item.id}>
   <div class="card-top">
@@ -34,7 +36,7 @@ const status = item.status ?? (sourceUrl ? "REAL" : "UNVERIFIED");
   <div class="card-foot">
     <span class="source">
       {sourceUrl
-        ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Source: {sourceName} ↗</a>
+        ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Source: {sourceName}{host ? ` · ${host}` : ""} ↗</a>
         : <span class="source-none">Source: {sourceName || "unknown"} · unverified</span>}
     </span>
     <div class="reactions" data-id={item.id}>

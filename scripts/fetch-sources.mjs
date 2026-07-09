@@ -71,10 +71,12 @@ function parseFeed(xml) {
     let link  = isAtom ? atomLink(b) : stripTags(tag(b, "link"));
     const desc = stripTags(tag(b, "description") || tag(b, "summary") || tag(b, "content"));
     const date = tag(b, "pubDate") || tag(b, "published") || tag(b, "updated") || "";
-    // Google News: <source url="...">Publisher</source> + " - Publisher" suffix in title
-    const src = stripTags(tag(b, "source"));
+    // Google News: <source url="https://publisher.com">Publisher</source> + " - Publisher" title suffix
+    const srcM = b.match(/<source[^>]*\burl="([^"]+)"[^>]*>([\s\S]*?)<\/source>/i);
+    const src = srcM ? stripTags(srcM[2]) : stripTags(tag(b, "source"));
+    const publisherUrl = srcM ? srcM[1] : "";
     if (src && title.endsWith(" - " + src)) title = title.slice(0, -(src.length + 3)).trim();
-    if (title && link) items.push({ title, link, desc, date, publisher: src });
+    if (title && link) items.push({ title, link, desc, date, publisher: src, publisherUrl });
   }
   return items;
 }
@@ -89,6 +91,31 @@ function toDateStr(raw) {
 }
 function seenIdOf(link, title) {
   return "src-" + crypto.createHash("sha1").update((link || title).trim()).digest("hex").slice(0, 12);
+}
+
+function hostOf(url) {
+  try { return new URL(url).hostname.replace(/^www\./i, ""); } catch { return ""; }
+}
+function isGoogleHost(h) { return /(^|\.)google\.com$/i.test(h || ""); }
+
+// Best-effort: turn a news.google.com/rss/articles/... link into the real
+// publisher article URL. Degrades gracefully — returns "" if it can't.
+async function resolveArticle(link) {
+  if (!link || !/news\.google\.com/i.test(link)) return "";  // already a real URL
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(link, { headers: { "User-Agent": UA }, redirect: "follow", signal: ctrl.signal });
+    clearTimeout(t);
+    if (res.url && !/google\.com/i.test(res.url)) { await res.text().catch(() => {}); return res.url; }
+    const html = await res.text();
+    const m =
+      html.match(/<link\s+rel="canonical"\s+href="(https?:\/\/(?!news\.google|www\.google|policies\.google|support\.google|accounts\.google)[^"]+)"/i) ||
+      html.match(/data-n-au="(https?:\/\/[^"]+)"/i) ||
+      html.match(/<a[^>]+href="(https?:\/\/(?!news\.google|www\.google|policies\.google|support\.google|accounts\.google)[^"]+)"/i);
+    if (m) return m[1];
+  } catch { /* timeout / network — fall through */ }
+  return "";
 }
 
 async function fetchText(url) {
@@ -153,6 +180,12 @@ async function main() {
       if (score < minScore) { seen.add(sid); st.lowScore++; totals.lowScore++; continue; }
       seen.add(sid);
       const excerpt = raw.desc ? raw.desc.slice(0, EXCERPT_MAX) : "";
+      // Real article URL + publisher domain (builds trust on the card)
+      let realUrl = raw.link;
+      let domain = hostOf(raw.publisherUrl);           // Google News gives the publisher homepage host
+      const resolved = await resolveArticle(raw.link); // best-effort upgrade of the google redirect
+      if (resolved && !isGoogleHost(hostOf(resolved))) { realUrl = resolved; if (!domain) domain = hostOf(resolved); }
+      if (!domain || isGoogleHost(domain)) { const h = hostOf(realUrl); domain = isGoogleHost(h) ? "" : h; }
       fresh.push({
         id: "aw-p-" + sid.slice(4),
         seen_id: sid,
@@ -161,7 +194,8 @@ async function main() {
         excerpt,
         category: pickCategory(text, s.defaultCategory || "only-in-america", filters),
         source_url: "",
-        external_url: raw.link,
+        external_url: realUrl,
+        source_domain: domain,
         source_name: raw.publisher || s.name,
         date: toDateStr(raw.date),
         score,
