@@ -1,7 +1,7 @@
 <?php
 /**
  * americawhat — curation panel
- * Location (live): americawhat.com/admin/panel.php
+ * Location (live): americawhat.com/boss/
  * What it does: reads pending.json + published.json via the GitHub API; commits approved items
  * to published.json (which triggers a deploy). Manual add, edit, delete.
  *
@@ -43,7 +43,7 @@ function check_csrf() {
 }
 function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 function flash($msg, $type = 'ok') { $_SESSION['flash'] = ['msg' => $msg, 'type' => $type]; }
-function redirect_self() { header('Location: panel.php'); exit; }
+function redirect_self() { header('Location: index.php'); exit; }
 
 // ---------- GitHub API ----------
 function gh_request($method, $path, $body = null) {
@@ -147,7 +147,7 @@ function item_from_post($id) {
 
 // ---------- Auth ----------
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
-if ($action === 'logout') { $_SESSION = []; session_destroy(); header('Location: panel.php'); exit; }
+if ($action === 'logout') { $_SESSION = []; session_destroy(); header('Location: index.php'); exit; }
 $loginError = '';
 if ($action === 'login') {
   $userOk = !defined('PANEL_USER') || hash_equals(PANEL_USER, (string)($_POST['username'] ?? ''));
