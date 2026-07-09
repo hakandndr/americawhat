@@ -5,3 +5,5 @@ dist/
 .env.*
 .ftp-deploy-sync-state.json
 public/admin/config.php
+public/boss/config.php
+public/og/

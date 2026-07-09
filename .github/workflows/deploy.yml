@@ -24,6 +24,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Generate OG images
+        run: |
+          pip install pillow
+          python scripts/gen-og.py
       - run: npm run build
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
