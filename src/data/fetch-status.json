@@ -1,41 +1,41 @@
 {
-  "finishedAt": "2026-07-09T16:53:15.929Z",
-  "sourcesChecked": 6,
+  "finishedAt": "2026-07-09T20:35:42.383Z",
+  "sourcesChecked": 9,
   "totals": {
-    "fetched": 576,
-    "added": 61,
-    "excluded": 3,
-    "duplicate": 298,
-    "lowScore": 9
+    "fetched": 801,
+    "added": 79,
+    "excluded": 2,
+    "duplicate": 362,
+    "lowScore": 100
   },
-  "pendingAfter": 122,
+  "pendingAfter": 79,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
       "added": 12,
-      "excluded": 1,
-      "duplicate": 46,
-      "lowScore": 0
+      "excluded": 0,
+      "duplicate": 58,
+      "lowScore": 4
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 12,
-      "excluded": 0,
-      "duplicate": 53,
-      "lowScore": 0
+      "excluded": 1,
+      "duplicate": 65,
+      "lowScore": 2
     },
     {
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 12,
+      "added": 6,
       "excluded": 0,
-      "duplicate": 35,
-      "lowScore": 0
+      "duplicate": 43,
+      "lowScore": 51
     },
     {
       "name": "Google News — Only in America",
@@ -43,16 +43,16 @@
       "fetched": 100,
       "added": 12,
       "excluded": 0,
-      "duplicate": 48,
-      "lowScore": 9
+      "duplicate": 67,
+      "lowScore": 7
     },
     {
       "name": "Google News — Food Crime",
       "ok": true,
       "fetched": 76,
-      "added": 1,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 75,
+      "duplicate": 76,
       "lowScore": 0
     },
     {
@@ -60,9 +60,36 @@
       "ok": true,
       "fetched": 100,
       "added": 12,
-      "excluded": 2,
-      "duplicate": 41,
-      "lowScore": 0
+      "excluded": 1,
+      "duplicate": 53,
+      "lowScore": 2
+    },
+    {
+      "name": "Google News — Fine Print",
+      "ok": true,
+      "fetched": 100,
+      "added": 12,
+      "excluded": 0,
+      "duplicate": 0,
+      "lowScore": 8
+    },
+    {
+      "name": "Google News — Bans & Ordinances",
+      "ok": true,
+      "fetched": 100,
+      "added": 12,
+      "excluded": 0,
+      "duplicate": 0,
+      "lowScore": 2
+    },
+    {
+      "name": "UPI Odd News",
+      "ok": true,
+      "fetched": 25,
+      "added": 1,
+      "excluded": 0,
+      "duplicate": 0,
+      "lowScore": 24
     }
   ]
 }
