@@ -52,6 +52,7 @@ const randHref = slugs.length
   />
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to content</a>
   <header class="site-head">
     <div class="site-head-inner">
       <a href="/" class="logo">america<b>what</b><span class="logo-q">?</span></a>
@@ -66,7 +67,7 @@ const randHref = slugs.length
     </div>
   </header>
   <slot name="hero" />
-  <main class="wrap">
+  <main class="wrap" id="main">
     <slot />
   </main>
   <footer class="site-foot">

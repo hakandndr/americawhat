@@ -24,9 +24,9 @@ const cats = Object.entries(CATEGORIES);
   </section>
 
   <nav class="cat-bar" aria-label="Filter by category">
-    <button class="cat-chip active" data-filter="all">All</button>
+    <button class="cat-chip active" data-filter="all" aria-pressed="true">All</button>
     {cats.map(([key, c]) => (
-      <button class="cat-chip" data-filter={key}>{c.label}</button>
+      <button class="cat-chip" data-filter={key} aria-pressed="false">{c.label}</button>
     ))}
   </nav>
 
@@ -43,8 +43,12 @@ const cats = Object.entries(CATEGORIES);
     const emptyEl = document.getElementById("empty");
     chips.forEach((chip) => {
       chip.addEventListener("click", () => {
-        chips.forEach((c) => c.classList.remove("active"));
+        chips.forEach((c) => {
+          c.classList.remove("active");
+          c.setAttribute("aria-pressed", "false");
+        });
         chip.classList.add("active");
+        chip.setAttribute("aria-pressed", "true");
         const f = chip.getAttribute("data-filter");
         let visible = 0;
         cards.forEach((card) => {
