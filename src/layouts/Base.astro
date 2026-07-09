@@ -8,6 +8,7 @@ const {
 } = Astro.props;
 import "../styles/global.css";
 import { items } from "../lib/items.js";
+import Subscribe from "../components/Subscribe.astro";
 const canonical = new URL(canonicalPath, Astro.site);
 const ogImageUrl = new URL(ogImage, Astro.site);
 const slugs = items.map((i) => i.slug);
@@ -71,6 +72,7 @@ const randHref = slugs.length
     <slot />
   </main>
   <footer class="site-foot">
+    <Subscribe />
     <b>americawhat.com</b> — something's coming. probably confusing.<br />
     Got a "wait, what" of your own? <a href="mailto:hello@americawhat.com" style="color:var(--red-hot)">hello@americawhat.com</a>
     <nav class="foot-nav" aria-label="More">

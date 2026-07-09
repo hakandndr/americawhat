@@ -1,0 +1,32 @@
+---
+// Weekly newsletter signup — posts to Buttondown's public embed endpoint.
+// No API key needed client-side. Set BD_USER to your Buttondown username.
+// In Buttondown: Settings → enable an RSS-to-email automation pointing at
+// https://americawhat.com/rss.xml on a weekly cadence to auto-send the digest.
+const BD_USER = "americawhat"; // ← change if your Buttondown handle differs
+const action = `https://buttondown.com/api/emails/embed-subscribe/${BD_USER}`;
+const popup = `window.open('https://buttondown.com/${BD_USER}', 'popupwindow')`;
+---
+<form
+  class="subscribe"
+  action={action}
+  method="post"
+  target="popupwindow"
+  onsubmit={popup}
+>
+  <div class="subscribe-copy">
+    <b>Get the weekly <i>wait, what.</i></b>
+    <span>The week's most absurdly American moments — one email, no spam.</span>
+  </div>
+  <div class="subscribe-row">
+    <input
+      type="email"
+      name="email"
+      placeholder="you@email.com"
+      aria-label="Email address"
+      autocomplete="email"
+      required
+    />
+    <button type="submit">Subscribe</button>
+  </div>
+</form>
