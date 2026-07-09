@@ -24,7 +24,7 @@
     {
       "name": "Google News — Only in America",
       "type": "rss",
-      "url": "https://news.google.com/rss/search?q=%22only%20in%20America%22&hl=en-US&gl=US&ceid=US:en",
+      "url": "https://news.google.com/rss/search?q=%22only%20in%20America%22%20(fined%20OR%20arrested%20OR%20ordinance%20OR%20lawsuit%20OR%20banned%20OR%20permit)&hl=en-US&gl=US&ceid=US:en",
       "defaultCategory": "only-in-america",
       "enabled": true
     },
