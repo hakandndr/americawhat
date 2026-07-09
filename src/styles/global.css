@@ -55,7 +55,7 @@ a{color:inherit;text-decoration:none}
 .logo b{color:var(--red-hot)}
 .logo-q{color:var(--star);margin-left:1px}
 .head-right{display:flex;align-items:center;gap:18px}
-.site-nav{display:flex;gap:16px}
+.site-nav{display:flex;gap:16px;align-items:center}
 .site-nav a{
   font-size:13px;color:var(--dim);letter-spacing:.02em;
   transition:color .15s ease;
@@ -64,17 +64,18 @@ a{color:inherit;text-decoration:none}
 /* Random: accent colour + weight, plus a smooth left–right sway (matches the hero "?" cadence) */
 .site-nav a.nav-random{
   color:var(--red-hot);
-  font-family:'Anton',sans-serif;
-  font-weight:400;
-  text-transform:uppercase;
-  font-size:20px;
-  letter-spacing:.02em;
+  font-family:'Archivo';
+  font-weight:800;
+  font-size:19px;
+  letter-spacing:-.02em;
+  line-height:1;
   display:inline-block;
   transform-origin:60% 60%;
   animation:nav-wobble 3.2s ease-in-out infinite;
   will-change:transform;
 }
-.site-nav a.nav-random:hover{color:var(--star)}
+.site-nav a.nav-random .nav-q{color:var(--star)}
+.site-nav a.nav-random:hover{color:var(--red)}
 @keyframes nav-wobble{
   0%,100%{transform:rotate(-4deg)}
   50%{transform:rotate(5.5deg)}
