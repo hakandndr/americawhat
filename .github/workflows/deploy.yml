@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - 'src/data/pending.json'
       - 'src/data/seen_ids.json'
+      - 'src/data/fetch-status.json'
   workflow_dispatch:
 
 # Only one deploy at a time; a newer push cancels older queued/running deploys

@@ -34,6 +34,7 @@ $VOTES_PATH = __DIR__ . '/../analytics/aw_votes.json';
 
 const PUB_PATH = 'src/data/published.json';
 const PEND_PATH = 'src/data/pending.json';
+const STATUS_PATH = 'src/data/fetch-status.json';
 
 // ---------- CSRF ----------
 if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(16));
@@ -257,6 +258,8 @@ if ($authed) {
   [$pend, $s2, $code2] = gh_get_file(PEND_PATH);
   if ($code2 === 200) $pendItems = pend_items($pend);
   else $loadErr .= "pending.json cekilemedi (HTTP $code2). ";
+  [$fetchStatus, $s3, $code3] = gh_get_file(STATUS_PATH);
+  if ($code3 !== 200 || !is_array($fetchStatus)) $fetchStatus = null;
 }
 
 function cat_options($cats, $selected) {
@@ -486,6 +489,52 @@ function status_options($statuses, $selected) {
       <!-- PENDING -->
       <section class="sec active" data-sec="pending">
         <h2>Pending (<?= count($pendItems) ?>)</h2>
+        <?php if ($fetchStatus): $ts = $fetchStatus['totals'] ?? []; ?>
+          <div class="card" style="border-color:#22345a">
+            <div class="meta" style="margin-bottom:10px">
+              <strong style="color:var(--txt)">Fetch status</strong> &middot; last run:
+              <?php
+                $fa = $fetchStatus['finishedAt'] ?? null;
+                if ($fa) {
+                  $dt = date_create($fa);
+                  if ($dt) {
+                    echo h($dt->setTimezone(new DateTimeZone('America/Los_Angeles'))->format('Y-m-d H:i')) . ' PST';
+                    $mins = (int) floor((time() - $dt->getTimestamp()) / 60);
+                    echo ' (' . ($mins < 60 ? $mins . 'm' : floor($mins / 60) . 'h') . ' ago)';
+                  } else { echo h($fa); }
+                } else { echo 'not run yet'; }
+              ?>
+              &middot; <?= (int)($fetchStatus['sourcesChecked'] ?? 0) ?> sources
+            </div>
+            <div class="trk-stats" style="margin-bottom:0">
+              <div class="trk-stat"><div class="trk-num"><?= (int)($ts['fetched'] ?? 0) ?></div><div class="trk-lbl">Fetched</div></div>
+              <div class="trk-stat"><div class="trk-num green"><?= (int)($ts['added'] ?? 0) ?></div><div class="trk-lbl">Added</div></div>
+              <div class="trk-stat"><div class="trk-num warn"><?= (int)($ts['excluded'] ?? 0) ?></div><div class="trk-lbl">Excluded</div></div>
+              <div class="trk-stat"><div class="trk-num"><?= (int)($ts['duplicate'] ?? 0) ?></div><div class="trk-lbl">Duplicate</div></div>
+              <div class="trk-stat"><div class="trk-num"><?= (int)($ts['lowScore'] ?? 0) ?></div><div class="trk-lbl">Low score</div></div>
+            </div>
+            <?php if (!empty($fetchStatus['sources'])): ?>
+              <details style="margin-top:12px">
+                <summary class="meta" style="cursor:pointer">Per-source breakdown</summary>
+                <table class="votes" style="margin-top:8px">
+                  <thead><tr><th>Source</th><th>Fetched</th><th>Added</th><th>Excl.</th><th>Dup.</th><th>Low</th></tr></thead>
+                  <tbody>
+                  <?php foreach ($fetchStatus['sources'] as $ss): ?>
+                    <tr>
+                      <td style="text-align:left"><?= h($ss['name'] ?? '') ?><?php if (empty($ss['ok'])): ?> <span class="unverified">no data</span><?php endif; ?></td>
+                      <td><?= (int)($ss['fetched'] ?? 0) ?></td>
+                      <td><?= (int)($ss['added'] ?? 0) ?></td>
+                      <td><?= (int)($ss['excluded'] ?? 0) ?></td>
+                      <td><?= (int)($ss['duplicate'] ?? 0) ?></td>
+                      <td><?= (int)($ss['lowScore'] ?? 0) ?></td>
+                    </tr>
+                  <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </details>
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
         <?php if (!$pendItems): ?>
           <div class="empty">No pending candidates. (They appear here after the fetch workflow runs.)</div>
         <?php else: foreach ($pendItems as $it): $pid = $it['id'] ?? ''; ?>
