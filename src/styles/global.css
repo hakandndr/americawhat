@@ -418,3 +418,12 @@ select.form-input{appearance:none;-webkit-appearance:none;cursor:pointer}
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important}
 }
+
+/* ── 404 page ── */
+.notfound{text-align:center;padding:clamp(50px,11vw,110px) 20px}
+.nf-code{font-family:'Anton',sans-serif;font-size:clamp(80px,20vw,180px);line-height:1;color:var(--line-strong);letter-spacing:.02em}
+.nf-title{font-family:'Anton',sans-serif;font-size:clamp(30px,6vw,52px);text-transform:uppercase;color:var(--ink);margin:6px 0 14px}
+.nf-title span{color:var(--red-hot)}
+.nf-lede{max-width:44ch;margin:0 auto 26px;color:var(--dim);font-size:16px;line-height:1.6}
+.nf-btn{display:inline-block;padding:11px 20px;border-radius:10px;background:var(--red);color:#fff;font-weight:600;font-size:14px}
+.nf-btn:hover{background:var(--red-hot)}

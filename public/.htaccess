@@ -1,0 +1,11 @@
+# americawhat — 404 + cache hardening (static Astro on Apache/Hostinger)
+
+# Use our branded 404 page instead of the host default
+ErrorDocument 404 /404.html
+
+# Never serve stale HTML (prevents cached old pages / cached 404s in browsers)
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
