@@ -1,6 +1,16 @@
 {
   "items": [
     {
+      "id": "aw-0036",
+      "title": "NYPD is looking into people who keep emerging from manholes at night",
+      "comment": "The city has questions. The manholes are not talking.",
+      "category": "crime-weird",
+      "source_url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOR290d1RROWhTQ1lpa3gyQWhRcG9tcFl3NVdMbXFkSXc0MlVzT0syejQxWkpRUER0UFQyWjRmNUJBaVA0b0Vpa0NRNm5raGlWN3BQMVNZUmZLNGtCU0ZpUU9uNjlTd0ZiV0I0dW5KMTVvTlFHSHR4NXoxY2JmSUNUYkp0M2ZSRmtyX21HM1pYV3k2TlcyUFlZUzczRnJwQ19jQ2hsaW5n0gGrAUFVX3lxTE5HaDZQeWs4aFJMX3FwcG5DUV93bXpJc05QWURnd0NsRUVIR0xUVFFyU0NxQl9DeFF1c1N3aEZGRi1PU2tZQXlQaS1zcHFrdEJvaG1OWWhidFJqSUtKYWJGSkRnQVR1Z3hMeFllV01oVFpTbkJSQjFuOGN5SE5IWTZ4QWtIVFozTmhPSG52cXVmZ1JWVUlOT0RGSUcwWmY4WHU3ZDE2RWNfLUVsWQ?oc=5",
+      "source_name": "WION",
+      "date": "2026-07-04",
+      "status": "REAL"
+    },
+    {
       "id": "aw-0035",
       "title": "A failing robot-cop company is now publishing AI fan-fiction about its own robots",
       "comment": "The robots could not fight crime, so now they solve it in fiction. Marketing found a way.",
