@@ -759,3 +759,18 @@ function status_options($statuses, $selected) {
           var ok = (!f.ip||r.dataset.ip.indexOf(f.ip)>=0) && (!f.country||r.dataset.country.indexOf(f.country)>=0)
                 && (!f.city||r.dataset.city.indexOf(f.city)>=0) && (!f.path||r.dataset.path.indexOf(f.path)>=0)
                 && (!f.flag||r.dataset.flag===f.flag) && (!f.human||r.dataset.human==='true');
+          r.style.display = ok?'':'none'; if(ok)vis++;
+        });
+        if(cnt) cnt.textContent = vis+' / '+rows.length+' rows';
+      }
+      function bind(id,key){ var el=document.getElementById(id); if(el) el.addEventListener('input',function(e){ f[key]=e.target.value.toLowerCase().trim(); apply(); }); }
+      bind('tf-ip','ip'); bind('tf-country','country'); bind('tf-city','city'); bind('tf-path','path');
+      var fl=document.getElementById('tf-flag'); if(fl) fl.addEventListener('change',function(e){ f.flag=e.target.value; apply(); });
+      var hu=document.getElementById('tf-human'); if(hu) hu.addEventListener('change',function(e){ f.human=e.target.checked; apply(); });
+      apply();
+    }
+  })();
+</script>
+<?php endif; ?>
+</body>
+</html>
