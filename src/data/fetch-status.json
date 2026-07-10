@@ -1,26 +1,35 @@
 {
-  "finishedAt": "2026-07-10T04:51:26.189Z",
+  "finishedAt": "2026-07-10T06:10:53.704Z",
   "sourcesChecked": 9,
   "totals": {
     "fetched": 717,
-    "added": 3,
-    "excluded": 107,
-    "duplicate": 596,
-    "lowScore": 11
+    "added": 0,
+    "excluded": 0,
+    "duplicate": 716,
+    "lowScore": 1
   },
-  "pendingAfter": 3,
+  "pendingAfter": 0,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 2,
-      "excluded": 3,
-      "duplicate": 93,
-      "lowScore": 2
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 100,
+      "lowScore": 0
     },
     {
       "name": "Google News — HOA & Housing",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 100,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
       "added": 0,
@@ -29,30 +38,21 @@
       "lowScore": 1
     },
     {
-      "name": "Google News — Bureaucracy",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 1,
-      "duplicate": 91,
-      "lowScore": 8
-    },
-    {
       "name": "Google News — Only in America",
       "ok": true,
       "fetched": 16,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 15,
+      "excluded": 0,
+      "duplicate": 16,
       "lowScore": 0
     },
     {
       "name": "Google News — Food Crime",
       "ok": true,
       "fetched": 76,
-      "added": 1,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 75,
+      "duplicate": 76,
       "lowScore": 0
     },
     {
@@ -60,8 +60,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 43,
-      "duplicate": 57,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 57,
-      "duplicate": 43,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
