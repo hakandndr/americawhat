@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /boss/
+Disallow: /analytics/
+
+Sitemap: https://americawhat.com/sitemap-index.xml

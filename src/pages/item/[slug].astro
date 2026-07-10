@@ -43,6 +43,24 @@ const shareText = item.title;
 const xShare = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
 const waShare = `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
 const fbShare = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: item.title,
+  description: pageDesc,
+  image: new URL(`/og/${item.id}.png`, Astro.site).toString(),
+  datePublished: item.date,
+  dateModified: item.date,
+  author: { "@type": "Organization", name: "americawhat" },
+  publisher: {
+    "@type": "Organization",
+    name: "americawhat",
+    logo: { "@type": "ImageObject", url: new URL("/og/default.png", Astro.site).toString() },
+  },
+  mainEntityOfPage: shareUrl,
+};
+const jsonLdStr = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
 ---
 <Base
   title={pageTitle}
@@ -51,6 +69,8 @@ const fbShare = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICompone
   ogType="article"
   ogImage={`/og/${item.id}.png`}
 >
+  <script type="application/ld+json" set:html={jsonLdStr} />
+
   <a href="/" class="back-link">&larr; back to feed</a>
 
   <article class="detail" data-id={item.id}>

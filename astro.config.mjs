@@ -7,5 +7,10 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // Keep the sitemap to indexable HTML pages only (drop the RSS endpoint).
+      filter: (page) => !page.includes('/rss.xml'),
+    }),
+  ],
 });
