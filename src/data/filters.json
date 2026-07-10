@@ -1,6 +1,6 @@
 {
   "minScore": 3,
-  "recencyDays": 10,
+  "recencyDays": 21,
   "maxPerSource": 12,
   "scoreKeywords": {
     "hoa": 5,
@@ -45,7 +45,14 @@
     "kids killed", "infant", "suicide", "overdose", "drowned", "body found",
     "human remains", "missing person", "domestic violence", "hate crime",
     "fatal crash", "arson", "hostage", "kidnap", "trafficking", "genocide",
-    "massacre", "war", "terror"
+    "massacre", "war", "terror",
+    "nfl", "nba", "premier league", "red card", "grand prix", "onside",
+    "goalkeeper", "touchdown", "quarterback", "world cup", "brawl", "referee"
+  ],
+  "excludeDomains": [
+    ".uk", ".in", ".kr", ".au", ".tr", ".ca", ".ie", ".nz", ".za", ".cn", ".pk",
+    "bbc.com", "aljazeera.com", "goal.com", "grandprix.com",
+    "theweathernetwork.com", "thechinaproject.com", "dailymail.co.uk"
   ],
   "categoryHints": {
     "florida man": "florida-man",

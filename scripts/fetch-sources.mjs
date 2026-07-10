@@ -97,6 +97,17 @@ function hostOf(url) {
   try { return new URL(url).hostname.replace(/^www\./i, ""); } catch { return ""; }
 }
 function isGoogleHost(h) { return /(^|\.)google\.com$/i.test(h || ""); }
+function isTooOld(dateStr, days) {
+  if (!days) return false;
+  const t = Date.parse(dateStr);
+  if (isNaN(t)) return false;
+  return Date.now() - t > days * 86400000;
+}
+function isBlockedDomain(host, list) {
+  host = (host || "").toLowerCase();
+  if (!host || !list.length) return false;
+  return list.some((d) => (d.startsWith(".") ? host.endsWith(d) : host === d || host.endsWith("." + d)));
+}
 
 // Best-effort: turn a news.google.com/rss/articles/... link into the real
 // publisher article URL. Degrades gracefully — returns "" if it can't.
@@ -155,6 +166,8 @@ async function main() {
 
   const minScore = filters.minScore ?? 2;
   const maxPer = filters.maxPerSource ?? 12;
+  const recencyDays = filters.recencyDays ?? 0;
+  const excludeDomains = (filters.excludeDomains || []).map((s) => String(s).toLowerCase());
   const fresh = [];
   const totals = { fetched: 0, added: 0, excluded: 0, duplicate: 0, lowScore: 0 };
   const srcStats = [];
@@ -176,6 +189,9 @@ async function main() {
       if (seen.has(sid)) { st.duplicate++; totals.duplicate++; continue; }
       const text = (raw.title + " " + raw.desc).toLowerCase();
       if (isExcluded(text, filters)) { seen.add(sid); st.excluded++; totals.excluded++; continue; }
+      if (isTooOld(raw.date, recencyDays)) { seen.add(sid); st.excluded++; totals.excluded++; continue; }
+      const pubHost = hostOf(raw.publisherUrl) || hostOf(raw.link);
+      if (isBlockedDomain(pubHost, excludeDomains)) { seen.add(sid); st.excluded++; totals.excluded++; continue; }
       const score = scoreItem(text, filters);
       if (score < minScore) { seen.add(sid); st.lowScore++; totals.lowScore++; continue; }
       seen.add(sid);
