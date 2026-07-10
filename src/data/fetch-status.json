@@ -1,23 +1,23 @@
 {
-  "finishedAt": "2026-07-10T21:11:57.597Z",
+  "finishedAt": "2026-07-10T22:54:29.385Z",
   "sourcesChecked": 9,
   "totals": {
-    "fetched": 716,
-    "added": 3,
-    "excluded": 27,
-    "duplicate": 677,
-    "lowScore": 9
+    "fetched": 717,
+    "added": 2,
+    "excluded": 10,
+    "duplicate": 701,
+    "lowScore": 4
   },
-  "pendingAfter": 8,
+  "pendingAfter": 10,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
       "added": 2,
-      "excluded": 11,
-      "duplicate": 87,
-      "lowScore": 0
+      "excluded": 6,
+      "duplicate": 90,
+      "lowScore": 2
     },
     {
       "name": "Google News — HOA & Housing",
@@ -33,9 +33,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 94,
-      "lowScore": 5
+      "excluded": 0,
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Only in America",
@@ -49,19 +49,19 @@
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 76,
+      "fetched": 77,
       "added": 0,
       "excluded": 0,
-      "duplicate": 76,
+      "duplicate": 77,
       "lowScore": 0
     },
     {
       "name": "Google News — Weird",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 1,
-      "duplicate": 98,
+      "added": 0,
+      "excluded": 4,
+      "duplicate": 96,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 13,
-      "duplicate": 87,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -88,8 +88,8 @@
       "fetched": 25,
       "added": 0,
       "excluded": 0,
-      "duplicate": 21,
-      "lowScore": 4
+      "duplicate": 25,
+      "lowScore": 0
     }
   ]
 }
