@@ -228,6 +228,17 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['appr
       if ($usha === null) { flash('Could not read published.json.', 'err'); redirect_self(); }
       $items = pub_items($pub);
       $item  = item_from_post(next_id($items));
+      // Carry over fetch metadata the form doesn't expose: real article link, domain, seen id.
+      $orig = null;
+      foreach ($plist as $p) { if (($p['id'] ?? '') === $id) { $orig = $p; break; } }
+      if ($orig) {
+        if ($item['source_url'] === '' && !empty($orig['external_url'])) {
+          $item['source_url'] = $orig['external_url'];
+          if ($item['status'] === 'UNVERIFIED') $item['status'] = 'REAL';
+        }
+        if (!empty($orig['source_domain'])) $item['source_domain'] = $orig['source_domain'];
+        if (!empty($orig['seen_id']))       $item['seen_id']       = $orig['seen_id'];
+      }
       if ($item['title'] === '') { flash('Title cannot be empty.', 'err'); redirect_self(); }
       array_unshift($items, $item);
       $pub['items'] = $items;
