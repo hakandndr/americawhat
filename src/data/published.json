@@ -1,6 +1,16 @@
 {
   "items": [
     {
+      "id": "aw-0048",
+      "title": "'Abe Lincoln' fined for reciting the Gettysburg Address at the Lincoln Memorial",
+      "comment": "A man dressed as Abraham Lincoln was fined for standing at the Lincoln Memorial and reciting the Gettysburg Address. The National Park Service, it turns out, requires a permit for that, and Honest Abe did not have one.",
+      "category": "only-in-america",
+      "source_url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQckFhT3hJVkJwTDZjbHhLa24xQTVDUUM1M1RLU0ItOTF2RUo3ZVVDY1NrSVU2Y3NkMjZNUDluS2lnSmJrV1VKUFQ4ZDlaMmFlYi1rdGlGR2hSSHU1bTUzWU0tSnhOa3NiR1hJQWZfbHpTakFiWEtDTF9wQnB1VGVqck9maEsxYU5Od1RhUWFIM2RqalVWU0d5SHNXWUlyTDhTU2dXRlpNbzhlWVFmMDlnaw?oc=5",
+      "source_name": "The Week",
+      "date": "2025-01-08",
+      "status": "REAL"
+    },
+    {
       "id": "aw-0047",
       "title": "Washington Post class action alleges customer data was used to set subscription prices",
       "comment": "A class action claims The Washington Post quietly used customers' own data to decide how much to charge each of them for a subscription. Democracy dies in darkness; your personalized price, apparently, is set there too.",
