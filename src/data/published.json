@@ -1,34 +1,14 @@
 {
   "items": [
     {
-      "id": "aw-0053",
-      "title": "Cornwall restaurant ignored ban on using 'deadly' indoor grill",
-      "comment": "",
-      "category": "food-crime",
-      "source_url": "",
-      "source_name": "Cornwall Live",
-      "date": "2026-06-22",
-      "status": "UNVERIFIED"
-    },
-    {
       "id": "aw-0052",
-      "title": "Florida man goes on Amazon shopping spree with stolen debit card, buys door hinges and Axe products: FCSO",
-      "comment": "",
+      "title": "Florida man used a stolen debit card on Amazon to buy door hinges and Axe body spray",
+      "comment": "Using a debit card someone left in a propane machine outside a Walmart, a Palm Coast man ordered about $79 of door hinges and Axe body spray on Amazon. He denied everything to deputies — right up until he pulled up his own Amazon account to prove his innocence and displayed the fraudulent orders for them.",
       "category": "florida-man",
-      "source_url": "",
+      "source_url": "https://www.fox13news.com/news/florida-man-goes-amazon-shopping-spree-stolen-debit-card-buys-door-hinges-axe-products-fcso",
       "source_name": "FOX 13 Tampa Bay",
       "date": "2026-07-07",
-      "status": "UNVERIFIED"
-    },
-    {
-      "id": "aw-0051",
-      "title": "Ga. deputies foil suspected prison contraband drop, arrest Florida man",
-      "comment": "",
-      "category": "florida-man",
-      "source_url": "",
-      "source_name": "Corrections1",
-      "date": "2026-06-30",
-      "status": "UNVERIFIED"
+      "status": "REAL"
     },
     {
       "id": "aw-0050",
