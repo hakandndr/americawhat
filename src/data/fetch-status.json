@@ -1,12 +1,12 @@
 {
-  "finishedAt": "2026-07-11T05:19:00.232Z",
+  "finishedAt": "2026-07-11T15:00:47.863Z",
   "sourcesChecked": 9,
   "totals": {
-    "fetched": 718,
-    "added": 2,
-    "excluded": 74,
-    "duplicate": 639,
-    "lowScore": 3
+    "fetched": 716,
+    "added": 0,
+    "excluded": 6,
+    "duplicate": 705,
+    "lowScore": 5
   },
   "pendingAfter": 2,
   "sources": [
@@ -14,18 +14,18 @@
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 2,
-      "excluded": 2,
-      "duplicate": 95,
-      "lowScore": 1
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 100,
+      "lowScore": 0
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 30,
-      "duplicate": 70,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -33,16 +33,16 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 23,
-      "duplicate": 75,
-      "lowScore": 2
+      "excluded": 1,
+      "duplicate": 94,
+      "lowScore": 5
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 17,
+      "fetched": 15,
       "added": 0,
-      "excluded": 2,
+      "excluded": 0,
       "duplicate": 15,
       "lowScore": 0
     },
@@ -60,8 +60,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 3,
-      "duplicate": 97,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 13,
-      "duplicate": 87,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
