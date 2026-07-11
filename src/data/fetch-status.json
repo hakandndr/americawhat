@@ -1,12 +1,12 @@
 {
-  "finishedAt": "2026-07-11T19:00:54.731Z",
+  "finishedAt": "2026-07-11T20:58:11.017Z",
   "sourcesChecked": 9,
   "totals": {
-    "fetched": 714,
+    "fetched": 716,
     "added": 0,
-    "excluded": 56,
-    "duplicate": 657,
-    "lowScore": 1
+    "excluded": 3,
+    "duplicate": 711,
+    "lowScore": 2
   },
   "pendingAfter": 2,
   "sources": [
@@ -15,17 +15,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 7,
-      "duplicate": 93,
-      "lowScore": 0
+      "excluded": 1,
+      "duplicate": 98,
+      "lowScore": 1
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -33,8 +33,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 6,
-      "duplicate": 93,
+      "excluded": 0,
+      "duplicate": 99,
       "lowScore": 1
     },
     {
@@ -49,23 +49,14 @@
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 74,
+      "fetched": 76,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 73,
+      "excluded": 0,
+      "duplicate": 76,
       "lowScore": 0
     },
     {
       "name": "Google News — Weird",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 26,
-      "duplicate": 74,
-      "lowScore": 0
-    },
-    {
-      "name": "Google News — Fine Print",
       "ok": true,
       "fetched": 100,
       "added": 0,
@@ -74,12 +65,21 @@
       "lowScore": 0
     },
     {
+      "name": "Google News — Fine Print",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 1,
+      "duplicate": 99,
+      "lowScore": 0
+    },
+    {
       "name": "Google News — Bans & Ordinances",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 14,
-      "duplicate": 86,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
