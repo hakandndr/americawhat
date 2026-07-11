@@ -1,31 +1,31 @@
 {
-  "finishedAt": "2026-07-10T22:54:29.385Z",
+  "finishedAt": "2026-07-11T05:19:00.232Z",
   "sourcesChecked": 9,
   "totals": {
-    "fetched": 717,
+    "fetched": 718,
     "added": 2,
-    "excluded": 10,
-    "duplicate": 701,
-    "lowScore": 4
+    "excluded": 74,
+    "duplicate": 639,
+    "lowScore": 3
   },
-  "pendingAfter": 10,
+  "pendingAfter": 2,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
       "added": 2,
-      "excluded": 6,
-      "duplicate": 90,
-      "lowScore": 2
+      "excluded": 2,
+      "duplicate": 95,
+      "lowScore": 1
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 30,
+      "duplicate": 70,
       "lowScore": 0
     },
     {
@@ -33,26 +33,26 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 98,
+      "excluded": 23,
+      "duplicate": 75,
       "lowScore": 2
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 15,
+      "fetched": 17,
       "added": 0,
-      "excluded": 0,
+      "excluded": 2,
       "duplicate": 15,
       "lowScore": 0
     },
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 77,
+      "fetched": 76,
       "added": 0,
       "excluded": 0,
-      "duplicate": 77,
+      "duplicate": 76,
       "lowScore": 0
     },
     {
@@ -60,8 +60,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 4,
-      "duplicate": 96,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 3,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 13,
+      "duplicate": 87,
       "lowScore": 0
     },
     {
