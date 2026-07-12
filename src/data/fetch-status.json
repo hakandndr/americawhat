@@ -1,11 +1,11 @@
 {
-  "finishedAt": "2026-07-11T20:58:11.017Z",
+  "finishedAt": "2026-07-12T02:47:56.578Z",
   "sourcesChecked": 9,
   "totals": {
     "fetched": 716,
     "added": 0,
-    "excluded": 3,
-    "duplicate": 711,
+    "excluded": 11,
+    "duplicate": 703,
     "lowScore": 2
   },
   "pendingAfter": 2,
@@ -15,17 +15,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 98,
-      "lowScore": 1
+      "excluded": 5,
+      "duplicate": 95,
+      "lowScore": 0
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -34,25 +34,25 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 15,
+      "fetched": 16,
       "added": 0,
       "excluded": 0,
-      "duplicate": 15,
+      "duplicate": 16,
       "lowScore": 0
     },
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 76,
+      "fetched": 75,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 76,
+      "excluded": 2,
+      "duplicate": 73,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
