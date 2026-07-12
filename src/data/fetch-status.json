@@ -1,12 +1,12 @@
 {
-  "finishedAt": "2026-07-12T02:47:56.578Z",
+  "finishedAt": "2026-07-12T05:36:24.931Z",
   "sourcesChecked": 9,
   "totals": {
-    "fetched": 716,
+    "fetched": 715,
     "added": 0,
-    "excluded": 11,
-    "duplicate": 703,
-    "lowScore": 2
+    "excluded": 3,
+    "duplicate": 706,
+    "lowScore": 6
   },
   "pendingAfter": 2,
   "sources": [
@@ -15,17 +15,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 5,
-      "duplicate": 95,
-      "lowScore": 0
+      "excluded": 1,
+      "duplicate": 98,
+      "lowScore": 1
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -34,16 +34,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 98,
-      "lowScore": 2
+      "duplicate": 95,
+      "lowScore": 5
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 16,
+      "fetched": 15,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 16,
+      "excluded": 1,
+      "duplicate": 14,
       "lowScore": 0
     },
     {
@@ -51,8 +51,8 @@
       "ok": true,
       "fetched": 75,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 73,
+      "excluded": 1,
+      "duplicate": 74,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
