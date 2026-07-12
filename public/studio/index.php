@@ -1,7 +1,7 @@
 <?php
 /**
  * americawhat — curation panel
- * Location (live): americawhat.com/studio/
+ * Location (live): your own private admin path on the server (kept out of deploys)
  * What it does: reads pending.json + published.json via the GitHub API; commits approved items
  * to published.json (which triggers a deploy). Manual add, edit, delete.
  *
