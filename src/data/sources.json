@@ -62,6 +62,41 @@
       "url": "https://rss.upi.com/news/odd_news.rss",
       "defaultCategory": "crime-weird",
       "enabled": true
+    },
+    {
+      "name": "Google News — American Chains",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=(%22Waffle%20House%22%20OR%20Walmart%20OR%20%22Cracker%20Barrel%22%20OR%20%22Taco%20Bell%22)%20(arrested%20OR%20bizarre%20OR%20%22caught%20on%20camera%22%20OR%20incident)&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "crime-weird",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Only-in-America Oddities",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=%22emotional%20support%22%20OR%20%22gender%20reveal%22%20OR%20%22world%27s%20largest%22%20OR%20%22roadside%20attraction%22&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "only-in-america",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Absurd Fines",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=%22fined%20for%22%20(feeding%20OR%20parking%20OR%20lawn%20OR%20grass%20OR%20chickens%20OR%20flag%20OR%20painting%20OR%20mailbox)&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "bureaucracy",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Neighbor Feuds",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=neighbor%20(feud%20OR%20lawsuit%20OR%20fence%20OR%20fined%20OR%20dispute)%20(HOA%20OR%20yard%20OR%20property)&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "hoa-housing",
+      "enabled": true
+    },
+    {
+      "name": "Google News — Odd Thefts",
+      "type": "rss",
+      "url": "https://news.google.com/rss/search?q=(stole%20OR%20%22tried%20to%20steal%22%20OR%20%22arrested%20for%20stealing%22)%20(statue%20OR%20sign%20OR%20toilet%20OR%20gnome%20OR%20tractor%20OR%20mailbox%20OR%20cheese%20OR%20%22shopping%20cart%22)&hl=en-US&gl=US&ceid=US:en",
+      "defaultCategory": "florida-man",
+      "enabled": true
     }
   ]
 }
