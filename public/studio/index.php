@@ -1,11 +1,11 @@
 <?php
 /**
  * americawhat — curation panel
- * Location (live): americawhat.com/boss/
+ * Location (live): americawhat.com/studio/
  * What it does: reads pending.json + published.json via the GitHub API; commits approved items
  * to published.json (which triggers a deploy). Manual add, edit, delete.
  *
- * Secrets live in admin/config.php (NOT in the repo, uploaded to the server manually).
+ * Secrets live in config.php (NOT in the repo, uploaded to the server manually).
  */
 
 session_start();
@@ -14,7 +14,7 @@ mb_internal_encoding('UTF-8');
 $cfg = __DIR__ . '/config.php';
 if (!file_exists($cfg)) {
   http_response_code(500);
-  exit('config.php not found. Upload admin/config.php to the server via FTP.');
+  exit('config.php not found. Upload config.php to the server via FTP.');
 }
 require $cfg; // GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, PANEL_PASSWORD
 
