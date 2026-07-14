@@ -1,21 +1,21 @@
 {
-  "finishedAt": "2026-07-14T04:56:44.970Z",
+  "finishedAt": "2026-07-14T08:08:47.018Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1213,
-    "added": 4,
-    "excluded": 16,
-    "duplicate": 1169,
-    "lowScore": 24
+    "added": 1,
+    "excluded": 11,
+    "duplicate": 1196,
+    "lowScore": 5
   },
-  "pendingAfter": 15,
+  "pendingAfter": 16,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 2,
-      "excluded": 5,
+      "added": 1,
+      "excluded": 6,
       "duplicate": 93,
       "lowScore": 0
     },
@@ -34,8 +34,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 89,
-      "lowScore": 11
+      "duplicate": 100,
+      "lowScore": 0
     },
     {
       "name": "Google News — Only in America",
@@ -96,25 +96,25 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 3,
-      "duplicate": 93,
-      "lowScore": 4
+      "excluded": 1,
+      "duplicate": 98,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 90,
-      "lowScore": 8
+      "excluded": 1,
+      "duplicate": 95,
+      "lowScore": 4
     },
     {
       "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 0,
+      "added": 0,
+      "excluded": 1,
       "duplicate": 99,
       "lowScore": 0
     },
@@ -122,18 +122,18 @@
       "name": "Google News — Neighbor Feuds",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 2,
-      "duplicate": 96,
-      "lowScore": 1
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 100,
+      "lowScore": 0
     },
     {
       "name": "Google News — Odd Thefts",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     }
   ]
