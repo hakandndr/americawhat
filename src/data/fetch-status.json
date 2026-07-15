@@ -1,21 +1,21 @@
 {
-  "finishedAt": "2026-07-14T21:05:51.926Z",
+  "finishedAt": "2026-07-15T04:57:15.748Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1213,
-    "added": 8,
-    "excluded": 16,
-    "duplicate": 1159,
-    "lowScore": 30
+    "fetched": 1238,
+    "added": 7,
+    "excluded": 30,
+    "duplicate": 1178,
+    "lowScore": 23
   },
-  "pendingAfter": 31,
+  "pendingAfter": 38,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 6,
-      "excluded": 1,
+      "added": 3,
+      "excluded": 4,
       "duplicate": 92,
       "lowScore": 1
     },
@@ -33,17 +33,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 92,
-      "lowScore": 7
+      "excluded": 0,
+      "duplicate": 85,
+      "lowScore": 15
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 12,
+      "fetched": 37,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 12,
+      "excluded": 20,
+      "duplicate": 17,
       "lowScore": 0
     },
     {
@@ -60,8 +60,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -88,43 +88,43 @@
       "fetched": 25,
       "added": 0,
       "excluded": 0,
-      "duplicate": 21,
-      "lowScore": 4
+      "duplicate": 25,
+      "lowScore": 0
     },
     {
       "name": "Google News — American Chains",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 4,
-      "duplicate": 96,
-      "lowScore": 0
+      "excluded": 0,
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 83,
-      "lowScore": 16
+      "excluded": 0,
+      "duplicate": 96,
+      "lowScore": 4
     },
     {
       "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
       "added": 1,
-      "excluded": 3,
-      "duplicate": 96,
+      "excluded": 2,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
       "name": "Google News — Neighbor Feuds",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 3,
       "excluded": 0,
-      "duplicate": 97,
+      "duplicate": 95,
       "lowScore": 2
     },
     {
@@ -132,8 +132,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 3,
-      "duplicate": 97,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
