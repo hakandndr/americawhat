@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0060",
+      "title": "Florida man arrested for allegedly stealing over $200,000 in crypto using Steam game malware",
+      "comment": "A Florida man allegedly buried malware in Steam games and drained $220,000 in crypto across 8,000 devices. The FBI unraveled it by following the stolen Bitcoin to his Uber Eats orders.",
+      "category": "florida-man",
+      "source_url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxONHAwcjVxMnVlWGM5S2V6c1I4RENOM0ZPSC0wY1ctMUMyeHRmaHBsS3BmeGxVdlpOSlhILVhmR0JVcmlHTUVYN3Axb3BicXp6NXNkXzFCaS1FcS1hTGg1dWQxRWNUVmdQQmZpTE5NYUZNNDZwZjFkQmhPbVBFRE9mOFlidw?oc=5",
+      "source_name": "The Verge",
+      "date": "2026-07-17",
+      "status": "REAL",
+      "city": "North Lauderdale",
+      "state": "Florida",
+      "source_domain": "theverge.com",
+      "seen_id": "src-ee1976f5f72c"
+    },
+    {
       "id": "aw-0059",
       "title": "Florida man arrested after being found nude behind New Smyrna Beach Circle K",
       "comment": "A Florida man turned up nude behind a New Smyrna Beach Circle K with no explanation on file. No word on what he came to buy, or why it required taking everything off.",
