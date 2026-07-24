@@ -1,22 +1,22 @@
 {
-  "finishedAt": "2026-07-24T05:26:42.834Z",
+  "finishedAt": "2026-07-24T15:35:05.440Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1209,
-    "added": 1,
-    "excluded": 16,
-    "duplicate": 1168,
-    "lowScore": 24
+    "fetched": 1208,
+    "added": 2,
+    "excluded": 19,
+    "duplicate": 1158,
+    "lowScore": 29
   },
-  "pendingAfter": 33,
+  "pendingAfter": 35,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 0,
-      "excluded": 5,
-      "duplicate": 95,
+      "added": 2,
+      "excluded": 2,
+      "duplicate": 96,
       "lowScore": 0
     },
     {
@@ -24,18 +24,18 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 0,
-      "duplicate": 96,
-      "lowScore": 3
+      "added": 0,
+      "excluded": 1,
+      "duplicate": 93,
+      "lowScore": 6
     },
     {
       "name": "Google News — Only in America",
@@ -49,10 +49,10 @@
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 70,
+      "fetched": 69,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 70,
+      "excluded": 2,
+      "duplicate": 67,
       "lowScore": 0
     },
     {
@@ -60,57 +60,21 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "excluded": 2,
+      "duplicate": 98,
+      "lowScore": 0
     },
     {
       "name": "Google News — Fine Print",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "excluded": 1,
+      "duplicate": 98,
+      "lowScore": 1
     },
     {
       "name": "Google News — Bans & Ordinances",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
-    },
-    {
-      "name": "UPI Odd News",
-      "ok": true,
-      "fetched": 25,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 25,
-      "lowScore": 0
-    },
-    {
-      "name": "Google News — American Chains",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 5,
-      "duplicate": 88,
-      "lowScore": 7
-    },
-    {
-      "name": "Google News — Only-in-America Oddities",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 3,
-      "duplicate": 84,
-      "lowScore": 13
-    },
-    {
-      "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
       "added": 0,
@@ -119,12 +83,48 @@
       "lowScore": 0
     },
     {
+      "name": "UPI Odd News",
+      "ok": true,
+      "fetched": 25,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 23,
+      "lowScore": 2
+    },
+    {
+      "name": "Google News — American Chains",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 2,
+      "duplicate": 94,
+      "lowScore": 4
+    },
+    {
+      "name": "Google News — Only-in-America Oddities",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 1,
+      "duplicate": 83,
+      "lowScore": 16
+    },
+    {
+      "name": "Google News — Absurd Fines",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 5,
+      "duplicate": 95,
+      "lowScore": 0
+    },
+    {
       "name": "Google News — Neighbor Feuds",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -132,8 +132,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     }
   ]
