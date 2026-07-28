@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0072",
+      "title": "Look: Florida police chase down loose emu wandering Dade City",
+      "comment": "Dade City officers spent a morning running down an emu that had decided it was a fine day for a stroll through town. The department conceded that chasing an emu was not covered at the academy, then posted photos of the bird riding in a patrol car.",
+      "category": "crime-weird",
+      "source_url": "https://www.upi.com/Odd_News/2026/07/27/loose-emu-Dade-City-Florida/1171785174874/",
+      "source_name": "UPI Odd News",
+      "date": "2026-07-27",
+      "status": "REAL",
+      "city": "Dade City",
+      "state": "Florida",
+      "source_domain": "upi.com",
+      "seen_id": "src-ced587621a36"
+    },
+    {
       "id": "aw-0071",
       "title": "Towel, tequila and trouble: Jupiter man accused of bizarre early morning break-in",
       "comment": "A Jupiter man allegedly broke into a neighbor's house at dawn to slice a lime and pour himself her tequila, a towel wrapped around his head. He lives just down the street; a Ring camera caught him trying the front door first, six-pack in hand.",
