@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0087",
+      "title": "Watch: Deer wanders into Pennsylvania s Hersheypark",
+      "comment": "A deer let itself into Hersheypark and wandered the midway among the visitors. It did not, as far as anyone reported, get in line for anything.",
+      "category": "only-in-america",
+      "source_url": "https://www.upi.com/Odd_News/2026/07/29/Hersheypark-theme-park-deer/5321785335924/",
+      "source_name": "UPI Odd News",
+      "date": "2026-07-29",
+      "status": "REAL",
+      "city": "Hershey",
+      "state": "Pennsylvania",
+      "source_domain": "upi.com",
+      "seen_id": "src-a70d821c8995"
+    },
+    {
       "id": "aw-0086",
       "title": "Baltimore woman's $228K water bill dispute deepens after DPW admits HOA manages account",
       "comment": "A Baltimore woman is fighting a $228,000 water bill, and the dispute got worse when the city's public works department admitted its HOA billing was wrong. The meter reads like a mortgage.",
