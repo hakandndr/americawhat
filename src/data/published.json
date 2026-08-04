@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0084",
+      "title": "Look: Escaped alligator found wandering loose in Indiana",
+      "comment": "A four-foot alligator turned up at 2 a.m. on a downtown Jeffersonville street and settled in at the front windows of a law office. Police already knew the owner — the gator has escaped before.",
+      "category": "crime-weird",
+      "source_url": "https://www.upi.com/Odd_News/2026/08/03/alligator-Jeffersonville-Indiana/6141785767738/",
+      "source_name": "UPI Odd News",
+      "date": "2026-08-03",
+      "status": "REAL",
+      "city": "Jeffersonville",
+      "state": "Indiana",
+      "source_domain": "upi.com",
+      "seen_id": "src-05655c3d3368"
+    },
+    {
       "id": "aw-0083",
       "title": "Florida man dressed as Superman put in cuffs after confession: video",
       "comment": "Deputies found their boat-burglary suspect in a full Superman costume, cape included, and he promptly confessed to taking three power tools. The Man of Steel posted $5,500 bond.",
