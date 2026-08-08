@@ -1,23 +1,23 @@
 {
-  "finishedAt": "2026-08-08T03:38:44.804Z",
+  "finishedAt": "2026-08-08T14:37:51.516Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1210,
-    "added": 0,
-    "excluded": 9,
-    "duplicate": 1189,
-    "lowScore": 12
+    "added": 1,
+    "excluded": 8,
+    "duplicate": 1185,
+    "lowScore": 16
   },
-  "pendingAfter": 47,
+  "pendingAfter": 48,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 0,
-      "excluded": 5,
-      "duplicate": 93,
-      "lowScore": 2
+      "added": 1,
+      "excluded": 2,
+      "duplicate": 97,
+      "lowScore": 0
     },
     {
       "name": "Google News — HOA & Housing",
@@ -60,9 +60,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "excluded": 3,
+      "duplicate": 96,
+      "lowScore": 1
     },
     {
       "name": "Google News — Fine Print",
@@ -70,8 +70,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Bans & Ordinances",
@@ -97,8 +97,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 97,
-      "lowScore": 3
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
@@ -106,16 +106,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 97,
-      "lowScore": 3
+      "duplicate": 91,
+      "lowScore": 9
     },
     {
       "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 3,
-      "duplicate": 97,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
