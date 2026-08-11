@@ -1,85 +1,85 @@
 {
-  "finishedAt": "2026-08-11T15:11:22.200Z",
+  "finishedAt": "2026-08-11T20:53:58.256Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 25,
-    "added": 0,
-    "excluded": 0,
-    "duplicate": 23,
-    "lowScore": 2
+    "fetched": 1212,
+    "added": 9,
+    "excluded": 24,
+    "duplicate": 1135,
+    "lowScore": 44
   },
-  "pendingAfter": 70,
+  "pendingAfter": 79,
   "sources": [
     {
       "name": "Google News — Florida Man",
-      "ok": false,
-      "fetched": 0,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 0
+      "ok": true,
+      "fetched": 100,
+      "added": 2,
+      "excluded": 5,
+      "duplicate": 90,
+      "lowScore": 3
     },
     {
       "name": "Google News — HOA & Housing",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
       "name": "Google News — Bureaucracy",
-      "ok": false,
-      "fetched": 0,
-      "added": 0,
+      "ok": true,
+      "fetched": 100,
+      "added": 4,
       "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 0
+      "duplicate": 83,
+      "lowScore": 13
     },
     {
       "name": "Google News — Only in America",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 13,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
+      "excluded": 1,
+      "duplicate": 12,
       "lowScore": 0
     },
     {
       "name": "Google News — Food Crime",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 74,
       "added": 0,
       "excluded": 0,
-      "duplicate": 0,
+      "duplicate": 74,
       "lowScore": 0
     },
     {
       "name": "Google News — Weird",
-      "ok": false,
-      "fetched": 0,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
+      "ok": true,
+      "fetched": 100,
+      "added": 1,
+      "excluded": 2,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
       "name": "Google News — Fine Print",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 0
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Bans & Ordinances",
-      "ok": false,
-      "fetched": 0,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
+      "ok": true,
+      "fetched": 100,
+      "added": 1,
+      "excluded": 2,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
@@ -88,52 +88,52 @@
       "fetched": 25,
       "added": 0,
       "excluded": 0,
-      "duplicate": 23,
-      "lowScore": 2
+      "duplicate": 21,
+      "lowScore": 4
     },
     {
       "name": "Google News — American Chains",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 0
+      "excluded": 1,
+      "duplicate": 95,
+      "lowScore": 4
     },
     {
       "name": "Google News — Only-in-America Oddities",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 0
+      "excluded": 5,
+      "duplicate": 78,
+      "lowScore": 17
     },
     {
       "name": "Google News — Absurd Fines",
-      "ok": false,
-      "fetched": 0,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
+      "ok": true,
+      "fetched": 100,
+      "added": 1,
+      "excluded": 2,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
       "name": "Google News — Neighbor Feuds",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
-      "lowScore": 0
+      "excluded": 4,
+      "duplicate": 95,
+      "lowScore": 1
     },
     {
       "name": "Google News — Odd Thefts",
-      "ok": false,
-      "fetched": 0,
+      "ok": true,
+      "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 0,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
