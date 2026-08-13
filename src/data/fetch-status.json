@@ -1,31 +1,31 @@
 {
-  "finishedAt": "2026-08-13T04:17:17.958Z",
+  "finishedAt": "2026-08-13T15:03:31.768Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1213,
-    "added": 3,
-    "excluded": 8,
-    "duplicate": 1183,
-    "lowScore": 19
+    "added": 2,
+    "excluded": 14,
+    "duplicate": 1174,
+    "lowScore": 23
   },
-  "pendingAfter": 91,
+  "pendingAfter": 93,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 2,
       "excluded": 3,
       "duplicate": 95,
-      "lowScore": 1
+      "lowScore": 0
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -34,8 +34,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 94,
-      "lowScore": 6
+      "duplicate": 97,
+      "lowScore": 3
     },
     {
       "name": "Google News — Only in America",
@@ -51,17 +51,17 @@
       "ok": true,
       "fetched": 75,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 74,
+      "excluded": 0,
+      "duplicate": 75,
       "lowScore": 0
     },
     {
       "name": "Google News — Weird",
       "ok": true,
       "fetched": 100,
-      "added": 2,
-      "excluded": 1,
-      "duplicate": 97,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -69,9 +69,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "excluded": 3,
+      "duplicate": 97,
+      "lowScore": 0
     },
     {
       "name": "Google News — Bans & Ordinances",
@@ -97,17 +97,17 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 98,
-      "lowScore": 2
+      "duplicate": 97,
+      "lowScore": 3
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 89,
-      "lowScore": 9
+      "excluded": 3,
+      "duplicate": 81,
+      "lowScore": 16
     },
     {
       "name": "Google News — Absurd Fines",
@@ -123,17 +123,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "excluded": 1,
+      "duplicate": 98,
+      "lowScore": 1
     },
     {
       "name": "Google News — Odd Thefts",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     }
   ]
