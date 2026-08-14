@@ -1,17 +1,71 @@
 {
-  "finishedAt": "2026-08-13T20:50:55.546Z",
+  "finishedAt": "2026-08-14T04:14:13.713Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1214,
-    "added": 1,
-    "excluded": 7,
-    "duplicate": 1170,
-    "lowScore": 36
+    "fetched": 1216,
+    "added": 4,
+    "excluded": 11,
+    "duplicate": 1174,
+    "lowScore": 27
   },
-  "pendingAfter": 94,
+  "pendingAfter": 98,
   "sources": [
     {
       "name": "Google News — Florida Man",
+      "ok": true,
+      "fetched": 100,
+      "added": 2,
+      "excluded": 0,
+      "duplicate": 98,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — HOA & Housing",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 1,
+      "duplicate": 99,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Bureaucracy",
+      "ok": true,
+      "fetched": 100,
+      "added": 1,
+      "excluded": 0,
+      "duplicate": 87,
+      "lowScore": 12
+    },
+    {
+      "name": "Google News — Only in America",
+      "ok": true,
+      "fetched": 14,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 14,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Food Crime",
+      "ok": true,
+      "fetched": 77,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 77,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Weird",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 2,
+      "duplicate": 98,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Fine Print",
       "ok": true,
       "fetched": 100,
       "added": 1,
@@ -20,66 +74,12 @@
       "lowScore": 0
     },
     {
-      "name": "Google News — HOA & Housing",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
-    },
-    {
-      "name": "Google News — Bureaucracy",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 93,
-      "lowScore": 7
-    },
-    {
-      "name": "Google News — Only in America",
-      "ok": true,
-      "fetched": 13,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 13,
-      "lowScore": 0
-    },
-    {
-      "name": "Google News — Food Crime",
-      "ok": true,
-      "fetched": 76,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 76,
-      "lowScore": 0
-    },
-    {
-      "name": "Google News — Weird",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
-    },
-    {
-      "name": "Google News — Fine Print",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
-    },
-    {
       "name": "Google News — Bans & Ordinances",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -88,16 +88,16 @@
       "fetched": 25,
       "added": 0,
       "excluded": 0,
-      "duplicate": 21,
-      "lowScore": 4
+      "duplicate": 25,
+      "lowScore": 0
     },
     {
       "name": "Google News — American Chains",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 96,
+      "excluded": 0,
+      "duplicate": 98,
       "lowScore": 2
     },
     {
@@ -106,8 +106,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 1,
-      "duplicate": 79,
-      "lowScore": 20
+      "duplicate": 86,
+      "lowScore": 13
     },
     {
       "name": "Google News — Absurd Fines",
@@ -123,9 +123,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 97,
-      "lowScore": 1
+      "excluded": 4,
+      "duplicate": 96,
+      "lowScore": 0
     },
     {
       "name": "Google News — Odd Thefts",
@@ -133,8 +133,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 1,
-      "duplicate": 98,
-      "lowScore": 1
+      "duplicate": 99,
+      "lowScore": 0
     }
   ]
 }
