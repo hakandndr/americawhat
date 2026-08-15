@@ -1,14 +1,14 @@
 {
-  "finishedAt": "2026-08-15T02:57:04.871Z",
+  "finishedAt": "2026-08-15T14:29:16.977Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1215,
     "added": 2,
-    "excluded": 10,
-    "duplicate": 1193,
-    "lowScore": 10
+    "excluded": 9,
+    "duplicate": 1196,
+    "lowScore": 8
   },
-  "pendingAfter": 110,
+  "pendingAfter": 112,
   "sources": [
     {
       "name": "Google News — Florida Man",
@@ -16,16 +16,16 @@
       "fetched": 100,
       "added": 2,
       "excluded": 2,
-      "duplicate": 95,
-      "lowScore": 1
+      "duplicate": 96,
+      "lowScore": 0
     },
     {
       "name": "Google News — HOA & Housing",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -51,8 +51,8 @@
       "ok": true,
       "fetched": 77,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 76,
+      "excluded": 0,
+      "duplicate": 77,
       "lowScore": 0
     },
     {
@@ -60,8 +60,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -96,17 +96,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
+      "excluded": 1,
       "duplicate": 99,
-      "lowScore": 1
+      "lowScore": 0
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 94,
+      "excluded": 0,
+      "duplicate": 95,
       "lowScore": 5
     },
     {
@@ -123,8 +123,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -132,8 +132,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 3,
+      "duplicate": 97,
       "lowScore": 0
     }
   ]
