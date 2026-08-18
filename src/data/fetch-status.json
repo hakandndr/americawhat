@@ -1,22 +1,22 @@
 {
-  "finishedAt": "2026-08-18T14:39:07.342Z",
+  "finishedAt": "2026-08-18T20:30:41.965Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1211,
-    "added": 4,
-    "excluded": 9,
-    "duplicate": 1162,
-    "lowScore": 36
+    "added": 3,
+    "excluded": 2,
+    "duplicate": 1171,
+    "lowScore": 35
   },
-  "pendingAfter": 23,
+  "pendingAfter": 26,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 4,
-      "excluded": 1,
-      "duplicate": 95,
+      "added": 1,
+      "excluded": 0,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -32,10 +32,10 @@
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 0,
+      "added": 1,
       "excluded": 0,
-      "duplicate": 87,
-      "lowScore": 13
+      "duplicate": 94,
+      "lowScore": 5
     },
     {
       "name": "Google News — Only in America",
@@ -51,8 +51,8 @@
       "ok": true,
       "fetched": 76,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 75,
+      "excluded": 0,
+      "duplicate": 76,
       "lowScore": 0
     },
     {
@@ -86,13 +86,40 @@
       "name": "UPI Odd News",
       "ok": true,
       "fetched": 25,
-      "added": 0,
+      "added": 1,
       "excluded": 0,
-      "duplicate": 24,
-      "lowScore": 1
+      "duplicate": 20,
+      "lowScore": 4
     },
     {
       "name": "Google News — American Chains",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 96,
+      "lowScore": 4
+    },
+    {
+      "name": "Google News — Only-in-America Oddities",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 79,
+      "lowScore": 21
+    },
+    {
+      "name": "Google News — Absurd Fines",
+      "ok": true,
+      "fetched": 100,
+      "added": 0,
+      "excluded": 1,
+      "duplicate": 99,
+      "lowScore": 0
+    },
+    {
+      "name": "Google News — Neighbor Feuds",
       "ok": true,
       "fetched": 100,
       "added": 0,
@@ -101,39 +128,12 @@
       "lowScore": 1
     },
     {
-      "name": "Google News — Only-in-America Oddities",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 4,
-      "duplicate": 75,
-      "lowScore": 21
-    },
-    {
-      "name": "Google News — Absurd Fines",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
-    },
-    {
-      "name": "Google News — Neighbor Feuds",
-      "ok": true,
-      "fetched": 100,
-      "added": 0,
-      "excluded": 3,
-      "duplicate": 97,
-      "lowScore": 0
-    },
-    {
       "name": "Google News — Odd Thefts",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
