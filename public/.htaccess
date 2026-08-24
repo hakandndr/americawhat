@@ -8,4 +8,29 @@ ErrorDocument 404 /404.html
   <FilesMatch "\.html$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
+
+  # Security headers, added 2026-08-24.
+  #
+  # This site previously sent none. The `content-security-policy:
+  # upgrade-insecure-requests` visible in a header check is not from here — it is
+  # Cloudflare's Automatic HTTPS Rewrites injecting itself, and it protects
+  # against nothing on this site. Do not read it as coverage.
+  #
+  # `always` matters: without it these are skipped on error responses, which is
+  # exactly where a header is worth having.
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+
+  # Deliberately without includeSubDomains. Once a browser has seen that
+  # directive it refuses plain HTTP for every subdomain of this host for the
+  # stated period, including ones that do not exist yet, and the commitment
+  # cannot be withdrawn early.
+  Header always set Strict-Transport-Security "max-age=31536000"
+
+  # Content-Security-Policy is not set here yet. When it is written, remember
+  # this site loads its own vote endpoints under /analytics/ and links out to
+  # Pinterest share URLs, and that the /studio panel is uploaded by hand and is
+  # not part of the deploy.
 </IfModule>
