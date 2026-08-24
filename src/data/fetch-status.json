@@ -1,12 +1,12 @@
 {
-  "finishedAt": "2026-08-23T20:30:10.936Z",
+  "finishedAt": "2026-08-24T03:09:56.242Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1216,
-    "added": 1,
-    "excluded": 5,
+    "fetched": 1214,
+    "added": 0,
+    "excluded": 1,
     "duplicate": 1206,
-    "lowScore": 4
+    "lowScore": 7
   },
   "pendingAfter": 66,
   "sources": [
@@ -15,8 +15,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -34,16 +34,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 14,
+      "fetched": 12,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 13,
+      "excluded": 0,
+      "duplicate": 12,
       "lowScore": 0
     },
     {
@@ -59,9 +59,9 @@
       "name": "Google News — Weird",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 99,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -97,17 +97,17 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 98,
-      "lowScore": 2
+      "excluded": 1,
+      "duplicate": 95,
+      "lowScore": 4
     },
     {
       "name": "Google News — Absurd Fines",
@@ -123,9 +123,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 3,
-      "duplicate": 96,
-      "lowScore": 1
+      "excluded": 0,
+      "duplicate": 100,
+      "lowScore": 0
     },
     {
       "name": "Google News — Odd Thefts",
@@ -133,8 +133,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "duplicate": 100,
+      "lowScore": 0
     }
   ]
 }
