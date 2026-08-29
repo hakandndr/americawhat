@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0106",
+      "title": "Watch: Texas police apprehend lemur on the loose",
+      "comment": "Belton officers were dispatched to a lemur at large and described the suspect as fast, furry, and refusing to cooperate. He was detained and returned to his owner, because Texas lets you keep one of these.",
+      "category": "crime-weird",
+      "source_url": "https://www.upi.com/Odd_News/2026/08/19/Belton-Texas-escaped-lemur/6161787154776/",
+      "source_name": "UPI Odd News",
+      "date": "2026-08-19",
+      "status": "REAL",
+      "city": "Belton",
+      "state": "Texas",
+      "source_domain": "upi.com",
+      "seen_id": "src-7164c0e54c48"
+    },
+    {
       "id": "aw-0105",
       "title": "Wanted Florida man caught hiding under mattress yells for mom who tried to punch officer: WHPD",
       "comment": "Officers spotted a suspiciously large lump in the middle of a mattress and lifted it to find their wanted man underneath. He immediately started yelling for his mother, who came running and made the situation considerably worse.",
