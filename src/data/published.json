@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0103",
+      "title": "Junction City parking update ends move-a-few-inches loophole",
+      "comment": "For years, drivers beat the time limit by rolling forward a few inches to reset the clock. The city has now written an ordinance specifically to end the shuffle.",
+      "category": "bureaucracy",
+      "source_url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQMHozRDl4T1gxVklNN3FCMVg5Z1JxQy14ZVRsdk4wLTFkQk5ua1dGeTVvQXpJbFRrdGlYN2NyTG0zdmo4bkc0cWlfX01lSzR5bmFrMmZELWxXVG1ocER4bFlrWDNYeGVVTmcwdENUcE1WMl9sUlNtcHBoaVgyOHRNeE9PRHh0dkh5Rk0zcjhnM252dFZyLXpJWnoyTEpsbmc3MzJXaEx5TmR2NEFUR21mejRrYjFxem8?oc=5",
+      "source_name": "The Register-Guard",
+      "date": "2026-08-21",
+      "status": "REAL",
+      "city": "Junction City",
+      "state": "Oregon",
+      "source_domain": "registerguard.com",
+      "seen_id": "src-6ae3c9524fec"
+    },
+    {
       "id": "aw-0102",
       "title": "St. Clair Shores man fined $15K for docking boats, attorney calls ordinance unconstitutional",
       "comment": "A Michigan man was fined $15,000 for docking boats at his own property. His attorney's characterization of the penalty is not printable in a family publication.",
