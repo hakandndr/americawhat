@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0104",
+      "title": "Watch: Florida man breaks own record with mini basketball shot from 102 feet",
+      "comment": "A Tampa man sank a miniature basketball from 102 feet — longer than a full court — to break the world record he already held. He trained for this at Pop-a-Shot.",
+      "category": "only-in-america",
+      "source_url": "https://www.upi.com/Odd_News/2026/08/18/Guinness-world-Records-farthest-miniature-basketball-shot/5281787073629/",
+      "source_name": "UPI Odd News",
+      "date": "2026-08-18",
+      "status": "REAL",
+      "city": "Tampa",
+      "state": "Florida",
+      "source_domain": "upi.com",
+      "seen_id": "src-381a785c79d0"
+    },
+    {
       "id": "aw-0103",
       "title": "Junction City parking update ends move-a-few-inches loophole",
       "comment": "For years, drivers beat the time limit by rolling forward a few inches to reset the clock. The city has now written an ordinance specifically to end the shuffle.",
