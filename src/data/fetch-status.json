@@ -1,21 +1,21 @@
 {
-  "finishedAt": "2026-08-29T22:32:50.934Z",
+  "finishedAt": "2026-08-30T08:09:41.989Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1218,
-    "added": 4,
-    "excluded": 2,
-    "duplicate": 1206,
-    "lowScore": 6
+    "fetched": 1217,
+    "added": 5,
+    "excluded": 9,
+    "duplicate": 1190,
+    "lowScore": 13
   },
-  "pendingAfter": 16,
+  "pendingAfter": 21,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 1,
+      "added": 0,
+      "excluded": 2,
       "duplicate": 98,
       "lowScore": 0
     },
@@ -32,10 +32,10 @@
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 5,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 0
+      "duplicate": 93,
+      "lowScore": 2
     },
     {
       "name": "Google News — Only in America",
@@ -49,10 +49,10 @@
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 79,
+      "fetched": 78,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 79,
+      "excluded": 2,
+      "duplicate": 76,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -95,10 +95,10 @@
       "name": "Google News — American Chains",
       "ok": true,
       "fetched": 100,
-      "added": 2,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 96,
-      "lowScore": 2
+      "duplicate": 95,
+      "lowScore": 5
     },
     {
       "name": "Google News — Only-in-America Oddities",
@@ -106,8 +106,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 1,
-      "duplicate": 95,
-      "lowScore": 4
+      "duplicate": 93,
+      "lowScore": 6
     },
     {
       "name": "Google News — Absurd Fines",
@@ -123,8 +123,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
