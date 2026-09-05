@@ -1,22 +1,22 @@
 {
-  "finishedAt": "2026-09-05T16:42:43.428Z",
+  "finishedAt": "2026-09-05T22:00:04.546Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1211,
-    "added": 3,
-    "excluded": 3,
-    "duplicate": 1194,
-    "lowScore": 11
+    "fetched": 1233,
+    "added": 7,
+    "excluded": 6,
+    "duplicate": 1213,
+    "lowScore": 7
   },
-  "pendingAfter": 125,
+  "pendingAfter": 132,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 3,
       "excluded": 1,
-      "duplicate": 98,
+      "duplicate": 96,
       "lowScore": 0
     },
     {
@@ -32,18 +32,18 @@
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 2,
+      "added": 3,
       "excluded": 0,
-      "duplicate": 97,
+      "duplicate": 96,
       "lowScore": 1
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 10,
+      "fetched": 32,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 10,
+      "excluded": 3,
+      "duplicate": 29,
       "lowScore": 0
     },
     {
@@ -68,9 +68,9 @@
       "name": "Google News — Fine Print",
       "ok": true,
       "fetched": 100,
-      "added": 0,
+      "added": 1,
       "excluded": 0,
-      "duplicate": 100,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -97,17 +97,17 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 98,
-      "lowScore": 2
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 93,
-      "lowScore": 7
+      "excluded": 1,
+      "duplicate": 94,
+      "lowScore": 5
     },
     {
       "name": "Google News — Absurd Fines",
@@ -133,8 +133,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "duplicate": 100,
+      "lowScore": 0
     }
   ]
 }
