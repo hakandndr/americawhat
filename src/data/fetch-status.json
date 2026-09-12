@@ -1,22 +1,22 @@
 {
-  "finishedAt": "2026-09-12T16:53:44.316Z",
+  "finishedAt": "2026-09-12T22:06:26.166Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1234,
-    "added": 1,
-    "excluded": 5,
-    "duplicate": 1208,
-    "lowScore": 20
+    "fetched": 1233,
+    "added": 3,
+    "excluded": 4,
+    "duplicate": 1213,
+    "lowScore": 13
   },
-  "pendingAfter": 81,
+  "pendingAfter": 84,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 3,
-      "duplicate": 96,
+      "added": 3,
+      "excluded": 2,
+      "duplicate": 95,
       "lowScore": 0
     },
     {
@@ -34,16 +34,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 95,
-      "lowScore": 5
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 32,
+      "fetched": 31,
       "added": 0,
       "excluded": 0,
-      "duplicate": 32,
+      "duplicate": 31,
       "lowScore": 0
     },
     {
@@ -60,9 +60,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
+      "excluded": 1,
       "duplicate": 99,
-      "lowScore": 1
+      "lowScore": 0
     },
     {
       "name": "Google News — Fine Print",
@@ -96,18 +96,18 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 98,
-      "lowScore": 1
+      "excluded": 0,
+      "duplicate": 97,
+      "lowScore": 3
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 86,
-      "lowScore": 13
+      "excluded": 0,
+      "duplicate": 91,
+      "lowScore": 9
     },
     {
       "name": "Google News — Absurd Fines",
@@ -132,8 +132,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
