@@ -1,23 +1,23 @@
 {
-  "finishedAt": "2026-09-14T23:02:17.494Z",
+  "finishedAt": "2026-09-15T07:31:15.608Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1216,
+    "fetched": 1214,
     "added": 2,
-    "excluded": 0,
-    "duplicate": 1202,
-    "lowScore": 12
+    "excluded": 6,
+    "duplicate": 1189,
+    "lowScore": 17
   },
-  "pendingAfter": 104,
+  "pendingAfter": 106,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 2,
+      "added": 1,
       "excluded": 0,
-      "duplicate": 95,
-      "lowScore": 3
+      "duplicate": 98,
+      "lowScore": 1
     },
     {
       "name": "Google News — HOA & Housing",
@@ -32,18 +32,18 @@
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 97,
-      "lowScore": 3
+      "added": 1,
+      "excluded": 1,
+      "duplicate": 88,
+      "lowScore": 10
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 14,
+      "fetched": 12,
       "added": 0,
       "excluded": 0,
-      "duplicate": 14,
+      "duplicate": 12,
       "lowScore": 0
     },
     {
@@ -70,8 +70,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Bans & Ordinances",
@@ -105,8 +105,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 97,
+      "excluded": 2,
+      "duplicate": 95,
       "lowScore": 3
     },
     {
@@ -123,8 +123,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -132,9 +132,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
+      "excluded": 1,
       "duplicate": 99,
-      "lowScore": 1
+      "lowScore": 0
     }
   ]
 }
