@@ -1,23 +1,23 @@
 {
-  "finishedAt": "2026-09-15T22:48:21.757Z",
+  "finishedAt": "2026-09-16T07:30:37.659Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1212,
-    "added": 4,
-    "excluded": 6,
-    "duplicate": 1179,
-    "lowScore": 23
+    "added": 1,
+    "excluded": 15,
+    "duplicate": 1181,
+    "lowScore": 15
   },
-  "pendingAfter": 115,
+  "pendingAfter": 116,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 4,
-      "excluded": 3,
-      "duplicate": 91,
-      "lowScore": 2
+      "added": 1,
+      "excluded": 2,
+      "duplicate": 96,
+      "lowScore": 1
     },
     {
       "name": "Google News — HOA & Housing",
@@ -34,16 +34,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 92,
-      "lowScore": 8
+      "duplicate": 94,
+      "lowScore": 6
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
       "fetched": 10,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 10,
+      "excluded": 1,
+      "duplicate": 9,
       "lowScore": 0
     },
     {
@@ -60,8 +60,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 3,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
@@ -69,17 +69,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "excluded": 2,
+      "duplicate": 97,
+      "lowScore": 1
     },
     {
       "name": "Google News — Bans & Ordinances",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -97,25 +97,25 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 97,
-      "lowScore": 3
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 91,
-      "lowScore": 8
+      "excluded": 2,
+      "duplicate": 94,
+      "lowScore": 4
     },
     {
       "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -123,8 +123,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 96,
+      "excluded": 1,
+      "duplicate": 97,
       "lowScore": 2
     },
     {
@@ -132,8 +132,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
