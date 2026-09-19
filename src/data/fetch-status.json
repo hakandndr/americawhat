@@ -1,22 +1,22 @@
 {
-  "finishedAt": "2026-09-19T17:07:03.501Z",
+  "finishedAt": "2026-09-19T22:16:34.778Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1213,
-    "added": 3,
-    "excluded": 7,
-    "duplicate": 1195,
-    "lowScore": 8
+    "added": 1,
+    "excluded": 5,
+    "duplicate": 1197,
+    "lowScore": 10
   },
-  "pendingAfter": 166,
+  "pendingAfter": 167,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
       "added": 1,
-      "excluded": 0,
-      "duplicate": 97,
+      "excluded": 2,
+      "duplicate": 95,
       "lowScore": 2
     },
     {
@@ -32,9 +32,9 @@
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 98,
+      "duplicate": 99,
       "lowScore": 1
     },
     {
@@ -59,9 +59,9 @@
       "name": "Google News — Weird",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 99,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -69,8 +69,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -96,26 +96,26 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 3,
-      "duplicate": 95,
-      "lowScore": 2
+      "excluded": 1,
+      "duplicate": 98,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
+      "excluded": 0,
       "duplicate": 95,
-      "lowScore": 3
+      "lowScore": 5
     },
     {
       "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -132,9 +132,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 98,
-      "lowScore": 0
+      "excluded": 0,
+      "duplicate": 99,
+      "lowScore": 1
     }
   ]
 }
