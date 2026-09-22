@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0121",
+      "title": "Look: Trapped coyote rescued from between walls in Pittsburgh alley",
+      "comment": "A coyote wedged itself into the gap between two buildings in a Pittsburgh alley and could not reverse out. Crews had to open up the wall to get it loose.",
+      "category": "crime-weird",
+      "source_url": "https://www.upi.com/Odd_News/2026/09/11/Pittsburgh-coyote-trapped-walls-alley/2511789144824/",
+      "source_name": "UPI Odd News",
+      "date": "2026-09-11",
+      "status": "REAL",
+      "city": "Pittsburgh",
+      "state": "Pennsylvania",
+      "source_domain": "upi.com",
+      "seen_id": "src-70275e622115"
+    },
+    {
       "id": "aw-0120",
       "title": "Georgia Man Turns Traffic Stop Into Bizarre Pursuit Ending in ‘Slowest PIT,’ Police Say",
       "comment": "A driver declined to stop for the traffic stop, then declined to speed up, producing what the department is billing as possibly the slowest PIT maneuver in its history. The original offense was ignoring a traffic-control device.",
