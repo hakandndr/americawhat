@@ -1,6 +1,19 @@
 {
   "items": [
     {
+      "id": "aw-0122",
+      "title": "Look: Overdue magazine returned to N.H. library after 132 years",
+      "comment": "A magazine borrowed from a New Hampshire library came back 132 years late. Nobody appears eager to calculate the fine.",
+      "category": "only-in-america",
+      "source_url": "https://www.upi.com/Odd_News/2026/09/15/Concord-Public-libraray-magazine-132-years-overdue/1491789490872/",
+      "source_name": "UPI Odd News",
+      "date": "2026-09-15",
+      "status": "REAL",
+      "state": "New Hampshire",
+      "source_domain": "upi.com",
+      "seen_id": "src-fc26481302e7"
+    },
+    {
       "id": "aw-0121",
       "title": "Look: Trapped coyote rescued from between walls in Pittsburgh alley",
       "comment": "A coyote wedged itself into the gap between two buildings in a Pittsburgh alley and could not reverse out. Crews had to open up the wall to get it loose.",
