@@ -1,23 +1,23 @@
 {
-  "finishedAt": "2026-09-26T22:36:09.965Z",
+  "finishedAt": "2026-09-27T07:55:38.856Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1240,
-    "added": 1,
-    "excluded": 5,
+    "fetched": 1241,
+    "added": 2,
+    "excluded": 9,
     "duplicate": 1228,
-    "lowScore": 6
+    "lowScore": 2
   },
-  "pendingAfter": 48,
+  "pendingAfter": 50,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 2,
       "excluded": 1,
-      "duplicate": 98,
-      "lowScore": 0
+      "duplicate": 96,
+      "lowScore": 1
     },
     {
       "name": "Google News — HOA & Housing",
@@ -40,10 +40,10 @@
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 36,
+      "fetched": 37,
       "added": 0,
       "excluded": 0,
-      "duplicate": 36,
+      "duplicate": 37,
       "lowScore": 0
     },
     {
@@ -78,8 +78,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -105,9 +105,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 93,
-      "lowScore": 5
+      "excluded": 3,
+      "duplicate": 97,
+      "lowScore": 0
     },
     {
       "name": "Google News — Absurd Fines",
@@ -123,8 +123,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 99,
+      "excluded": 1,
+      "duplicate": 98,
       "lowScore": 1
     },
     {
@@ -132,8 +132,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
