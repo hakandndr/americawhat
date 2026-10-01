@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0132",
+      "title": "Honolulu building permit backlog grows despite AI processing tools",
+      "comment": "Honolulu brought in AI tools to clear its building permit backlog, and the backlog has grown anyway. The software is faster than the people; the queue is unmoved.",
+      "category": "bureaucracy",
+      "source_url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNcEw5d3hSZzVpWlR0SktZMUxQRTJpMXU5a0dKNzJmcmVNSlZzLVJhQ3phd1VvcXVwVWNMSURXU3RQWVZoWjlZYmhJUGpMeW5PLWItNS13YTlhVGtpSlVhYi1zVWFRX0RBbjlhRzdjQjdMdEhJQzNxYkthS0Y3LWFpWEtXUWhnWWpjVUo4Y2FDTHBHVEQzUmtpMkY1LXFySFpDeWR3N1RCU3RmWFMyRTNqemZFREhuWlplWHBOWnhvNVdjQQ?oc=5",
+      "source_name": "hawaiipublicradio.org",
+      "date": "2026-09-24",
+      "status": "REAL",
+      "city": "Honolulu",
+      "state": "Hawaii",
+      "source_domain": "hawaiipublicradio.org",
+      "seen_id": "src-484c56314f0d"
+    },
+    {
       "id": "aw-0131",
       "title": "‘Callous indifference’: Lawsuit accuses Nashville HOA board of $240K mismanagement",
       "comment": "A lawsuit accuses a Nashville HOA board of 'callous indifference' toward the homeowners it was elected to serve. The board's own records are now the central exhibit.",
