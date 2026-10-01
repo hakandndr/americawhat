@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0133",
+      "title": "Controversial Fee Eliminated For Newark Apartment Renters",
+      "comment": "Newark apartment renters have been paying a fee that the city has now eliminated. Nobody is explaining what the fee was for in the first place.",
+      "category": "fine-print",
+      "source_url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxOMU1Eblc0bzlKWm1CV1NLYkg0VTd5WW03X28yT1BzcHpHMndDUVRPSWVxamZpVnFqbV9nM2FtRVdJaWpBMmRRZFRqTU56T2ZEOHVCdTFLZEFXZk9sZWc4Zk5lSVFHTkZvU0NJQldYa0h6aG1tZUdtandSbW5NTlUzQ3ZrLUZJOGFKTUExVWgyeElJc0gyM3fSAawBQVVfeXFMTVN3QjFuSUJ5OVhLOTIwSVpfSGVmUnVWNkk2Ym5NYWh0UE9zMmFYVHFxSWVuMDRvdFFtdXRPU2N4U1Nsdi13WkpDTkx2aVJIRl9yaWtGVE1HM3Nqa2VzMnRRR1VZejNEQjBPZnhHelpxaWM3MWloYkhvMzUxTkhmaUZEWGRVNmJNcXlYV0JDRFYwbUpaUzk0Q0pfbTE0dEM0UDhnNjdyTmwyVUZOVA?oc=5",
+      "source_name": "Patch",
+      "date": "2026-09-24",
+      "status": "REAL",
+      "city": "Newark",
+      "state": "New Jersey",
+      "source_domain": "patch.com",
+      "seen_id": "src-6da3d06d73fb"
+    },
+    {
       "id": "aw-0132",
       "title": "Honolulu building permit backlog grows despite AI processing tools",
       "comment": "Honolulu brought in AI tools to clear its building permit backlog, and the backlog has grown anyway. The software is faster than the people; the queue is unmoved.",
