@@ -8,6 +8,15 @@ A curated feed of absurd, only-in-America news — each item hand-picked, catego
 
 ---
 
+## Documentation
+
+Full handoff documentation lives in [`docs/`](docs/):
+
+- **[docs/HANDOFF.md](docs/HANDOFF.md)** — start here: architecture, repo map, item schema
+- **[docs/EDITORIAL-GUIDE.md](docs/EDITORIAL-GUIDE.md)** — the concept, categories, voice, and rejection rules
+- **[docs/OPERATIONS.md](docs/OPERATIONS.md)** — the curate → push → approve → deploy loop and known failure modes
+- **[docs/CURRENT-STATE.md](docs/CURRENT-STATE.md)** — live counts, known gaps, backlog
+
 ## Why this project is interesting
 
 The content pipeline is **GitOps, end to end**: a small PHP admin panel reads and writes the content JSON **through the GitHub API**. When an item is approved, the panel commits it to `published.json` on the `main` branch — which triggers a **GitHub Actions** workflow that builds the Astro site and deploys it over FTP. No database, no server-side rendering, no CMS service: the Git repository *is* the content store, and every content change is a versioned commit with an automatic deploy.
