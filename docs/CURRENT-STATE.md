@@ -97,3 +97,29 @@ the panel. Recent batches: 16 → 5, 90 → 10, 42 → 2, 66 → 10, 81 → 10, 
 
 Two older digest files sit at the repo root (`digest-2026-08-14.md`,
 `digest-2026-09-18.md`) and are point-in-time notes, superseded by this folder.
+
+## DNDR Analytics — staging rehearsal only (2026-10-02)
+
+Nothing about the live site changed. Visitor analytics stay where they are:
+the server's `analytics/aw_panel_log.txt`, written by the server-only
+`log_df.php`, read by the Studio panel. Studio stays operational and stays the
+owner's view of this site; DNDR Analytics is an additional, central copy.
+
+- Transport: a signed server-to-server relay from the PHP logger, because the
+  domain is on Hostinger's nameservers and CDN, outside Cloudflare (no route or
+  binding can see a visit). Reviewed files and the exact change are in
+  `integrations/dndr/` (not deployed; `deploy.yml` uploads `dist/` only).
+- Rehearsed on 2026-10-02 against DNDR's staging collector from an isolated
+  local PHP runtime serving this site's build with the patched logger and its
+  own empty log: 4 of 4 live page views matched exactly; 3 sent while the
+  local runtime had no TLS failed without touching the log and were recovered
+  by identity from the log itself.
+- History: the local copy of the panel log is empty; the production log is
+  only on the server. Its import into DNDR waits for the owner's export of
+  `public_html/analytics/aw_panel_log.txt`.
+- Production enrolment, the server change and the private relay configuration
+  need the owner's approval.
+
+Two rules hold for this and future control-plane work: Studio is never
+removed, redirected or replaced by DNDR, and analytics work does not change
+public pages (content, design, navigation, routes or scripts).

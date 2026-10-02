@@ -102,3 +102,6 @@ UNVERIFIED. Set it explicitly to REAL anyway.
 - **`CURRENT-STATE.md`** — what is live right now, counts, known gaps, backlog.
 - **`OPERATIONS.md`** — the curate → push → approve → deploy loop and every
   gotcha that has actually bitten us.
+- **`../integrations/dndr/README.md`** — the DNDR Analytics signed relay for the
+  server-side logger (staging-rehearsed, not deployed; Studio stays the
+  analytics view).
