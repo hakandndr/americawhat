@@ -92,14 +92,11 @@ then push.
 `source_url` is empty. The fetcher stores the link in `external_url`; copy it.
 
 ### 4.6 `ENOSPC: no space left on device` / workspace fails to start
-Claude Cowork's Linux VM ran out of room. Not a repo problem. Fixes, in order:
-fully quit Claude from the system tray and relaunch; Help → Troubleshooting →
-Clear cache and restart; free several GB on `C:`; then, for the stubborn case,
-quit Claude and delete `%APPDATA%\Claude\vm_bundles` to force a clean VM
-rebuild (the in-app "Reinstall workspace" button preserves the corrupted files,
-so it often doesn't help). After an app update also delete
-`%APPDATA%\Claude\claude-code-vm`. Diagnostic log:
-`Get-Content "$env:APPDATA\Claude\logs\cowork_vm_node.log" -Tail 30`.
+The local development workspace (a desktop tool's virtual machine, not this
+repository) ran out of disk space. Not a repo problem. Fixes, in order: restart
+the tool; clear its cache; free several GB on `C:`; if it still fails, let the
+tool rebuild its workspace from scratch, as its own documentation describes.
+A built-in "reinstall" that keeps the old workspace files often does not help.
 
 ## 5. Deploy chain
 
