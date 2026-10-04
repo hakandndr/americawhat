@@ -1,22 +1,22 @@
 {
-  "finishedAt": "2026-10-03T22:47:24.525Z",
+  "finishedAt": "2026-10-04T08:15:36.628Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1237,
+    "fetched": 1212,
     "added": 1,
     "excluded": 5,
-    "duplicate": 1229,
-    "lowScore": 2
+    "duplicate": 1199,
+    "lowScore": 7
   },
-  "pendingAfter": 38,
+  "pendingAfter": 39,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
       "added": 1,
-      "excluded": 3,
-      "duplicate": 96,
+      "excluded": 2,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
@@ -34,25 +34,25 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 36,
+      "fetched": 12,
       "added": 0,
       "excluded": 0,
-      "duplicate": 36,
+      "duplicate": 12,
       "lowScore": 0
     },
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 76,
+      "fetched": 75,
       "added": 0,
       "excluded": 0,
-      "duplicate": 76,
+      "duplicate": 75,
       "lowScore": 0
     },
     {
@@ -106,16 +106,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "duplicate": 94,
+      "lowScore": 6
     },
     {
       "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -124,8 +124,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "duplicate": 100,
+      "lowScore": 0
     },
     {
       "name": "Google News — Odd Thefts",
