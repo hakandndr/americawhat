@@ -1,99 +1,99 @@
 # americawhat — Current State
 
-Snapshot. Update this file whenever something structural changes.
+Snapshot. Update whenever something structural changes. Earlier snapshots are
+in Git history; dated statements are historical once superseded.
 
-**As of:** 2026-09-30
+**As of:** 2026-10-14
+
+Status words: **production** (serving americawhat.com), **staging** (deployed to
+an isolated AmericaWhat staging resource), **tested locally** (automated tests
+and/or local workerd), **implemented** (code exists), **planned**.
 
 ---
 
-## Live numbers
+## Production (unchanged by the migration work)
 
-- **Published items:** 114 (highest id `aw-0125`)
-- **Pending, curated and awaiting approval:** 10
-- **Site:** live at americawhat.com, deploying cleanly from `main`
+- Hostinger web hosting; FTP deploy from `main`; PHP endpoints
+  `/analytics/vote.php`, `get_votes.php`, server-only `log_df.php`; PHP Studio
+  panel at `/boss/` (GitHub Contents API, password login).
+- DNS at Hostinger (`dns-parking.com`); email on Hostinger (MX/SPF/DKIM/DMARC) —
+  email stays there by owner decision.
+- `main` head at the start of this work: `276b94d` (fetch commit, 2026-10-14).
+- **Content (verified on `main`, 2026-10-14):** 124 published (highest id
+  `aw-0135`), 125 pending (none drafted), 14 RSS sources, fetch three times a
+  day, all recent fetch runs green. Last panel approval and deploy: 2026-10-01.
+- **Reactions (verified via the live read endpoint):** 13 votes on 9 items.
+- **Visitor history:** Hostinger log since 2026-07-07; DNDR holds 1,031
+  imported + 29 relayed rows for `site_americawhat` (read-only aggregate query);
+  see `ANALYTICS.md` §1.
 
-### Category distribution (published)
+### Category distribution (published, 124)
 
 | category | items |
 |---|---|
-| florida-man | 41 |
-| hoa-housing | 23 |
-| crime-weird | 21 |
-| bureaucracy | 10 |
+| florida-man | 42 |
+| hoa-housing | 26 |
+| crime-weird | 25 |
+| bureaucracy | 11 |
 | only-in-america | 10 |
+| fine-print | 5 |
 | food-crime | 5 |
-| fine-print | 4 |
 
-`florida-man` is 36% of the feed. `food-crime` and `fine-print` are thin — favour
-them when a legitimate candidate appears.
+`city` present on 62 of 124, `state` on 73.
 
-### Field coverage (published)
+## Cloudflare-native replacement — branch `dev/cloudflare-native`
 
-- `city` present: 53 / 114
-- `state` present: 64 / 114
+| Part | Status | Evidence |
+|---|---|---|
+| Static site on Workers Static Assets (`americawhat-web`) | **staging** | `https://americawhat-web-staging.hakan-c89.workers.dev`, version `3bdcc891-c07a-4163-9ac8-823d13a40ace`; smoke 23/23 |
+| URL/SEO parity with production | **tested locally** | `npm run parity:live`: 131/131 sitemap URLs, 40 sampled pages identical in canonical, title, og:image, JSON-LD; `/about` → 301 |
+| Static upload excludes PHP/config/logs/secrets | **staging** | `verify:static` 0 failures; smoke: 9 forbidden paths answer 404 |
+| Reactions API (atomic, guarded, POST-only) | **staging** | real D1: repeat vote counted once; local workerd: 40 parallel votes = 40 |
+| First-party page-view collector | **staging** | real D1: retried beacon stored once; GET stores nothing |
+| DNDR forwarding (source-first, outbox) | **implemented, tested locally** with a mock binding; **not configured** (needs a DNDR producer — blocked, separate approval) |
+| Legacy log importer (DNDR identity, DST, ledger, idempotent) | **tested locally** (unit + workerd); no real log imported anywhere |
+| Reaction snapshot importer (baseline/delta, refuses decreases) | **tested locally**; no real votes imported |
+| Boss Worker (`americawhat-boss`) | **tested locally** in workerd (`npm run test:boss-preview` 11/11); uploaded to staging as version `9a8d649d-1ed2-4b17-b17d-7f2bafc47fa1` with **no route** (Cloudflare answers 1042) |
+| Boss: Access JWT verification, CSRF/Origin | **tested locally** (forged, expired, wrong audience/issuer/email, missing config) |
+| Boss: weekly review, one-commit approvals, URL protection | **tested locally** against an in-memory GitHub, including a concurrent fetch commit |
+| Boss Analytics, exports, manual Delete Before Date, audit | **tested locally** |
+| D1 `americawhat-app-staging` / `americawhat-analytics-staging` | **staging** (`a3c9ff1f-…`, `306b9ee6-…`), migrations 0001 applied, synthetic rows only |
+| Production Workers, D1, Access application, custom domains | **planned** — not created |
+| CI (`ci.yml`, no deploy, no secrets) | GitHub run on `dev/cloudflare-native`: success |
 
-The gap is historical: `city`/`state` were only added to the workflow partway
-through. Everything curated from that point on carries them.
-
-## Pipeline configuration
-
-- **Sources:** `src/data/sources.json` — seven Google News RSS queries, one per
-  category, each with a `defaultCategory`.
-- **Filters:** `src/data/filters.json` — `minScore: 3`, `recencyDays: 21`,
-  `maxPerSource: 12`, plus a keyword→score map (`hoa` 5, `fined` 5, `dmv` 5,
-  `loophole` 5, `bizarre` 5, `ordinance` 1, …).
-- **Fetch cron:** 02:00, 14:00, 20:00 UTC daily.
-- **Typical batch size on arrival:** 80–190 candidates, of which 40–60% are
-  duplicate syndications of a handful of stories.
-
-## What has been done
-
-- Astro site, 7 categories, client-side category filtering
-- Item detail pages with slugs, Article JSON-LD, RSS feed, XML sitemap
-- Per-item OG image generation at build (Python/Pillow)
-- Reaction system (WAT / LOL / SAME / DEAD) + view beacon on PHP/JSON endpoints
-- GitOps admin panel at `/boss/` committing through the GitHub Contents API
-- Automated candidate fetching with keyword scoring and a `seen_ids` dedup ledger
-- Legal pages: privacy, terms, disclaimer, guidelines, about, contact
-- Editorial standard settled: two-sentence comment, `status: REAL`, `city`/`state`
-  filled from the source, hard-reject list for harmful content
-- Privacy page "Visit logs" clause trimmed from a four-line technical inventory to
-  one line (retention + no ad profiles)
+Test suite: `npm test` — 92 tests, all passing (2026-10-14).
 
 ## Known gaps / backlog
 
-1. **No syndication filter in the fetcher.** The single biggest cost. One wire
-   story arrives up to 71 times. `scripts/fetch-sources.mjs` should canonicalize
-   and collapse by normalized title or resolved URL before writing `pending.json`.
-2. **`source_url` left empty by the fetcher.** It writes the link to
-   `external_url` instead, so every curated item needs a manual copy or the card
-   renders "unverified". Fix at the source in `fetch-sources.mjs`.
-3. **61 published items missing `city`/`state`.** Backfillable from their source
-   links; purely cosmetic (the detail page just omits the place line).
-4. **Foreign noise in the source queries.** The Google News RSS queries are not
-   geo-restricted, so UK/India/Nepal/Australia/Canada "man fined" stories flood
-   in. Adding a country filter or a domain blocklist to `filters.json` would cut
-   a large share of manual rejections.
-5. **Category imbalance.** `fine-print` (4) and `food-crime` (5) need dedicated
-   sources; the current queries rarely surface them.
-6. **Contact form.** `src/pages/contact.astro` posts to Formspree; verify the
-   endpoint is wired before relying on submissions.
-7. **No automated tests or link checking.** Dead `source_url`s would fail silently.
+1. **Production migration approvals** — the ordered list is in
+   `CLOUDFLARE-MIGRATION.md` §7. Nothing beyond staging has been done.
+2. **Hostinger inventory and backup** — not done yet (owner action,
+   `CLOUDFLARE-MIGRATION.md` §1). The server's current `log_df.php` must be
+   confirmed to read POST before `dev/cloudflare-native` is merged.
+3. **Privacy promise already exceeded** — the page says ~90 days; the log is
+   older and nothing deletes it (`ANALYTICS.md` §6). Owner decision needed.
+4. **Original source URLs** — 108 of 124 published items and almost all pending
+   candidates carry Google News links instead of the outlet's article URL.
+   Boss now requires an original URL for new `REAL` stories; backfilling the
+   published ones is a separate editorial task.
+5. **DNDR side** — the 13 h 30 min coverage gap of 2026-10-03 and a native
+   producer for AmericaWhat need DNDR-side approval.
+6. **Fetch cadence** — recommendation (daily) in `EDITORIAL-GUIDE.md` §10; not changed.
+7. **Foreign noise** — geography flags now mark it in review; a domain
+   blocklist in `filters.json` would cut it at fetch time.
+8. **Category imbalance** — `fine-print` and `food-crime` need dedicated sources.
+9. **Published items missing `city` (62 of 124 lack it) or `state` (51 lack it)** — cosmetic, unchanged.
+10. **Contact form** — posts to Formspree; delivery not re-verified.
 
-## Planned next steps
+## Repository
 
-- Dedup in `fetch-sources.mjs` (item 1) — highest leverage change available
-- Populate `source_url` at fetch time (item 2)
-- Backfill `city`/`state` on older published items (item 3)
-- Geo/domain filtering in `filters.json` (item 4)
-- Add `fine-print` and `food-crime` specific RSS queries (item 5)
-
-## Working history
-
-Content curation has run in batches, each one: fetch produces N candidates →
-group by title → read the sources → keep 5–10 → fill fields → push → approve in
-the panel. Recent batches: 16 → 5, 90 → 10, 42 → 2, 66 → 10, 81 → 10, 121 → 8,
-108 → 10, 142 → 6, 190 → 10, 89 → 10.
-
-Two older digest files sit at the repo root (`digest-2026-08-14.md`,
-`digest-2026-09-18.md`) and are point-in-time notes, superseded by this folder.
+- Local workspace `D:\IT\AmericaWhat\americawhat` fast-forwarded to `276b94d`
+  (it was 57 commits behind; no local work lost). Recovery bundle and backup refs
+  in `.git/aw-backups/20261014-sprint/` and `refs/aw-backup/pre-sprint/*`.
+- Local branch `docs/neutral-tooling-note` (2 commits, owner-authored) is merged
+  into `dev/cloudflare-native`; the branch itself is kept.
+- Remote branch `staging/dndr-analytics` untouched.
+- Untracked `digest-2026-08-14.md` and `digest-2026-09-18.md` at the root are
+  left as they were (owner's notes; copies in the recovery folder).
+- Local git identity: `Hakan Dundar <hakan@dndr.net>`; hooks enabled with
+  `core.hooksPath=.githooks`.

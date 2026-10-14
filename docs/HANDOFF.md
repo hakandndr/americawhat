@@ -1,14 +1,15 @@
 # americawhat — Handoff
 
-Master onboarding document. If you are an AI or developer picking this project up
-cold, read this file first, then `EDITORIAL-GUIDE.md` (the part that actually
-matters), then `OPERATIONS.md`.
+Master onboarding document. If you are picking this project up cold, read this
+file first, then `CURRENT-STATE.md` (what is live, what is only prepared), then
+`EDITORIAL-GUIDE.md` (the part that actually matters), then `OPERATIONS.md`.
 
 **Live site:** https://americawhat.com
 **Repo:** https://github.com/hakandndr/americawhat
-**Admin panel:** https://americawhat.com/boss/ (password-protected)
+**Admin panel:** https://americawhat.com/boss/ today (password-protected PHP);
+the replacement is `boss.americawhat.com` behind Cloudflare Access (prepared, not live)
 **Owner:** Hakan Dundar
-**Last updated:** 2026-09-30
+**Last updated:** 2026-10-14
 
 ---
 
@@ -28,6 +29,13 @@ files **through the GitHub Contents API**, so approving an item is literally a
 git commit. That commit triggers a second Action that builds the Astro site,
 generates per-item Open Graph images with Python/Pillow, and deploys `dist/` over
 FTP to Hostinger. The git repository *is* the CMS.
+
+**Migration in progress (not live):** branch `dev/cloudflare-native` contains the
+Cloudflare-native replacement — the same static site served by the
+`americawhat-web` Worker (Static Assets + a small API for reactions and page
+views), a new `americawhat-boss` Worker on `boss.americawhat.com` behind
+Cloudflare Access, and two D1 databases. Git stays the source of truth. See
+`ARCHITECTURE.md`, and `CLOUDFLARE-MIGRATION.md` for the approval-gated steps.
 
 ```
 fetch.yml (cron 02:00/14:00/20:00 UTC)
@@ -56,6 +64,16 @@ fetch.yml (cron 02:00/14:00/20:00 UTC)
 | `scripts/gen-og.py` | Per-item OG image generator (Pillow), runs at build |
 | `.github/workflows/fetch.yml` | Candidate fetch cron |
 | `.github/workflows/deploy.yml` | Build + FTP deploy on push to `main` |
+| `workers/web/` | Cloudflare public Worker (assets + API) — prepared |
+| `workers/boss/` | Cloudflare Boss Worker — prepared |
+| `workers/shared/` | Time, classification, legacy/reaction importers, editorial signals |
+| `migrations/app/`, `migrations/analytics/` | D1 schemas |
+| `scripts/analytics/legacy-import.mjs` | Offline inventory/rehearsal of the legacy visitor log |
+| `scripts/editorial/apply-curation.mjs` | Safe local curation of `pending.json` |
+| `scripts/dev/boss-preview.mjs` | Real Boss in workerd, locally |
+| `scripts/build/verify-static.mjs` | Static output security check |
+| `tests/` | `npm test` |
+| `.githooks/` | Commit guardrails (`git config core.hooksPath .githooks`) |
 | `docs/` | This documentation set |
 
 `public/studio/config.php` holds the GitHub token and panel password. It is
@@ -80,7 +98,9 @@ fetch.yml (cron 02:00/14:00/20:00 UTC)
 }
 ```
 
-Optional: `body`, `whyAmericaWhat`. Both are normally left empty — the comment
+Optional: `body`, `whyAmericaWhat`, and `slug` — a pinned URL segment that Boss
+sets only when a retitle, a colliding title or a deletion would otherwise move an
+existing article's URL (`assignSlugs` in `src/lib/slug.js`; never edit it by hand). Both are normally left empty — the comment
 carries the whole piece. Pending items additionally carry `excerpt`,
 `external_url`, `score`, `fetched_at`; these are working fields, not published.
 
@@ -100,5 +120,8 @@ UNVERIFIED. Set it explicitly to REAL anyway.
   rejection rules. This is the irreplaceable part; the code can be rebuilt, the
   editorial judgment cannot.
 - **`CURRENT-STATE.md`** — what is live right now, counts, known gaps, backlog.
-- **`OPERATIONS.md`** — the curate → push → approve → deploy loop and every
-  gotcha that has actually bitten us.
+- **`OPERATIONS.md`** — the curate → push → approve → deploy loop, local
+  development, staging, and every gotcha that has actually bitten us.
+- **`ARCHITECTURE.md`**, **`ANALYTICS.md`**, **`SECURITY.md`**,
+  **`CLOUDFLARE-MIGRATION.md`**, **`DECISIONS.md`** — the Cloudflare-native target,
+  its data, its security and the migration runbook.

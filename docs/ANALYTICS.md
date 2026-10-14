@@ -1,0 +1,182 @@
+# americawhat — Analytics
+
+Authoritative for the AmericaWhat analytics store, the Boss Analytics screen,
+the legacy import, DNDR reconciliation and retention. Status labels used here:
+**IMPLEMENTED**, **TESTED LOCALLY**, **STAGING**, **PRODUCTION**, **OWNER DECISION**.
+
+## 1. Today (production, Hostinger) — verified 2026-10-14
+
+- `src/scripts/tracking.js` calls `/analytics/log_df.php` on every page view.
+  That file exists **only on the server** (not in `main`; a reviewed copy is on
+  the `staging/dndr-analytics` branch). It appends one JSON line per view to
+  `public_html/analytics/aw_panel_log.txt` (address, PT wall time, country, city,
+  crawler label, device, full user agent, referrer, path) and, since
+  2026-10-03 21:04:44 UTC, relays a signed copy to the DNDR collector.
+- Geolocation is looked up by sending each visitor address to `ip-api.com`
+  over plain HTTP. This processor is not named on the Privacy page.
+- The Studio panel (`/boss/`) reads the log file directly.
+- DNDR `dndr-analytics-v2`, site `site_americawhat` (read-only aggregate query,
+  2026-10-14): **1,031 imported** page views (2026-07-07 → 2026-10-03 07:34 UTC)
+  and **29 native relay** page views (2026-10-03 → 2026-10-14 10:42 UTC). DNDR's
+  own records add one `missing_page` line preserved in its ledger and an
+  **unobserved interval of at most 13 h 30 min** (2026-10-03 07:34 → 21:04 UTC)
+  between the snapshot it imported and the start of the relay.
+
+## 2. Target store (IMPLEMENTED, TESTED LOCALLY, STAGING)
+
+One table, `visitor_events` (`migrations/analytics/0001_analytics_core.sql`),
+holds legacy and native page views:
+
+- `id` — **ALL #**: AUTOINCREMENT, never reused or renumbered; deletions leave gaps.
+- `event_uid` — stable identity, unique: `panel_log:<first 32 hex of sha256(line)>.<n>`
+  for legacy lines (the identity DNDR already uses), `aw:<uuid>` for native views.
+- `origin` — `legacy` | `native`, set by the writer, never inferred later.
+- `occurred_at` (UTC seconds), `la_day` (America/Los_Angeles day), `time_quality`.
+- address, country/code, region, city, path, normalized page, referrer label and
+  raw referrer, full user agent, legacy crawler label, device string, device
+  class, browser, OS, agent family, `automation` (`human` | `automated`).
+- `import_corpus_id`, `import_record_id` for legacy rows.
+
+Native rows come from the web Worker (`workers/web/src/collector.mjs`): POST
+only, Origin-checked, per-view UUID (a retried beacon is stored once), location
+from Cloudflare's request metadata (no third-party lookup), at most 120 events
+per address per 10 minutes.
+
+## 3. Metrics (Boss → Analytics)
+
+| Metric | Definition |
+|---|---|
+| ALL # | `visitor_events.id`, durable across filters, pages and deletions |
+| TODAY # | position among **all** rows of the same LA day, in id order; filters never change it |
+| IP VISITS | retained page views with exactly that address, all time, all origins |
+| Distinct IP addresses | distinct address strings in the view — **not people** (shared networks, changing addresses, privacy relays) |
+| Human / Automated | from the crawler label (legacy) or the user-agent classification (native); a user agent can lie |
+| All-time page views | retained rows + aggregates kept from deleted rows |
+
+The screen has range chips (Today, 7 days, 30 days, All time), custom PT day
+ranges, filters (source, class, device, exact IP, country, city/region, page or
+page prefix `*`, referrer, browser), top pages / countries / referrers / agents,
+the raw stream (newest first, keyset "Older →"), CSV and NDJSON exports, the
+retention box and the import/coverage list. Owner-facing times are PT, 12-hour;
+storage is UTC. LA day boundaries come from the IANA zone (23- and 25-hour DST
+days are tested).
+
+CSV cells are quoted, quotes doubled, NUL removed, and a cell starting with
+`=`, `+`, `-`, `@`, tab or CR is prefixed with `'` (a lone `-` is kept). NDJSON
+keeps exact values. Exports stream in keyset chunks and are audited.
+
+## 4. Legacy import (IMPLEMENTED, TESTED LOCALLY, in workerd)
+
+Code: `workers/shared/legacy-import.mjs`; local tool
+`scripts/analytics/legacy-import.mjs` (inventory / rehearse / daily); Boss page
+Analytics → Legacy log import.
+
+- **Identity:** `panel_log:<sha32>.<occurrence>` of the PHP-trimmed line, the
+  same id DNDR assigns; an append-only log keeps every id stable, so a later,
+  longer snapshot is a safe delta import.
+- **One disposition per line:** `imported`, `already_present` (stored by an
+  earlier corpus, or imported once and since deleted), `missing_page`,
+  `malformed`, `invalid_time`, `before_retention_cutoff`. Nothing is invented:
+  no region split from the stored city, no country code for legacy lines.
+- **Time:** the log has PT wall time without offset. A repeated fall-back hour
+  (next: 2026-11-01 01:00–01:59) has two instants: log order decides when it
+  rules one out (`dst_ambiguous_ordered`), otherwise the earlier instant is used
+  and flagged (`dst_ambiguous_first`). The skipped spring hour cannot be written
+  by PHP and is `invalid_time`.
+- **Idempotent and restartable:** corpus, ledger rows and events are written
+  with `INSERT OR IGNORE` by identity; a failed run is completed by running it
+  again; a second run adds nothing (tested, including in workerd).
+- **Privacy guard:** lines older than an applied Delete Before Date cutoff, and
+  lines once imported and since deleted, are never inserted again.
+- **Reconciliation report:** every line accounted for; events equal the ledger;
+  per-LA-day counts (`daily --compare <json>`) for comparison with DNDR or the old
+  panel.
+- The Boss import applies only after an inventory and the first 12 characters
+  of the file's SHA-256 typed back. The page never shows addresses or agents.
+
+No real log has been imported anywhere. Staging holds synthetic data only.
+
+## 5. Native ingestion and DNDR (no double counting)
+
+- After cutover, each page view reaches exactly one origin: Cloudflare (stored
+  natively, optionally copied to DNDR with `producerEventId = event_uid`) or —
+  for a client with stale DNS — Hostinger (PHP log + existing signed relay).
+  Neither path can store the same view twice.
+- AmericaWhat's own database imports the **whole** final log (including the
+  relay era and any stale-DNS tail) under the legacy identity; DNDR is **not**
+  re-imported. The only DNDR-side history work left is the 13 h 30 min gap,
+  which DNDR's own importer can fill with `--native-start
+  2026-10-03T21:04:44.968Z --producer prd_americawhat_relay` (a DNDR change,
+  separate approval).
+- Forwarding native rows to DNDR needs a new DNDR producer (for example
+  `prd_americawhat_native`) and a Service Binding — **blocked until approved on
+  the DNDR side**. Until then the binding is absent and nothing is sent.
+- Reconciliation after cutover: per LA day, AmericaWhat `visitor_events` =
+  DNDR `site_americawhat` (imported + relay + native), once the gap import and
+  forwarding are in place.
+
+## 6. Retention (OWNER DECISION: 90-day target, manual only)
+
+Implemented (TESTED LOCALLY, workerd):
+
+- Retention status on the Analytics screen and on Health: records older than
+  90 days, oldest record and its age, last deletion. **Nothing is deleted
+  automatically.**
+- Delete analytics records before a PT day: exact preview (count, ALL # range,
+  oldest/newest affected, kept records, oldest kept), export links for exactly
+  those rows, typed date confirmation, and one D1 batch in which the audit row
+  is inserted only if the live count still equals the preview; the aggregates
+  and the deletion run only if that audit row exists. A stale preview deletes
+  nothing; an operation id cannot be replayed.
+- Before raw rows go, non-identifying aggregates are kept: per day × origin ×
+  class page views, per month × page, per month × country. No address, agent,
+  city or exact path is kept for deleted rows. All-time totals remain correct.
+- `analytics_operator_log` is append-only (triggers) and holds no address or path.
+
+### Assessment of the aggregates
+
+Daily totals by origin and class carry no visitor attribute. Monthly page and
+monthly country counts can, in principle, contain a cell of one (one view of a
+rarely read page from one country in a month). Without the address, agent,
+city, time of day or day, such a cell does not identify a person in practice,
+but it is not mathematically anonymous. If the owner wants a stricter rule, the
+monthly tables can drop cells below a threshold at deletion time — not
+implemented, an **OWNER DECISION**.
+
+### Inconsistencies to resolve before production (verified)
+
+1. **The public promise is already exceeded.** The Privacy page says visit logs
+   are "kept for about 90 days, then deleted". The Hostinger log holds lines
+   from 2026-07-07 (99 days old on 2026-10-14) and nothing deletes them.
+2. **Copies are not covered by any deletion:** the Hostinger file, DNDR's
+   imported and relayed copies (its registry policy reads
+   `detail-90d-durable-forever`; actual behaviour not verified), the owner's
+   offline backup, and any CSV/NDJSON export.
+3. **Undisclosed processor:** `ip-api.com` receives every visitor address today
+   (ends with the Cloudflare cutover).
+4. **Manual-only deletion** means the 90-day figure is a target the owner keeps
+   by running the tool; the page should say so honestly.
+5. **Importing the full legacy log** into the new store will bring records
+   older than 90 days into a new system. Options: import everything and run a
+   Delete Before Date right after (aggregates kept), or import only the last 90
+   days. **OWNER DECISION** before the real import.
+
+### Privacy page — proposed wording (not published)
+
+> **Visit records.** When you view a page, our own analytics records the page,
+> the time, your IP address, the approximate location your network provider
+> reports, your browser's user agent and the referring page. We use this to
+> count visits and to keep the site working and free of abuse. Detailed records
+> are kept for up to 90 days; the site owner removes older ones manually, and
+> afterwards only daily and monthly totals without any personal detail remain.
+> A copy of the same visit record may be held in the owner's private network
+> analytics under the same limits. We do not build advertising profiles and we
+> do not sell this data.
+>
+> **Reactions.** The WAT / LOL / SAME / DEAD buttons store anonymous counts. To
+> stop repeated or automated voting we keep, for about two days, a one-way code
+> derived from your IP address; it cannot be turned back into the address.
+
+This wording must be checked against the final DNDR retention decision and the
+real deletion schedule before it is published (a separate, owner-approved
+change to `src/pages/privacy.astro`).

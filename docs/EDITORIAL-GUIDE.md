@@ -142,7 +142,9 @@ Real counts from recent batches:
 | 121 | 121 | ~45 | lobster diver air supply ×15 |
 | 89 | 89 | 61 | G-string/Target ×9 |
 
-**Always group by normalized title before reading anything.** Working one-liner:
+**Always group before reading anything.** The new Boss weekly review (§9)
+clusters copies across publishers automatically (headline similarity within a
+7-day window). Until it is live, the working one-liner for the current workflow:
 
 ```bash
 git show origin/main:src/data/pending.json | python3 -c "
@@ -171,8 +173,15 @@ outlet closest to the event (the local station that covered it).
   outlet's city is often not the story's city (Boca Raton Tribune covering a Lake
   Worth Beach arrest; a Gray TV station in Montana reprinting a Florida story).
 - **`status`** — `REAL`.
-- **`source_url`** — the fetcher leaves this **empty** and puts the real link in
-  `external_url`. Copy it across or the card renders "Source: X · unverified".
+- **`source_url`** — the **original article URL** from the outlet that reported
+  the story. A Google News link (`news.google.com/rss/articles/…`) is not an
+  original source: it hides the publisher and can stop resolving. Almost every
+  current candidate arrives with only such a link in `external_url`, so open it,
+  find the article on the outlet's own site and paste that URL. `REAL` means the
+  underlying news is supported by a checked original source with a usable link
+  (it has nothing to do with GitHub's "Verified" commit badge). The new Boss
+  refuses a `REAL` story without an original URL unless the owner ticks an
+  explicit override.
 - **`category`** — fix the fetcher's guess. It assigns a default per RSS source
   and is frequently wrong (a viral raccoon arrived as `crime-weird`).
 - **`body` / `whyAmericaWhat`** — leave empty.
@@ -182,3 +191,51 @@ outlet closest to the event (the local station that covered it).
 Roughly **5–10 approved items per batch**, whatever the batch size. A 190-item
 batch yielded 10; a 142-item batch yielded 6. Low yield is the system working.
 Do not pad the list to hit a number.
+
+## 9. The weekly review in Boss (implemented, not yet live)
+
+Boss → Weekly review shows one card per **story**, not per candidate:
+
+- **Clusters:** copies of the same story from different outlets are grouped; the
+  card shows the best outlet (a newsroom over an aggregator) and lists the rest.
+- **Already published:** a candidate matching a published story (same seen id,
+  same source URL or a very similar headline) is marked with the published id.
+- **Geography:** `us_likely`, `foreign_likely` (foreign domain, place or
+  spelling) or `unknown`, with the evidence.
+- **Risk flags:** words from the §4 hard-reject families (minors, sexual offence,
+  animal cruelty, domestic violence, serious violence or threats, hate crime,
+  vulnerable-victim fraud, death or missing person, partisan politics). A flag
+  means **read the source first**; it never rejects anything by itself.
+- **Ranking:** fetch score, number of copies and scarce categories (`food-crime`,
+  `fine-print`) raise a story; foreign, already published and flagged stories
+  sink.
+
+For every story the owner chooses **skip**, **approve** (with the fields of §7)
+or **reject with a reason code**: `NOT_US`, `ALREADY_PUBLISHED`, `DUPLICATE`,
+`HARD_REJECT_*` (one per §4 family), `ROUTINE`, `LISTICLE`, `ORDINARY_CRIME`,
+`UNVERIFIABLE`, `OTHER`. "Also remove the other copies as DUPLICATE" is
+pre-ticked on clustered cards and can be unticked. Nothing changes until the
+form is submitted; the whole batch is **one commit**. The comment must be two
+sentences (an explicit override exists for the rare exception). Every decision
+and its reason are kept in Boss → Audit.
+
+Drafting comments and checking sources with an assistant stays **outside** the
+production system: drafts go into `pending.json` (comment, city, state,
+original URL) or into notes; the owner decides in Boss.
+
+## 10. Cadence (recommendation, not yet adopted)
+
+Observed 2026-10-01 → 2026-10-14: 125 candidates (about 9 a day), 98 distinct
+stories, 16 multi-copy clusters, 12 stories with risk flags, 9 likely foreign,
+1 already published; 92 of the 98 representative links are unresolved Google
+News links. Each fetch run reads about 1,230 feed items, of which about 1,180
+were already seen.
+
+- **Review weekly**, one sitting, target 5–10 approvals. Twice a week only if a
+  story's timeliness matters for sharing.
+- **Fetch once a day** instead of three times: the feeds return the newest 100
+  items per query and repeat almost all of them between runs, so one run loses
+  practically nothing and removes two bot commits a day. The schedule is
+  unchanged until the owner decides.
+- Spend the saved time on finding original source URLs, now the largest manual
+  step.

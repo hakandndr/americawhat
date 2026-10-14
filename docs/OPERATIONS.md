@@ -30,38 +30,57 @@ git fetch origin main
 git show origin/main:src/data/pending.json > /tmp/p.json
 ```
 
-Group by title to collapse syndication (see `EDITORIAL-GUIDE.md` §6), read the
-sources for the survivors, then rewrite `src/data/pending.json` containing only
-the keepers with `comment`, `city`, `state`, `status: "REAL"`, corrected
-`category`, and `source_url` copied from `external_url`.
+Group by story to collapse syndication (see `EDITORIAL-GUIDE.md` §6), read the
+sources for the survivors, then write a **curation file** — never rewrite
+`pending.json` by hand:
 
-Everything dropped from the file is effectively declined — the panel will simply
-not show it. Items stay out permanently because `seen_ids.json` prevents the
-fetcher re-adding them.
+```json
+{
+  "keep": [ { "id": "aw-p-…", "comment": "…", "city": "…", "state": "…",
+              "category": "…", "source_url": "https://<original article>", "status": "REAL" } ],
+  "drop": [ "aw-p-…" ]
+}
+```
+
+`scripts/editorial/apply-curation.mjs` applies it to the **current**
+`pending.json`: kept items get the fields, dropped items leave, every other
+candidate (including any the fetcher added meanwhile) stays untouched. Dropped
+items do not come back because `seen_ids.json` remembers them.
 
 ## 3. Push sequence (Windows / PowerShell)
 
-Run from the repo root. The order matters.
+Run from the repo root, on `main`, with a clean working tree.
 
 ```powershell
 cd D:\IT\AmericaWhat\americawhat
-Remove-Item .git\index.lock,.git\HEAD.lock -Force -ErrorAction SilentlyContinue
+git switch main
+git fetch origin
+git merge --ff-only origin/main
+node scripts/editorial/apply-curation.mjs curation.json
 git add src/data/pending.json
 git commit -m "content(pending): curated items + comments, city/state, status"
-git pull --no-edit -X ours origin main
 git push origin main
 ```
 
-Why each line:
-- **Remove-Item** clears stale lock files (see §4.1).
-- **commit before pull.** With uncommitted changes to `pending.json`, git refuses
-  the merge: *"Your local changes to the following files would be overwritten by
-  merge."*
-- **`-X ours`** keeps our curated `pending.json` when the fetch bot has rewritten
-  it, while still accepting the bot's other changes (`seen_ids.json`,
-  `fetch-status.json`) and the panel's `published.json` updates.
-- Confirm the `git commit` line printed a SHA. If it printed an error, stop —
-  everything after it is meaningless.
+If the push is refused because `main` moved (a fetch run or a panel approval),
+do **not** merge with `-X ours` — that silently discards the other side's
+candidates. Start again from the new head; the curation file is re-applied to
+the fresh `pending.json`:
+
+```powershell
+git fetch origin
+git reset --hard origin/main
+node scripts/editorial/apply-curation.mjs curation.json
+git add src/data/pending.json
+git commit -m "content(pending): curated items + comments, city/state, status"
+git push origin main
+```
+
+`git reset --hard` here only discards the commit you just made from the
+curation file. Confirm each command succeeded before running the next one.
+
+Once Boss is live (`CLOUDFLARE-MIGRATION.md`), curation happens in Boss →
+Weekly review and this local routine is no longer needed.
 
 ## 4. Failure modes we have actually hit
 
@@ -85,11 +104,12 @@ different project that has `src/data/events.json` and no `pending.json`. Always
 
 ### 4.4 `! [rejected] main -> main (fetch first / non-fast-forward)`
 `origin/main` moved while you were working — either the fetch cron or the panel
-committing an approval. Commit first, then `git pull --no-edit -X ours origin main`,
-then push.
+committing an approval. Follow the second block of §3 (reset to the new head and
+re-apply the curation file). Never use `-X ours`.
 
 ### 4.5 Cards render "Source: X · unverified"
-`source_url` is empty. The fetcher stores the link in `external_url`; copy it.
+`source_url` is empty. Put the original article URL there (`EDITORIAL-GUIDE.md` §7);
+the Google News link in `external_url` is not a source.
 
 ### 4.6 `ENOSPC: no space left on device` / workspace fails to start
 The local development workspace (a desktop tool's virtual machine, not this
@@ -115,9 +135,57 @@ enough to trigger a full rebuild; there is no incremental path.
 ## 6. Local development
 
 ```bash
-npm install
-npm run dev     # http://localhost:4321
-npm run build   # writes dist/
+npm ci
+git config core.hooksPath .githooks   # once per clone: commit guardrails
+npm run dev                           # http://localhost:4321
+npm test                              # node:test suite (Workers, Boss, importers, signals)
+npm run build:og                      # OG images (needs Pillow: python -m pip install pillow==11.3.0)
+npm run build                         # writes dist/
+npm run verify:static                 # fails if PHP, config, logs or secrets would be uploaded
+```
+
+Git identity for this repository: `Hakan Dundar <hakan@dndr.net>`
+(`git config user.name/user.email` in the repository). The hooks refuse
+co-author trailers, tool signatures and private files.
+
+### Boss locally
+
+```bash
+npm run test:boss-preview   # runs the real Boss in workerd, smoke-checks it, stops
+npm run preview:boss        # keeps it running at http://127.0.0.1:8788 (local only)
+```
+
+The preview uses a locally signed identity, local D1 databases and an
+in-memory copy of GitHub (25 current candidates); nothing leaves the machine.
+If it reports that port 8789 is in use, an earlier preview is still running.
+
+### Web Worker locally
+
+```bash
+npx wrangler d1 migrations apply americawhat-app-staging --local --config workers/web/wrangler.jsonc
+npx wrangler d1 migrations apply americawhat-analytics-staging --local --config workers/web/wrangler.jsonc
+npx wrangler dev --config workers/web/wrangler.jsonc --var PUBLIC_ORIGINS:http://127.0.0.1:8787 --var REACTION_GUARD_SECRET:local
+```
+
+If a `CLOUDFLARE_API_TOKEN` environment variable is set but invalid, wrangler
+fails with code 9109; unset it to use the logged-in account.
+
+### Staging (americawhat-web-staging)
+
+```bash
+npm run build:og && npm run build && npm run verify:static
+npx wrangler deploy --config workers/web/wrangler.jsonc
+npm run smoke -- https://americawhat-web-staging.hakan-c89.workers.dev --write
+```
+
+Staging is `noindex` and holds synthetic data only. The Boss staging Worker
+has no route; it must not get one before an Access application protects it.
+Production deploys follow `CLOUDFLARE-MIGRATION.md` and need owner approval.
+
+### Read-only checks against the live site
+
+```bash
+npm run parity:live   # sitemap URL set, canonical, title, og:image, JSON-LD, 301
 ```
 
 ## 7. Secrets and safety
@@ -128,3 +196,5 @@ npm run build   # writes dist/
 - The panel sits behind a server-side password with a constant-time comparison.
 - If you reuse this project, rename `public/studio/` to a path of your own; the
   live panel is served from `/boss/`.
+- The Cloudflare Boss, its secrets and the Access requirements are described in
+  `SECURITY.md`.

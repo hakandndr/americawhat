@@ -9,7 +9,12 @@
     "preview": "astro preview",
     "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
     "build:og": "python scripts/gen-og.py",
-    "verify:static": "node scripts/build/verify-static.mjs"
+    "verify:static": "node scripts/build/verify-static.mjs",
+    "preview:boss": "node scripts/dev/boss-preview.mjs --serve",
+    "test:boss-preview": "node scripts/dev/boss-preview.mjs",
+    "parity:live": "node scripts/parity/compare-live.mjs https://americawhat.com",
+    "smoke": "node scripts/release/smoke.mjs",
+    "analytics:legacy": "node --disable-warning=ExperimentalWarning scripts/analytics/legacy-import.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.1.6",

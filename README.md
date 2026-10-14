@@ -16,6 +16,9 @@ Full handoff documentation lives in [`docs/`](docs/):
 - **[docs/EDITORIAL-GUIDE.md](docs/EDITORIAL-GUIDE.md)** — the concept, categories, voice, and rejection rules
 - **[docs/OPERATIONS.md](docs/OPERATIONS.md)** — the curate → push → approve → deploy loop and known failure modes
 - **[docs/CURRENT-STATE.md](docs/CURRENT-STATE.md)** — live counts, known gaps, backlog
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the Cloudflare-native target (Workers Static Assets, Boss, D1)
+- **[docs/CLOUDFLARE-MIGRATION.md](docs/CLOUDFLARE-MIGRATION.md)** — approval-gated migration and release runbook
+- **[docs/ANALYTICS.md](docs/ANALYTICS.md)**, **[docs/SECURITY.md](docs/SECURITY.md)**, **[docs/DECISIONS.md](docs/DECISIONS.md)**
 
 ## Why this project is interesting
 
@@ -78,10 +81,19 @@ scripts/        Python OG-image generator
 ## Local development
 
 ```bash
-npm install
+npm ci
 npm run dev      # http://localhost:4321
+npm test         # automated tests
 npm run build    # generates dist/
 ```
+
+## Migration to Cloudflare (in preparation)
+
+A Cloudflare-native replacement — the same static site on Workers Static Assets,
+Worker endpoints instead of PHP, and an Access-protected Boss on
+`boss.americawhat.com` — is being prepared on a development branch and in
+isolated staging. Production still runs on Hostinger until the owner-approved
+cutover described in `docs/CLOUDFLARE-MIGRATION.md`.
 
 ## Deployment
 
