@@ -51,6 +51,20 @@ async function loadKeys(config, fetchImpl) {
 }
 
 /**
+ * Local preview only: keys supplied in BOSS_DEV_JWKS are used when, and only
+ * when, ENVIRONMENT is "local" AND the request arrived on a loopback address.
+ * Staging and production never read this variable. The token is still fully
+ * verified (signature, issuer, audience, time, email).
+ */
+export function localPreviewKeys(request, env) {
+  if (env.ENVIRONMENT !== 'local' || !env.BOSS_DEV_JWKS) return null;
+  const host = new URL(request.url).hostname;
+  if (host !== '127.0.0.1' && host !== 'localhost' && host !== '[::1]') return null;
+  const parsed = JSON.parse(env.BOSS_DEV_JWKS);
+  return Array.isArray(parsed.keys) ? parsed.keys : null;
+}
+
+/**
  * Returns { ok: true, identity: { email, subject } } or { ok: false, status, error }.
  * options.fetchImpl and options.now are test seams.
  */
@@ -73,7 +87,9 @@ export async function authenticate(request, env, { fetchImpl = fetch, now = () =
   if (header.alg !== 'RS256') return { ok: false, status: 401, error: 'Unexpected algorithm.' };
 
   let keys;
-  try { keys = await loadKeys(config, fetchImpl); } catch { return { ok: false, status: 503, error: 'Identity keys unavailable.' }; }
+  try {
+    keys = localPreviewKeys(request, env) || await loadKeys(config, fetchImpl);
+  } catch { return { ok: false, status: 503, error: 'Identity keys unavailable.' }; }
   const candidates = header.kid ? keys.filter((k) => k.kid === header.kid) : keys;
   if (!candidates.length) return { ok: false, status: 401, error: 'Unknown signing key.' };
 

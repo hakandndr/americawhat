@@ -1,0 +1,55 @@
+// americawhat-boss: the owner's administration Worker.
+// The top level is STAGING and has NO public route and NO workers.dev URL:
+// without a Cloudflare Access application in front of it, it must not be
+// reachable. Test it locally (docs/OPERATIONS.md, "Boss locally").
+// Production (env.production) is boss.americawhat.com behind Cloudflare Access
+// and is deployed only through the owner-approved release procedure.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "americawhat-boss-staging",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "d1_databases": [
+    { "binding": "APP_DB", "database_name": "americawhat-app-staging", "database_id": "REPLACE_WITH_STAGING_APP_DB_ID", "migrations_dir": "../../migrations/app" },
+    { "binding": "ANALYTICS_DB", "database_name": "americawhat-analytics-staging", "database_id": "REPLACE_WITH_STAGING_ANALYTICS_DB_ID", "migrations_dir": "../../migrations/analytics" }
+  ],
+  "vars": {
+    "ENVIRONMENT": "staging",
+    "BOSS_ORIGIN": "https://boss-staging.americawhat.com",
+    "BOSS_ALLOWED_EMAILS": "hakan@dndr.net",
+    "BOSS_ACCESS_TEAM_DOMAIN": "dndrnet.cloudflareaccess.com",
+    "BOSS_ACCESS_AUD": "",
+    "BOSS_GITHUB_REPOSITORY": "hakandndr/americawhat",
+    "BOSS_GITHUB_BRANCH": "content-staging",
+    "BOSS_COMMIT_AUTHOR_NAME": "Hakan Dundar",
+    "BOSS_COMMIT_AUTHOR_EMAIL": "hakan@dndr.net"
+  },
+  "observability": { "enabled": true },
+  "env": {
+    "production": {
+      "name": "americawhat-boss-production",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [{ "pattern": "boss.americawhat.com", "custom_domain": true }],
+      "d1_databases": [
+        { "binding": "APP_DB", "database_name": "americawhat-app-production", "database_id": "PRODUCTION_NOT_PROVISIONED", "migrations_dir": "../../migrations/app" },
+        { "binding": "ANALYTICS_DB", "database_name": "americawhat-analytics-production", "database_id": "PRODUCTION_NOT_PROVISIONED", "migrations_dir": "../../migrations/analytics" }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production",
+        "BOSS_ORIGIN": "https://boss.americawhat.com",
+        "BOSS_ALLOWED_EMAILS": "hakan@dndr.net",
+        "BOSS_ACCESS_TEAM_DOMAIN": "dndrnet.cloudflareaccess.com",
+        // Set to the AUD tag of the boss.americawhat.com Access application when it exists.
+        "BOSS_ACCESS_AUD": "",
+        "BOSS_GITHUB_REPOSITORY": "hakandndr/americawhat",
+        "BOSS_GITHUB_BRANCH": "main",
+        "BOSS_COMMIT_AUTHOR_NAME": "Hakan Dundar",
+        "BOSS_COMMIT_AUTHOR_EMAIL": "hakan@dndr.net"
+      },
+      "observability": { "enabled": true }
+    }
+  }
+}

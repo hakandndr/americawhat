@@ -125,6 +125,22 @@ export async function route(request, env, ctx) {
   return null;
 }
 
+/**
+ * Static Assets answers "/about" with a 307 to "/about/". The site has always
+ * answered 301 (Apache), and search engines treat the two differently, so the
+ * same-origin trailing-slash redirect is kept permanent. Other redirects pass
+ * through unchanged.
+ */
+export function permanentSlashRedirect(request, response) {
+  if (response.status !== 307 && response.status !== 308) return response;
+  const location = response.headers.get('Location');
+  if (!location) return response;
+  const from = new URL(request.url);
+  const to = new URL(location, from);
+  if (to.origin !== from.origin || to.pathname !== `${from.pathname}/` || to.search !== from.search) return response;
+  return new Response(null, { status: 301, headers: { Location: `${to.pathname}${to.search}`, 'Cache-Control': 'public, max-age=3600' } });
+}
+
 export default {
   async fetch(request, env, ctx) {
     let response;
@@ -134,7 +150,7 @@ export default {
       console.error(`web: unhandled ${error instanceof Error ? error.message : String(error)}`);
       response = json({ status: 'error', error: 'internal' }, 500);
     }
-    if (!response) response = await env.ASSETS.fetch(request);
+    if (!response) response = permanentSlashRedirect(request, await env.ASSETS.fetch(request));
     if (env.ENVIRONMENT !== 'production') {
       response = new Response(response.body, response);
       response.headers.set('X-Robots-Tag', 'noindex, nofollow');

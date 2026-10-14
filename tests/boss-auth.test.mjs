@@ -82,3 +82,23 @@ test('CSRF: token bound to identity and window; Origin enforced', async () => {
   assert.equal((await checkCsrf(post('https://boss.americawhat.com'), ENV, { ...id, subject: 'other' }, token, now)).ok, false);
   assert.equal((await checkCsrf(post('https://boss.americawhat.com'), { ...ENV, BOSS_CSRF_SECRET: '' }, id, token, now)).status, 503);
 });
+
+test('local preview keys are honoured only for ENVIRONMENT=local on loopback', async () => {
+  const { localPreviewKeys } = await import('../workers/boss/src/auth.mjs');
+  const { apiBase } = await import('../workers/boss/src/github.mjs');
+  const jwks = JSON.stringify({ keys: [signer.jwk] });
+  const local = new Request('http://127.0.0.1:8788/review');
+  const remote = new Request('https://boss.americawhat.com/review');
+  assert.ok(localPreviewKeys(local, { ENVIRONMENT: 'local', BOSS_DEV_JWKS: jwks }));
+  assert.equal(localPreviewKeys(remote, { ENVIRONMENT: 'local', BOSS_DEV_JWKS: jwks }), null);
+  assert.equal(localPreviewKeys(local, { ENVIRONMENT: 'staging', BOSS_DEV_JWKS: jwks }), null);
+  assert.equal(localPreviewKeys(local, { ENVIRONMENT: 'production', BOSS_DEV_JWKS: jwks }), null);
+  // Production with the variable set still fetches the real team keys (and fails closed here).
+  resetKeyCache();
+  const r = await authenticate(new Request('https://boss.americawhat.com/', { headers: { 'Cf-Access-Jwt-Assertion': signer.sign() } }),
+    { ...ENV, ENVIRONMENT: 'production', BOSS_DEV_JWKS: jwks }, { fetchImpl: async () => new Response('', { status: 500 }) });
+  assert.equal(r.status, 503);
+  assert.equal(apiBase({ ENVIRONMENT: 'production', BOSS_GITHUB_API_BASE: 'http://127.0.0.1:9999' }), 'https://api.github.com');
+  assert.equal(apiBase({ ENVIRONMENT: 'local', BOSS_GITHUB_API_BASE: 'http://evil.example' }), 'https://api.github.com');
+  assert.equal(apiBase({ ENVIRONMENT: 'local', BOSS_GITHUB_API_BASE: 'http://127.0.0.1:9999' }), 'http://127.0.0.1:9999');
+});

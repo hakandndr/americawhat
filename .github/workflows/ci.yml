@@ -1,0 +1,55 @@
+name: CI
+
+# Build and test only. This workflow has no deploy step and uses no secret:
+# it cannot publish anything, to Hostinger or to Cloudflare.
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Unit and integration tests
+        run: npm test
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate OG images (Pillow)
+        run: |
+          pip install "pillow==11.3.0"
+          python scripts/gen-og.py
+      - name: Build
+        run: npm run build
+      - name: Verify static output (no PHP, config, logs or secrets in the upload set)
+        run: npm run verify:static
+      - name: Bundle both Workers (dry run, no upload)
+        run: |
+          npx wrangler deploy --dry-run --config workers/web/wrangler.jsonc --outdir .wrangler/ci-web
+          npx wrangler deploy --dry-run --config workers/boss/wrangler.jsonc --outdir .wrangler/ci-boss
+      - name: Commit hygiene (no co-author trailers or tool signatures on this branch)
+        if: github.event_name == 'push'
+        run: |
+          git fetch --no-tags --depth=200 origin main || true
+          range="origin/main..HEAD"
+          if git rev-parse --verify origin/main >/dev/null 2>&1; then
+            if git log --format=%B "$range" | grep -qiE '^[[:space:]]*co-authored-by:|generated (with|by)|noreply@anthropic\.com'; then
+              echo "A commit message on this branch carries a co-author trailer or a tool signature." >&2
+              exit 1
+            fi
+          fi

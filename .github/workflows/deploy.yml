@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   build-deploy:
+    # A manual run from any other branch must never publish to production.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,3 +50,5 @@ jobs:
             **/config.php
             **/studio/**
             **/boss/**
+            **/.assetsignore
+            **/_headers

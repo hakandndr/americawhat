@@ -20,17 +20,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Fetch candidates
-        run: node scripts/fetch-sources.mjs
-      - name: Commit if changed
+      - name: Fetch candidates and commit
+        # Boss approvals commit published.json and pending.json together. If one
+        # lands while this job runs, the push is refused; the job then starts
+        # again from the new main and re-runs the fetch on top of it, so neither
+        # the approval nor the new candidates are lost. No merge strategy that
+        # could silently drop either side (such as -X ours) is used.
         run: |
           git config user.name  "aw-bot"
           git config user.email "actions@users.noreply.github.com"
-          if [ -n "$(git status --porcelain src/data/pending.json src/data/seen_ids.json src/data/fetch-status.json)" ]; then
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            node scripts/fetch-sources.mjs
+            if [ -z "$(git status --porcelain src/data/pending.json src/data/seen_ids.json src/data/fetch-status.json)" ]; then
+              echo "No changes."
+              exit 0
+            fi
             git add src/data/pending.json src/data/seen_ids.json src/data/fetch-status.json
             git commit -m "chore(fetch): status + candidates"
-            git pull --rebase origin main
-            git push
-          else
-            echo "No changes."
-          fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during the fetch (attempt $attempt); starting again from the new head."
+          done
+          echo "Could not push after 3 attempts; the next scheduled run will try again." >&2
+          exit 1

@@ -41,13 +41,20 @@ export function githubConfig(env) {
   };
 }
 
+/** The real API, except for a local preview pointed at a loopback mock (ENVIRONMENT=local only). */
+export function apiBase(env) {
+  const base = String(env.BOSS_GITHUB_API_BASE || '');
+  if (env.ENVIRONMENT === 'local' && /^http:\/\/127\.0\.0\.1:\d+$/.test(base)) return base;
+  return 'https://api.github.com';
+}
+
 export function createGitHub(env, { fetchImpl = fetch, now = () => new Date() } = {}) {
   const config = githubConfig(env);
   const state = { tokenExpiration: null, rateRemaining: null };
 
   async function api(method, path, body) {
     if (!config.ok) throw new GitHubError(503, `GitHub not configured: ${config.errors.join('; ')}`);
-    const res = await fetchImpl(`https://api.github.com/repos/${config.repo}${path}`, {
+    const res = await fetchImpl(`${apiBase(env)}/repos/${config.repo}${path}`, {
       method,
       headers: {
         Authorization: `Bearer ${env.GITHUB_TOKEN}`,

@@ -168,3 +168,16 @@ test('health reports checks without secrets', async () => {
   const { env: env2 } = makeEnv({ REACTION_GUARD_SECRET: '' });
   assert.equal((await worker.fetch(req('/api/health'), env2, ctx)).status, 503);
 });
+
+test('trailing-slash redirects from assets become 301; other redirects pass through', async () => {
+  const { permanentSlashRedirect } = await import('../workers/web/src/index.mjs');
+  const r = (loc, status = 307) => new Response(null, { status, headers: { Location: loc } });
+  const a = permanentSlashRedirect(new Request('https://americawhat.com/about'), r('https://americawhat.com/about/'));
+  assert.equal(a.status, 301);
+  assert.equal(a.headers.get('Location'), '/about/');
+  const q = permanentSlashRedirect(new Request('https://americawhat.com/item/x?utm=1'), r('/item/x/?utm=1'));
+  assert.equal(q.status, 301);
+  assert.equal(permanentSlashRedirect(new Request('https://americawhat.com/a'), r('https://evil.example/a/')).status, 307);
+  assert.equal(permanentSlashRedirect(new Request('https://americawhat.com/a'), r('/b/')).status, 307);
+  assert.equal(permanentSlashRedirect(new Request('https://americawhat.com/a/'), new Response('ok')).status, 200);
+});
