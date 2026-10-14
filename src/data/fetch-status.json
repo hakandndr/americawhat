@@ -1,23 +1,23 @@
 {
-  "finishedAt": "2026-10-13T20:09:22.798Z",
+  "finishedAt": "2026-10-14T07:22:32.987Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1232,
-    "added": 4,
+    "fetched": 1234,
+    "added": 7,
     "excluded": 6,
-    "duplicate": 1184,
-    "lowScore": 38
+    "duplicate": 1179,
+    "lowScore": 42
   },
-  "pendingAfter": 118,
+  "pendingAfter": 125,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 2,
+      "added": 3,
+      "excluded": 1,
       "duplicate": 96,
-      "lowScore": 1
+      "lowScore": 0
     },
     {
       "name": "Google News — HOA & Housing",
@@ -32,18 +32,18 @@
       "name": "Google News — Bureaucracy",
       "ok": true,
       "fetched": 100,
-      "added": 1,
+      "added": 0,
       "excluded": 0,
-      "duplicate": 89,
-      "lowScore": 10
+      "duplicate": 78,
+      "lowScore": 22
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 31,
+      "fetched": 33,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 31,
+      "excluded": 1,
+      "duplicate": 32,
       "lowScore": 0
     },
     {
@@ -59,10 +59,10 @@
       "name": "Google News — Weird",
       "ok": true,
       "fetched": 100,
-      "added": 0,
+      "added": 4,
       "excluded": 0,
-      "duplicate": 99,
-      "lowScore": 1
+      "duplicate": 96,
+      "lowScore": 0
     },
     {
       "name": "Google News — Fine Print",
@@ -88,16 +88,16 @@
       "fetched": 25,
       "added": 0,
       "excluded": 0,
-      "duplicate": 19,
-      "lowScore": 6
+      "duplicate": 25,
+      "lowScore": 0
     },
     {
       "name": "Google News — American Chains",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 1,
-      "duplicate": 97,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 99,
       "lowScore": 1
     },
     {
@@ -105,17 +105,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 2,
-      "duplicate": 79,
-      "lowScore": 19
+      "excluded": 1,
+      "duplicate": 82,
+      "lowScore": 17
     },
     {
       "name": "Google News — Absurd Fines",
       "ok": true,
       "fetched": 100,
-      "added": 1,
-      "excluded": 0,
-      "duplicate": 99,
+      "added": 0,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -123,17 +123,17 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 1,
-      "duplicate": 99,
-      "lowScore": 0
+      "excluded": 0,
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Odd Thefts",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
