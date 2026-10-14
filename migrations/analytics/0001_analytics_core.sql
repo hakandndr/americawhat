@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS analytics_import_records (
   line_no     INTEGER NOT NULL,
   record_id   TEXT NOT NULL,
   disposition TEXT NOT NULL CHECK (disposition IN
-                ('imported', 'already_present', 'missing_page', 'malformed', 'invalid_time')),
+                ('imported', 'already_present', 'missing_page', 'malformed', 'invalid_time', 'before_retention_cutoff')),
   event_uid   TEXT,
   detail      TEXT NOT NULL DEFAULT '',
   PRIMARY KEY (corpus_id, line_no)

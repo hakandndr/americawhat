@@ -9,6 +9,8 @@
 // - Every line gets exactly one disposition: imported, already_present,
 //   missing_page, malformed or invalid_time. Nothing is guessed: a missing
 //   field stays empty, a line without a page is kept in the ledger only.
+// - Lines older than an applied Delete Before Date cutoff, or imported once
+//   and since deleted, are never inserted again (privacy over completeness).
 // - Times were written by PHP as America/Los_Angeles wall clock with no offset
 //   ('Y-m-d h:i:s A'). A wall time in the repeated fall-back hour has two
 //   possible instants. When the previous line's instant rules the earlier one
@@ -155,15 +157,24 @@ export async function applyPlan(db, plan, { actor, now, chunkSize = 40 }) {
   const existing = await db.prepare('SELECT corpus_id FROM analytics_import_corpora WHERE content_sha256 = ?').bind(plan.sha256).first();
   const importable = plan.records.filter((r) => r.disposition === 'imported');
 
-  // Identities stored before this run (from earlier corpora or earlier attempts of this one).
+  // Identities stored by an earlier corpus: still present, or imported once and
+  // later removed by a Delete Before Date. Neither is inserted again.
   const present = new Set();
   for (let i = 0; i < importable.length; i += 80) {
     const ids = importable.slice(i, i + 80).map((r) => r.recordId);
+    const marks = ids.map(() => '?').join(',');
     const { results } = await db.prepare(
-      `SELECT event_uid, import_corpus_id FROM visitor_events WHERE event_uid IN (${ids.map(() => '?').join(',')})`,
-    ).bind(...ids).all();
-    for (const row of results) if (row.import_corpus_id !== corpusId) present.add(row.event_uid);
+      `SELECT event_uid FROM visitor_events WHERE event_uid IN (${marks}) AND COALESCE(import_corpus_id, '') <> ?
+       UNION SELECT record_id FROM analytics_import_records
+        WHERE record_id IN (${marks}) AND corpus_id <> ? AND disposition IN ('imported', 'already_present')`,
+    ).bind(...ids, corpusId, ...ids, corpusId).all();
+    for (const row of results) present.add(row.event_uid);
   }
+  // Raw rows older than an applied retention cutoff are never brought back.
+  const floorRow = await db.prepare(
+    "SELECT MAX(cutoff_at) AS floor FROM analytics_operator_log WHERE action = 'delete_before'",
+  ).first();
+  const retentionFloor = floorRow && floorRow.floor != null ? Number(floorRow.floor) : null;
 
   await db.prepare(
     `INSERT OR IGNORE INTO analytics_import_corpora
@@ -177,6 +188,7 @@ export async function applyPlan(db, plan, { actor, now, chunkSize = 40 }) {
     for (const r of plan.records.slice(i, i + chunkSize)) {
       let disposition = r.disposition;
       if (disposition === 'imported' && present.has(r.recordId)) disposition = 'already_present';
+      if (disposition === 'imported' && retentionFloor != null && r.row.occurred_at < retentionFloor) disposition = 'before_retention_cutoff';
       if (disposition === 'imported') {
         const row = { ...r.row, received_at: now, import_corpus_id: corpusId, import_record_id: r.recordId };
         statements.push(db.prepare(
@@ -210,6 +222,7 @@ export async function reconcile(db, plan) {
   for (const row of results) { ledger[row.disposition] = Number(row.n); ledgerTotal += Number(row.n); }
   const events = await db.prepare('SELECT COUNT(*) AS n FROM visitor_events WHERE import_corpus_id = ?').bind(corpusId).first();
   const expectedImportable = plan.records.filter((r) => r.disposition === 'imported').length;
+  const heldBack = ledger.before_retention_cutoff || 0;
   const storedForCorpus = Number(events.n);
   const accounted = (ledger.imported || 0) + (ledger.already_present || 0);
   return {
@@ -221,7 +234,7 @@ export async function reconcile(db, plan) {
     eventsFromThisCorpus: storedForCorpus,
     checks: {
       everyLineHasOneDisposition: ledgerTotal === plan.lineCount,
-      importableAccounted: accounted === expectedImportable,
+      importableAccounted: accounted + heldBack === expectedImportable,
       eventsMatchLedger: storedForCorpus === (ledger.imported || 0),
     },
   };
