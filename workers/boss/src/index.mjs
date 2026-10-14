@@ -178,7 +178,9 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
       const format = url.searchParams.get('format') === 'ndjson' ? 'ndjson' : 'csv';
       const cutoff = url.searchParams.get('cutoff');
       const stamp = new Date(clock()).toISOString().slice(0, 10);
-      await audit(env, { at: now, actor: identity.email, action: 'analytics_export', outcome: 'started', detail: `${format} ${cutoff ? `before ${cutoff}` : url.search}` });
+      // The audit names the filters used, never their values (an IP filter is personal data).
+      const filterNames = [...new Set([...url.searchParams.keys()].filter((k) => k !== 'format' && k !== 'cutoff'))].sort().join(',');
+      await audit(env, { at: now, actor: identity.email, action: 'analytics_export', outcome: 'started', detail: `${format} ${cutoff ? `before ${cutoff}` : `filters: ${filterNames || 'none'}`}` });
       if (cutoff) {
         if (!isDay(cutoff)) return errorPage(400, 'Bad date.');
         return exportResponse(adb, format, { cutoffAt: laMidnight(cutoff) }, `americawhat-analytics-before-${cutoff}.${format === 'csv' ? 'csv' : 'ndjson'}`);

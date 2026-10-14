@@ -205,3 +205,12 @@ test('untrusted feed URLs are never rendered as javascript: links', async () => 
   assert.equal(safeHref('data:text/html,x'), '#');
   assert.equal(safeHref('https://example.com/a?b="c"'), h('https://example.com/a?b=%22c%22'));
 });
+
+test('the export audit records filter names, never filter values', async () => {
+  const ctx = setup();
+  const res = await get(ctx, '/analytics/export?format=csv&ip=203.0.113.77&country=US');
+  await res.text();
+  const row = ctx.env.APP_DB.sqlite.prepare("SELECT detail FROM boss_audit WHERE action = 'analytics_export'").get();
+  assert.match(row.detail, /filters: country,ip/);
+  assert.doesNotMatch(row.detail, /203\.0\.113\.77/);
+});

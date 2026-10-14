@@ -45,6 +45,11 @@ so one build works on Hostinger and on Cloudflare during the migration. The
 page-view beacon is a POST (`src/scripts/tracking.js`); the PHP logger already
 reads POST fields.
 
+Outside production the collector stores a page view only when the request
+carries the staging test key (`COLLECT_VISITS=test-only`, the default for every
+non-production environment), so a public staging hostname never keeps real
+visitor data.
+
 The web Worker runs before assets (`run_worker_first: true`) so that the
 platform's trailing-slash redirect is answered with 301, as Apache does today,
 and so staging can add `X-Robots-Tag: noindex`.

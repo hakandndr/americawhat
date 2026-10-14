@@ -24,7 +24,13 @@
 - **Staging Boss** has no route and no workers.dev URL (verified: Cloudflare
   answers error 1042). It is exercised locally with `npm run preview:boss`,
   whose loopback-only identity seam is ignored outside `ENVIRONMENT=local`
-  (tested).
+  (tested); every non-production page carries an environment banner. The
+  owner-run path to an Access-protected staging Boss without DNS is in
+  `CLOUDFLARE-MIGRATION.md` §3a.
+- **Assumption to verify on activation:** the issuer of a `workers.dev` Access
+  application is the team domain `https://dndrnet.cloudflareaccess.com`
+  (same Zero Trust organisation as OC-CA). If the AUD or issuer differs, Boss
+  answers 401 — fail closed, never open.
 
 ## 2. Secrets
 
@@ -33,6 +39,7 @@
 | `GITHUB_TOKEN` | Boss Worker secret only | Fine-grained PAT, repository `hakandndr/americawhat` only, Contents read/write. Expiry is shown on Boss → Health (warning at 14 days). Commits are authored as `Hakan Dundar <hakan@dndr.net>`. |
 | `BOSS_CSRF_SECRET` | Boss Worker secret | Random, per environment. |
 | `REACTION_GUARD_SECRET` | web Worker secret | Random, per environment (staging set 2026-10-14). |
+| `STAGING_TEST_KEY` | web Worker secret, staging only | Lets the smoke test store a page view on staging; the local copy lives in git-ignored `private/`. Never set in production. |
 | `FTP_*` | GitHub Actions secrets | Hostinger only; delete at Hostinger retirement. |
 | Hostinger `boss/config.php`, `dndr-relay.config.php` | Server only | Never copied into the repository or a chat; revoke the PAT and the relay key at retirement. |
 
@@ -46,7 +53,11 @@ by an `app[bot]` account, which would appear among the repository contributors.
   keys, one count per address/item/reaction/LA day, 30 reactions per address per
   hour, atomic D1 batch. Addresses are stored only as HMACs, expired after 48 h.
 - Page views: UUID per view, path must start with a single `/`, size limits,
-  120 events per address per 10 minutes.
+  120 events per address per 10 minutes. Outside production nothing from a
+  real visitor is stored (`COLLECT_VISITS` defaults to `test-only`).
+- D1 accepts at most 100 bound parameters per statement; every `IN (…)` query is
+  chunked and the test adapter enforces the limit. (Found in staging: the
+  homepage's 124-id read returned 500 before the fix.)
 - Static output: `public/.assetsignore` keeps every `.php`, `.htaccess`,
   `aw_votes.json`, `studio/`, `boss/` and `analytics/` file out of the upload;
   `npm run verify:static` fails the build if any would be uploaded or if a
@@ -72,6 +83,24 @@ Real defects (fixed in the new implementation, still present on Hostinger):
 
 Hypothetical or low risk: the PHP session cookie flags depend on `php.ini`;
 `robots.txt` names `/studio/`.
+
+## 4a. Verification review (2026-10-14) — defects found in the new code and fixed
+
+1. Reaction read with more than 100 ids failed on D1 (homepage). Fixed, tested,
+   staging verified.
+2. The public staging hostname stored real visitors' addresses and user agents.
+   Fixed (test-key gate), staging verified; the 3 rows already stored await an
+   owner decision.
+3. The legacy import's presence check would exceed the D1 parameter limit on a
+   real-size log. Fixed and restructured as idempotent SQL.
+4. SQL rendering could have altered whitespace inside values. Fixed, with a
+   byte-for-byte equivalence test.
+5. A same-corpus re-run after a deletion could have re-inserted deleted rows.
+   Now impossible (event insert requires the ledger row and the retention floor).
+6. Analytics export audit rows contained the raw query string (which can hold
+   an IP filter). Now only the filter names are recorded.
+
+Open risk: Workers CPU time on the Free plan (CLOUDFLARE-MIGRATION.md §3 step 0).
 
 ## 5. Repository hygiene
 

@@ -8,15 +8,23 @@ no Hostinger subscription is cancelled while it provides email.
 Every step below that touches production, DNS or real data needs its own owner
 approval. Nothing in this document has been executed in production.
 
-## 0. Status of the preparation (2026-10-14)
+## 0. Status of the preparation
 
-- Implementation on branch `dev/cloudflare-native` (never merged).
-- Staging: `americawhat-web-staging` on
-  `https://americawhat-web-staging.hakan-c89.workers.dev` (noindex, synthetic
-  data), `americawhat-boss-staging` uploaded with **no route** (unreachable),
-  D1 `americawhat-app-staging` (`a3c9ff1f-05c2-4ed6-bb9e-4ca41f4cc9e2`) and
-  `americawhat-analytics-staging` (`306b9ee6-2529-4f95-b43c-c7cd9dbf0a3c`).
-- Production resources: **none created.**
+See `CURRENT-STATE.md` for the exact deployed versions. In short: implementation
+on branch `dev/cloudflare-native` (never merged; `origin/main` merged into it,
+not the reverse); `americawhat-web-staging` on
+`https://americawhat-web-staging.hakan-c89.workers.dev` (noindex; stores page
+views only from requests with the staging test key); `americawhat-boss-staging`
+uploaded with **no route**; D1 `americawhat-app-staging` and
+`americawhat-analytics-staging`. Production resources: **none created.**
+
+### Branch reconciliation rule
+
+`dev/cloudflare-native` never changes `src/data/*.json`, so `origin/main`
+(fetch and panel commits) is merged **into** the development branch whenever
+needed — conflict-free, every candidate kept. The branch is never rebased or
+force-pushed. The final step is a reviewed pull request from the development
+branch to `main`, after the pre-merge checks below.
 
 ## 1. Hostinger inventory and backup (owner, read-only)
 
@@ -53,9 +61,20 @@ git hash-object "<A>/boss/index.php"
 Compare the last with `git rev-parse origin/main:public/studio/index.php`, and the
 log inventory's first 1,032 lines with DNDR's snapshot SHA `33fadc4f…89468`.
 
-**Before merging anything to `main`** (the FTP deploy would ship the new
-`tracking.js`): confirm the server's current `log_df.php` reads POST fields (the
-reviewed copy does: `$_GET['path'] ?? $_POST['path']`). The new beacon uses POST.
+### Pre-merge checks (before `dev/cloudflare-native` goes into `main`)
+
+Merging ships the new `tracking.js` (POST beacon) and the shared slug function
+to Hostinger through the FTP deploy. Production-only PHP files are **not**
+assumed to match the repository copies.
+
+| # | Check | How | Done by |
+|---|---|---|---|
+| 1 | The server's `analytics/log_df.php` reads `path` and `referrer` from POST | Open the downloaded copy and look for `$_POST['path']` and `$_POST['referrer']` (the reviewed copy on `staging/dndr-analytics` has `$_GET['path'] ?? ($_POST['path'] ?? '-')`). Do **not** test against production: a test POST writes a real log line | owner |
+| 2 | A POST from the new beacon reaches the PHP logger (same-origin, form encoded) and DNDR still receives the relay | After merge: one visit, then the newest log line and the DNDR count for `site_americawhat` (read-only) | owner + engineer |
+| 3 | The FTP deploy would not touch PHP, `.htaccess`, the vote store or the log | `node scripts/release/ftp-diff.mjs` on the build to be merged. Result on 2026-10-14 (`6453ff2`): no PHP or `.htaccess` change, nothing sensitive uploaded, only two renamed `_astro/hoisted.*.js` bundles deleted | engineer |
+| 4 | Server-only files stay: `log_df.php`, `dndr-relay.php`, `tracker.php`, `boss/`, `aw_panel_log.txt`, `aw_votes.json`, private configuration | They are not in the deploy's sync state (it only replaces/deletes files it uploaded) and `aw_votes.json`, `config.php`, `studio/`, `boss/` are excluded in `deploy.yml` | verified by check 3 |
+| 5 | No secret or configuration is published | `npm run verify:static` (0 failures) and the `.assetsignore`/`_headers` exclusions in `deploy.yml` | CI |
+| 6 | A rollback is possible | The backup of §1 exists; the previous `main` commit can be redeployed with the manual `deploy.yml` run | owner |
 
 ## 2. DNS requirements (separate operation, later)
 
@@ -80,7 +99,40 @@ registrar; (d) verify mail delivery both ways and that the site is unchanged
 (`server: hcdn`). Rollback: put the Hostinger nameservers back. The site does
 not move in this step.
 
+## 3a. Boss staging behind Access (owner action, no DNS change)
+
+Cloudflare can protect a Worker's own `workers.dev` address with Access in one
+step; this needs no zone and no DNS record. It creates a **new** Access
+application (and a policy named `americawhat-boss-staging - Production`) in the
+account's Zero Trust organisation, which my credentials cannot do and which is
+a change to a shared organisation — so it is the owner's action.
+
+1. Dashboard → Workers & Pages → `americawhat-boss-staging` → Settings →
+   Domains & Routes: turn on the `workers.dev` route **and** click
+   *Enable Cloudflare Access*. Until step 4 the Worker answers 503 to every
+   request (no audience configured), so there is no unprotected window.
+2. *Manage Cloudflare Access*: allow only `hakan@dndr.net`; copy the
+   application's **AUD tag**.
+3. Secrets for the staging Worker: `BOSS_CSRF_SECRET` (random) and, only if
+   GitHub writes should be tested, a fine-grained `GITHUB_TOKEN` for this
+   repository. The staging Boss refuses to write `main`; create a branch
+   `content-staging` from `main` for it to write to.
+4. In `workers/boss/wrangler.jsonc` (top level): `"workers_dev": true`,
+   `"preview_urls": false`, `BOSS_ACCESS_AUD` = the AUD tag,
+   `BOSS_ORIGIN` = `https://americawhat-boss-staging.hakan-c89.workers.dev`;
+   deploy. Verify: anonymous → Access login; another identity → 403; owner →
+   Health green.
+
+Rollback: disable the `workers.dev` route (Cloudflare then answers 1042) and
+disable Access on it, which also removes its policy.
+
 ## 3. Production provisioning (owner-approved, before cutover)
+
+0. Confirm the Workers plan. On the Free plan a request has 10 ms of CPU; the
+   Weekly review page measured about 11 ms warm and 31 ms cold for 130
+   candidates (Node, 2026-10-14). The paid plan (30 s default) removes the risk;
+   on Free, the review page may intermittently fail with a CPU limit error. The
+   full legacy import does not depend on this (it runs as a .sql file).
 
 1. Create D1 `americawhat-app-production` and `americawhat-analytics-production`;
    put their ids into `env.production` of both wrangler configs; apply
@@ -104,8 +156,12 @@ Prerequisites: §1 done; DNS on Cloudflare (§2); §3 done; staging smoke and
 
 1. **Reaction baseline S1:** download `aw_votes.json`; Boss → Reactions →
    upload, check the plan, apply with the SHA prefix (baseline).
-2. **Legacy log S1:** download `aw_panel_log.txt`; Boss → Analytics → Legacy
-   log import; inventory, then apply. Check the reconciliation.
+2. **Legacy log S1:** download `aw_panel_log.txt`;
+   `npm run analytics:legacy -- inventory <file>`, then
+   `npm run analytics:legacy -- sql <file> --out private/legacy-s1.sql` and
+   `npx wrangler d1 execute americawhat-analytics-production --remote --env production --file private/legacy-s1.sql --config workers/web/wrangler.jsonc`
+   (run it twice: the second run must add nothing). Check the reconciliation in
+   Boss, apply the legacy decision (ANALYTICS.md §6 memo), delete the .sql file.
 3. Deploy `americawhat-web --env production` (custom domains `americawhat.com`
    and `www.americawhat.com`). This replaces the Hostinger A/AAAA/CNAME answers.
 4. Smoke: `npm run smoke -- https://americawhat.com` (read checks only),
@@ -142,12 +198,14 @@ Prerequisites: §1 done; DNS on Cloudflare (§2); §3 done; staging smoke and
 ## 7. Approvals required, in order
 
 1. Run the Hostinger inventory/backup (§1).
-2. Merge `dev/cloudflare-native` into `main` (ships the POST beacon and the new
-   slug function to Hostinger; no visible change).
-3. DNS move (§2).
-4. Production provisioning (§3), including the Access application.
-5. Legacy-import scope decision and the real imports (§4.1–4.2).
-6. App cutover (§4.3).
-7. DNDR-side: gap import and native producer (separate project).
-8. Privacy page update (ANALYTICS.md §6).
-9. Hostinger web retirement (§6).
+2. Enable Access on the Boss staging `workers.dev` address (§3a) and review Boss
+   on staging; decide on the 3 real visitor rows found in staging (ANALYTICS.md §4).
+3. Merge `dev/cloudflare-native` into `main` after the pre-merge checks (§1)
+   (ships the POST beacon and the new slug function to Hostinger; no visible change).
+4. DNS move (§2).
+5. Production provisioning (§3), including the plan check and the Access application.
+6. Legacy-import decision (ANALYTICS.md §6 memo) and the real imports (§4.1–4.2).
+7. App cutover (§4.3).
+8. DNDR-side: gap import, native producer, retention of the AmericaWhat copy (separate project).
+9. Privacy page update (ANALYTICS.md §6).
+10. Hostinger web retirement (§6).

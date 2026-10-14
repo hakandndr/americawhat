@@ -155,9 +155,17 @@ npm run test:boss-preview   # runs the real Boss in workerd, smoke-checks it, st
 npm run preview:boss        # keeps it running at http://127.0.0.1:8788 (local only)
 ```
 
-The preview uses a locally signed identity, local D1 databases and an
-in-memory copy of GitHub (25 current candidates); nothing leaves the machine.
-If it reports that port 8789 is in use, an earlier preview is still running.
+The preview uses a locally signed identity, its own local D1 state
+(`.wrangler/boss-preview-state`, emptied at every start) and an in-memory copy
+of GitHub holding the public content files (25 current candidates); nothing
+leaves the machine and no write reaches GitHub or a Cloudflare database. It
+seeds synthetic analytics (a legacy corpus older than 90 days plus 20 days of
+native rows, documentation-range addresses only) and synthetic reaction counts,
+so every section can be reviewed: Weekly review, Published, approvals,
+Reactions (try `tests/fixtures/votes/aw_votes-sample.json`), Analytics, Legacy
+import (try `.wrangler/preview-legacy-log-delta.ndjson`), Export, Delete Before
+Date, Audit and Health. `npm run test:boss-preview` runs 18 checks over all of
+them. If it reports that port 8789 is in use, an earlier preview is still running.
 
 ### Web Worker locally
 
@@ -175,18 +183,44 @@ fails with code 9109; unset it to use the logged-in account.
 ```bash
 npm run build:og && npm run build && npm run verify:static
 npx wrangler deploy --config workers/web/wrangler.jsonc
-npm run smoke -- https://americawhat-web-staging.hakan-c89.workers.dev --write
+AW_STAGING_TEST_KEY=$(cat private/staging-test-key) npm run smoke -- https://americawhat-web-staging.hakan-c89.workers.dev --write
+curl -s https://americawhat-web-staging.hakan-c89.workers.dev/api/health   # "release" must equal the deployed commit
 ```
 
-Staging is `noindex` and holds synthetic data only. The Boss staging Worker
+Deploy with `--var RELEASE_ID:$(git rev-parse --short HEAD)` so `/api/health`
+names the exact source revision. Staging is `noindex` and stores a page view
+only when the request carries the staging test key (`private/staging-test-key`,
+git-ignored; the Worker secret `STAGING_TEST_KEY`). The Boss staging Worker
 has no route; it must not get one before an Access application protects it.
 Production deploys follow `CLOUDFLARE-MIGRATION.md` and need owner approval.
 
 ### Read-only checks against the live site
 
 ```bash
-npm run parity:live   # sitemap URL set, canonical, title, og:image, JSON-LD, 301
+npm run parity:live                  # sitemap URL set, canonical, title, og:image, JSON-LD, 301
+node scripts/release/ftp-diff.mjs    # what an FTP deploy of dist/ would upload, replace or delete
 ```
+
+### Keeping the development branch current
+
+```bash
+git fetch origin
+git switch dev/cloudflare-native
+git merge --no-ff origin/main        # conflict-free: the branch never edits src/data
+```
+
+Never rebase or force-push it; never push it to `main`.
+
+### Legacy log import (offline SQL)
+
+```bash
+npm run analytics:legacy -- inventory <log>
+npm run analytics:legacy -- sql <log> --out private/<name>.sql
+npx wrangler d1 execute <database> --remote --file private/<name>.sql --config workers/web/wrangler.jsonc
+```
+
+The second execution of the same file must add nothing. Delete the .sql file
+afterwards: it contains visitor data.
 
 ## 7. Secrets and safety
 

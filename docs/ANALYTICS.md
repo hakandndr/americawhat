@@ -83,9 +83,21 @@ Analytics → Legacy log import.
   rules one out (`dst_ambiguous_ordered`), otherwise the earlier instant is used
   and flagged (`dst_ambiguous_first`). The skipped spring hour cannot be written
   by PHP and is `invalid_time`.
-- **Idempotent and restartable:** corpus, ledger rows and events are written
-  with `INSERT OR IGNORE` by identity; a failed run is completed by running it
-  again; a second run adds nothing (tested, including in workerd).
+- **Idempotent and restartable:** the import is one ordered list of SQL
+  statements (`importStatements`): the ledger row of each line is written first
+  and decides the disposition in SQL; the event is inserted only if its ledger
+  row says `imported`. Everything is `INSERT OR IGNORE` by identity, so a failed
+  run is completed by running it again and a second run adds nothing (tested in
+  Node, in workerd, and on the staging D1 with a synthetic file).
+- **Two ways to run it, same statements:** Boss → Analytics → Legacy log import
+  (small deltas), or `npm run analytics:legacy -- sql <log> --out private/<name>.sql`
+  followed by `wrangler d1 execute <db> --remote --file private/<name>.sql` (the
+  full log; no Worker CPU limit applies). The .sql file holds visitor data: keep
+  it under `private/` (git-ignored) and delete it after the import. On
+  2026-10-14 the first `d1 execute` attempt returned a transient authentication
+  error (code 10000) and the retry succeeded.
+- **D1 limits:** at most 100 bound parameters per statement; the presence checks
+  are chunked and the test adapter enforces the limit.
 - **Privacy guard:** lines older than an applied Delete Before Date cutoff, and
   lines once imported and since deleted, are never inserted again.
 - **Reconciliation report:** every line accounted for; events equal the ledger;
@@ -94,7 +106,25 @@ Analytics → Legacy log import.
 - The Boss import applies only after an inventory and the first 12 characters
   of the file's SHA-256 typed back. The page never shows addresses or agents.
 
-No real log has been imported anywhere. Staging holds synthetic data only.
+No real log has been imported anywhere.
+
+### Staging data (verified 2026-10-14)
+
+The staging analytics database is **not** synthetic-only: besides one smoke
+row and the 5 synthetic legacy rows from the import test, it holds **3 page
+views from real browser visits** to the public staging hostname (2026-10-14,
+about 18:44 UTC), with real IP addresses and user agents (2 distinct
+addresses, all classified human). The staging reactions table holds 3 votes, 2
+of them not from the smoke test (stored as counts; the abuse guard keeps only
+HMACs). Nothing was deleted.
+
+Corrective action (implemented, **staging verified** on version
+`2f53980a-f08a-4d14-8362-20f6b1299fb7`): outside production, page views are
+stored only when the request carries the staging test key (Worker secret
+`STAGING_TEST_KEY`, used by the smoke test); every other beacon is answered 202
+and stored nowhere. `/api/health` reports `visit_collection: test-only`.
+Owner action: approve deleting the 3 real rows (and the 2 non-test votes) from
+the staging databases, or keep them.
 
 ## 5. Native ingestion and DNDR (no double counting)
 
@@ -143,6 +173,18 @@ but it is not mathematically anonymous. If the owner wants a stricter rule, the
 monthly tables can drop cells below a threshold at deletion time — not
 implemented, an **OWNER DECISION**.
 
+### Copies that the Boss deletion does not reach
+
+| Copy | Holds | Covered by Delete Before Date? |
+|---|---|---|
+| AmericaWhat `ANALYTICS_DB` | raw rows | **yes** (aggregates kept) |
+| D1 Time Travel of that database | every past state, 7 days (Free) or 30 days (Paid) | **no** — deleted rows stay restorable for that window, then expire |
+| Hostinger `aw_panel_log.txt` | full raw history since 2026-07-07 | no, until the file is removed at retirement |
+| Owner's offline `public_html` archive | same file | no — owner decides how long to keep it |
+| DNDR `dndr-analytics-v2` (`site_americawhat`) | 1,031 imported + relayed rows, address-level counters | no — DNDR's own policy (`detail-90d-durable-forever` in its registry; actual behaviour not verified) |
+| CSV / NDJSON exports | whatever was exported | no — files on the owner's machine |
+| Google Analytics | GA's own data | no — GA retention setting |
+
 ### Inconsistencies to resolve before production (verified)
 
 1. **The public promise is already exceeded.** The Privacy page says visit logs
@@ -161,14 +203,46 @@ implemented, an **OWNER DECISION**.
    Delete Before Date right after (aggregates kept), or import only the last 90
    days. **OWNER DECISION** before the real import.
 
+### Decision memo: legacy data older than 90 days (OWNER DECISION)
+
+Facts: the Hostinger log starts on 2026-07-07; on 2026-10-14 the oldest lines
+are 99 days old and the file keeps growing until cutover. DNDR already holds a
+raw copy (1,031 rows) and its own address-level counters. The owner wants the
+historical statistics kept and raw IP / user-agent data limited to about 90 days.
+
+| Option | What happens | Historical statistics | Raw data older than 90 days |
+|---|---|---|---|
+| **A. Import all, then Delete Before Date at once** (recommended) | Full import with the tested tools, then one Delete Before Date with cutoff = today − 90 days, in the same sitting | Kept: daily totals by origin and class, monthly pages and countries, durable ALL # | Gone from the AmericaWhat database; recoverable only through D1 Time Travel until it expires (7 or 30 days) |
+| B. Import only the last 90 days | Older lines stay only in the Hostinger file and the archive | **Lost** in AmericaWhat (only DNDR keeps them) | Never enters the new system |
+| C. Import all, keep all | Everything stays | Fully kept, including addresses | Kept indefinitely — contradicts the 90-day target; the Privacy page would have to say so |
+
+Recommendation: **A**. It keeps every historical total, uses only tested code,
+and leaves no raw row older than 90 days in AmericaWhat after the sitting
+(apart from the Time Travel window, which should be stated in the decision).
+Independently of the option:
+
+- **DNDR copy:** decide on the DNDR side whether raw AmericaWhat rows older than
+  90 days are deleted there too; otherwise the public statement must mention
+  the network analytics copy and its own rule. AmericaWhat cannot delete them.
+- **Hostinger file and archive:** after the final import is reconciled, keep
+  the encrypted archive for a stated period (for example 30 days, for rollback)
+  and then delete it; remove `aw_panel_log.txt` from the server at retirement.
+- **Exports:** treat as temporary; delete after use.
+- **Cadence:** manual deletion keeps the target only if it is run; a monthly
+  Delete Before Date keeps raw data between 90 and about 120 days old. The page
+  must not promise a strict 90-day maximum unless the owner runs it at least
+  that often.
+
 ### Privacy page — proposed wording (not published)
 
 > **Visit records.** When you view a page, our own analytics records the page,
 > the time, your IP address, the approximate location your network provider
 > reports, your browser's user agent and the referring page. We use this to
 > count visits and to keep the site working and free of abuse. Detailed records
-> are kept for up to 90 days; the site owner removes older ones manually, and
-> afterwards only daily and monthly totals without any personal detail remain.
+> are kept for about 90 days: the site owner removes older ones by hand, at
+> least once a month, so a record can occasionally be up to about four months
+> old. Afterwards only daily and monthly totals without any personal detail
+> remain; backups that still contain removed records expire within 30 days.
 > A copy of the same visit record may be held in the owner's private network
 > analytics under the same limits. We do not build advertising profiles and we
 > do not sell this data.

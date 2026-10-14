@@ -86,11 +86,29 @@ rebasing over a Boss commit.
 lives in `CLOUDFLARE-MIGRATION.md`, the editorial process in
 `EDITORIAL-GUIDE.md`, the engineering process in `OPERATIONS.md`.
 
+## D-17 Staging never stores real visitors
+Outside production, page views are stored only with the staging test key.
+Reason: the public staging hostname collected real IPs and user agents on
+2026-10-14. Rejected: Access in front of the public staging site (needs the
+owner's Zero Trust change; the site itself must stay testable without login).
+
+## D-18 Legacy import runs as idempotent SQL
+One statement list serves Boss and an offline `.sql` file for
+`wrangler d1 execute`. Reasons: Worker CPU limits on a full log, D1's
+parameter limit, and identical behaviour on both paths (tested byte for byte).
+
+## D-19 Development branch absorbs main by merge
+`origin/main` is merged into `dev/cloudflare-native` (the branch never touches
+`src/data`), never rebased; the branch reaches `main` only through a reviewed
+pull request after the pre-merge checks.
+
 ## Open questions (owner)
 
-1. Legacy import scope: everything then delete >90 days, or only the last 90 days.
+1. Legacy data older than 90 days: option A, B or C of the ANALYTICS.md §6 memo (A recommended).
 2. Monthly page/country aggregates: keep all cells, or drop cells below a threshold.
 3. Weekly vs twice-weekly review; reduce fetches to once a day.
 4. DNDR: approve the gap import and a native producer for AmericaWhat.
 5. "Verified" commits: is the owner identity enough, or should local commits be
    signed (SSH signing) for GitHub's Verified badge?
+6. Workers plan (Free or Paid) — affects the Boss review page's CPU budget.
+7. The 3 real visitor rows and 2 non-test votes in staging: delete or keep.
