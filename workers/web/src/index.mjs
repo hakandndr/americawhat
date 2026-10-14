@@ -12,7 +12,7 @@
 // PHP source, log or JSON file can ever be served from this Worker.
 
 import publishedData from '../../../src/data/published.json' with { type: 'json' };
-import { json, methodNotAllowed, readBody } from '../../shared/http.mjs';
+import { json, methodNotAllowed, readBody, safeEqual } from '../../shared/http.mjs';
 import { nowSeconds } from '../../shared/time.mjs';
 import { buildNativeEvent, storeNativeEvent } from './collector.mjs';
 import { dndrPageEvent, forwardAndRecord, forwardingEnabled } from './dndr-forward.mjs';
@@ -58,8 +58,23 @@ async function handleReactionWrite(request, env, legacyShape) {
   return json({ status: 'ok', counted: result.counted, counts: result.counts });
 }
 
+/**
+ * Whether this request's page view may be stored. Production stores every
+ * view. Every other environment stores nothing from real visitors: only
+ * requests carrying the staging test key (a Worker secret used by the smoke
+ * test) are recorded, so a public staging hostname never collects real
+ * addresses or user agents.
+ */
+export function visitCollectionAllowed(request, env) {
+  const mode = env.COLLECT_VISITS || (env.ENVIRONMENT === 'production' ? 'all' : 'test-only');
+  if (mode === 'all') return true;
+  if (mode !== 'test-only' || !env.STAGING_TEST_KEY) return false;
+  return safeEqual(request.headers.get('X-AW-Test-Key') || '', env.STAGING_TEST_KEY);
+}
+
 async function handlePageView(request, env, ctx, { form }) {
   if (!originAllowed(request, env)) return json({ status: 'error', error: 'forbidden' }, 403);
+  if (!visitCollectionAllowed(request, env)) return json({ status: 'ok', stored: false }, 202);
   const body = await readBody(request, 2048);
   if (!body) return json({ status: 'error', error: 'bad_request' }, 400);
   // Old cached pages may not send an event id; one is generated for them.
@@ -87,12 +102,14 @@ async function handleHealth(env) {
     } catch { checks[name] = 'error'; }
   }
   checks.reaction_secret = env.REACTION_GUARD_SECRET ? 'ok' : 'missing';
+  const collection = env.COLLECT_VISITS || (env.ENVIRONMENT === 'production' ? 'all' : 'test-only');
   const ok = Object.values(checks).every((v) => v === 'ok');
   return json({
     status: ok ? 'ok' : 'degraded',
     environment: env.ENVIRONMENT || 'unknown',
     release: env.RELEASE_ID || 'unversioned',
     published_items: PUBLISHED_IDS.size,
+    visit_collection: collection,
     checks,
   }, ok ? 200 : 503);
 }

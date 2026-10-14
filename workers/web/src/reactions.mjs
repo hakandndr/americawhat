@@ -15,7 +15,9 @@ export const REACTIONS = Object.freeze(['wat', 'lol', 'same', 'dead']);
 export const RATE_LIMIT_PER_HOUR = 30;
 export const GUARD_TTL_SECONDS = 2 * 86400;
 const ID_PATTERN = /^aw-[a-z0-9-]{1,40}$/i;
-const MAX_IDS_PER_READ = 200;
+// The homepage asks for every card at once (124 today); the PHP endpoint had no cap.
+const MAX_IDS_PER_READ = 1000;
+const IDS_PER_QUERY = 90;
 
 export function emptyCounts() {
   return { wat: 0, lol: 0, same: 0, dead: 0 };
@@ -40,12 +42,14 @@ export function parseIds(raw) {
 export async function readCounts(db, ids) {
   const out = {};
   for (const id of ids) out[id] = emptyCounts();
-  if (!ids.length) return out;
-  const placeholders = ids.map(() => '?').join(',');
-  const { results } = await db.prepare(
-    `SELECT item_id, reaction, count FROM reaction_counts WHERE item_id IN (${placeholders})`,
-  ).bind(...ids).all();
-  for (const row of results) if (out[row.item_id] && REACTIONS.includes(row.reaction)) out[row.item_id][row.reaction] = Number(row.count);
+  // D1 accepts at most 100 bound parameters per statement.
+  for (let i = 0; i < ids.length; i += IDS_PER_QUERY) {
+    const chunk = ids.slice(i, i + IDS_PER_QUERY);
+    const { results } = await db.prepare(
+      `SELECT item_id, reaction, count FROM reaction_counts WHERE item_id IN (${chunk.map(() => '?').join(',')})`,
+    ).bind(...chunk).all();
+    for (const row of results) if (out[row.item_id] && REACTIONS.includes(row.reaction)) out[row.item_id][row.reaction] = Number(row.count);
+  }
   return out;
 }
 

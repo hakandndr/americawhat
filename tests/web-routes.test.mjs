@@ -19,6 +19,7 @@ function makeEnv(over = {}) {
       ENVIRONMENT: 'staging',
       PUBLIC_ORIGINS: ORIGIN,
       REACTION_GUARD_SECRET: 'secret',
+      COLLECT_VISITS: 'all',
       SITE_HOSTNAME: 'americawhat.com',
       ...over,
     },
@@ -180,4 +181,31 @@ test('trailing-slash redirects from assets become 301; other redirects pass thro
   assert.equal(permanentSlashRedirect(new Request('https://americawhat.com/a'), r('https://evil.example/a/')).status, 307);
   assert.equal(permanentSlashRedirect(new Request('https://americawhat.com/a'), r('/b/')).status, 307);
   assert.equal(permanentSlashRedirect(new Request('https://americawhat.com/a/'), new Response('ok')).status, 200);
+});
+
+test('staging stores no real visitor: only requests with the staging test key are recorded', async () => {
+  const { env } = makeEnv({ COLLECT_VISITS: undefined, STAGING_TEST_KEY: 'k-123' });
+  const body = `path=%2F&evt=${UUID}`;
+  const anon = await worker.fetch(req('/analytics/log_df.php', { method: 'POST', body }), env, ctx);
+  assert.equal(anon.status, 202);
+  assert.equal(env.ANALYTICS_DB.count('visitor_events'), 0);
+  const wrong = await worker.fetch(req('/analytics/log_df.php', { method: 'POST', body, headers: { 'X-AW-Test-Key': 'nope' } }), env, ctx);
+  assert.equal(wrong.status, 202);
+  const ok = await worker.fetch(req('/analytics/log_df.php', { method: 'POST', body, headers: { 'X-AW-Test-Key': 'k-123' } }), env, ctx);
+  assert.equal(ok.status, 200);
+  assert.equal(env.ANALYTICS_DB.count('visitor_events'), 1);
+  // Without a configured key nothing is ever stored outside production.
+  const { env: env2 } = makeEnv({ COLLECT_VISITS: undefined });
+  await worker.fetch(req('/analytics/log_df.php', { method: 'POST', body, headers: { 'X-AW-Test-Key': '' } }), env2, ctx);
+  assert.equal(env2.ANALYTICS_DB.count('visitor_events'), 0);
+  // Production collects by default.
+  const { visitCollectionAllowed } = await import('../workers/web/src/index.mjs');
+  assert.equal(visitCollectionAllowed(new Request('https://americawhat.com/'), { ENVIRONMENT: 'production' }), true);
+});
+
+test('staging config binds no DNDR collector and production config has none yet', async () => {
+  const fs = await import('node:fs');
+  const cfg = fs.readFileSync(new URL('../workers/web/wrangler.jsonc', import.meta.url), 'utf8');
+  assert.doesNotMatch(cfg, /"services"\s*:/);
+  assert.doesNotMatch(cfg, /DNDR_COLLECTOR/);
 });

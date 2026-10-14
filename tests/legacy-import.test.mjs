@@ -125,3 +125,52 @@ test('CRLF files hash the same lines as LF files', async () => {
   const b = await planCorpus(S1.replace(/\n/g, '\r\n'));
   assert.deepEqual(a.records.map((r) => r.recordId), b.records.map((r) => r.recordId));
 });
+
+test('a realistic-size log (1,200 lines) imports within D1 parameter limits, idempotently', async () => {
+  const db = D1Sqlite.analytics();
+  let text = '';
+  for (let i = 0; i < 1200; i++) {
+    const minute = String(i % 60).padStart(2, '0');
+    const hour = String(1 + (Math.floor(i / 60) % 11)).padStart(2, '0');
+    text += `${line(`2026-08-${String(1 + Math.floor(i / 660)).padStart(2, '0')} ${hour}:${minute}:${String(i % 60).padStart(2, '0')} PM`, `203.0.113.${i % 250}`, `/item/${i}/`)}\n`;
+  }
+  const plan = await planCorpus(text);
+  const report = await applyPlan(db, plan, { actor: 'test', now: 1791976000 });
+  assert.ok(Object.values(report.checks).every(Boolean), JSON.stringify(report.checks));
+  assert.equal(db.count('visitor_events'), 1200);
+  await applyPlan(db, plan, { actor: 'test', now: 1791976001 });
+  assert.equal(db.count('visitor_events'), 1200);
+});
+
+test('the offline .sql rendering produces exactly the same database as applyPlan', async () => {
+  const { importStatements, renderSql } = await import('../workers/shared/legacy-import.mjs');
+  const tricky = `${S2}${JSON.stringify({ ip: '203.0.113.90', date: '2026-07-11 01:02:03 PM', country: "Côte d'Ivoire", city: 'A  B, C', source: 'Unknown', device: 'Desktop / Chrome 1', ua_full: "Mozilla  'quoted' ? ; -- x", referrer: 'Direct', referrer_raw: "https://x.example/?q='a'&b=?", path: "/item/it's/" })}\n`;
+  const plan = await planCorpus(tricky);
+  const a = D1Sqlite.analytics();
+  await applyPlan(a, plan, { actor: 'x', now: 100 });
+  const b = D1Sqlite.analytics();
+  b.sqlite.exec(renderSql(importStatements(plan, { actor: 'x', now: 100 })));
+  const dump = (db) => JSON.stringify([
+    db.sqlite.prepare('SELECT * FROM visitor_events ORDER BY id').all(),
+    db.sqlite.prepare('SELECT * FROM analytics_import_records ORDER BY line_no').all(),
+  ]);
+  assert.equal(dump(b), dump(a));
+  // Running the file twice adds nothing.
+  b.sqlite.exec(renderSql(importStatements(plan, { actor: 'x', now: 100 })));
+  assert.equal(dump(b), dump(a));
+  const row = b.sqlite.prepare("SELECT user_agent, city FROM visitor_events WHERE ip = '203.0.113.90'").get();
+  assert.equal(row.user_agent, "Mozilla  'quoted' ? ; -- x");
+  assert.equal(row.city, 'A  B, C');
+});
+
+test('re-running the same corpus after a Delete Before Date does not resurrect deleted rows', async () => {
+  const { deleteBefore, previewDelete } = await import('../workers/boss/src/analytics-db.mjs');
+  const db = D1Sqlite.analytics();
+  const plan = await planCorpus(S1);
+  await applyPlan(db, plan, { actor: 'x', now: 1 });
+  const p = await previewDelete(db, '2026-08-01');
+  const r = await deleteBefore(db, { cutoffDay: '2026-08-01', expectedCount: p.count, actor: 'x', opId: 'op_22222222-dddd', now: 2 });
+  assert.equal(r.ok, true);
+  await applyPlan(db, plan, { actor: 'x', now: 3 });
+  assert.equal(db.count('visitor_events'), 0);
+});

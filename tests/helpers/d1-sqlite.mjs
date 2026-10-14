@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
+export const D1_MAX_BOUND_PARAMETERS = 100;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 class Statement {
@@ -16,6 +17,8 @@ class Statement {
   }
 
   bind(...args) {
+    // Cloudflare D1 refuses more than 100 bound parameters per statement.
+    if (args.length > D1_MAX_BOUND_PARAMETERS) throw new Error(`D1_ERROR: too many SQL variables (${args.length} > ${D1_MAX_BOUND_PARAMETERS})`);
     return new Statement(this.db, this.sql, args.map((a) => (a === undefined ? null : a)));
   }
 

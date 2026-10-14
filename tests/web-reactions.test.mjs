@@ -83,3 +83,12 @@ test('parseIds keeps well-formed unique ids only', () => {
   assert.deepEqual(parseIds('aw-0001, aw-0001,bad id,aw-0002,<script>'), ['aw-0001', 'aw-0002']);
   assert.deepEqual(parseIds(''), []);
 });
+
+test('reading counts for a full homepage (200 ids) stays within D1 parameter limits', async () => {
+  const db = D1Sqlite.app();
+  const ids = Array.from({ length: 200 }, (_, i) => `aw-${String(i + 1).padStart(4, '0')}`);
+  await recordReaction(db, { itemId: 'aw-0150', reaction: 'wat', ip: '1.2.3.4', secret: SECRET, publishedIds: new Set(ids), now: NOW });
+  const counts = await readCounts(db, ids);
+  assert.equal(Object.keys(counts).length, 200);
+  assert.equal(counts['aw-0150'].wat, 1);
+});

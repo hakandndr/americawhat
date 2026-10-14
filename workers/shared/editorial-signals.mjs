@@ -31,8 +31,21 @@ const STOPWORDS = new Set(('a an the and or of in on at to for from by with afte
   + 'man woman says said police cops officials report reports new news video watch photos update local after amid as about '
   + 'he she they it this that who what when where why how').split(' '));
 
-/** Lower-case content tokens of a headline; publisher suffix removed. */
+const tokenCache = new Map();
+
+/** Lower-case content tokens of a headline; publisher suffix removed (memoised). */
 export function titleTokens(title) {
+  const key = String(title ?? '');
+  let cached = tokenCache.get(key);
+  if (!cached) {
+    if (tokenCache.size > 5000) tokenCache.clear();
+    cached = computeTitleTokens(key);
+    tokenCache.set(key, cached);
+  }
+  return cached;
+}
+
+function computeTitleTokens(title) {
   const t = String(title ?? '')
     .replace(/\s+[-|–—]\s+[^-|–—]{2,60}$/, '')
     .toLowerCase()
@@ -62,11 +75,12 @@ function daysBetween(a, b) {
  */
 export function clusterCandidates(items, { threshold = 0.5, windowDays = 7 } = {}) {
   const tokens = items.map((it) => titleTokens(it.title));
+  const days = items.map((it) => { const t = Date.parse(it.date); return Number.isNaN(t) ? null : t / 86400000; });
   const parent = items.map((_, i) => i);
   const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
   for (let i = 0; i < items.length; i++) {
     for (let j = i + 1; j < items.length; j++) {
-      if (daysBetween(items[i].date, items[j].date) > windowDays) continue;
+      if (days[i] != null && days[j] != null && Math.abs(days[i] - days[j]) > windowDays) continue;
       const sameUrl = items[i].external_url && items[i].external_url === items[j].external_url;
       if (sameUrl || jaccard(tokens[i], tokens[j]) >= threshold) parent[find(i)] = find(j);
     }
@@ -120,8 +134,15 @@ const US_SIGNALS = ['florida', 'texas', 'california', 'ohio', 'georgia', 'arizon
   'massachusetts', 'connecticut', 'maine', 'vermont', 'new hampshire', 'rhode island', 'delaware', 'arkansas', 'idaho', 'montana', 'wyoming',
   'dakota', 'new mexico', 'alaska', 'hawaii', 'west virginia', 'sheriff', 'deputies', 'hoa', 'homeowners association', 'dmv', 'county'];
 
+const phraseCache = new Map();
+
 function hasPhrase(text, phrase) {
-  return new RegExp(`(^|[^a-z])${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`, 'i').test(text);
+  let re = phraseCache.get(phrase);
+  if (!re) {
+    re = new RegExp(`(^|[^a-z])${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`, 'i');
+    phraseCache.set(phrase, re);
+  }
+  return re.test(text);
 }
 
 /** 'us_likely' | 'foreign_likely' | 'unknown', with the evidence. */

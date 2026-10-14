@@ -45,9 +45,13 @@ if (write) {
   });
   await check('page view beacon stored (idempotent id)', async () => {
     const body = `path=%2Fsmoke%2F&referrer=&evt=${crypto.randomUUID()}`;
-    const send = () => get('/analytics/log_df.php', { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/x-www-form-urlencoded' }, body });
-    const a = await send();
-    const b = await send();
+    const key = process.env.AW_STAGING_TEST_KEY || '';
+    const send = (withKey) => get('/analytics/log_df.php', { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/x-www-form-urlencoded', ...(withKey ? { 'X-AW-Test-Key': key } : {}) }, body });
+    const anonymous = await send(false);
+    if (anonymous.status !== 202) return `a real visitor's view was not refused on staging (${anonymous.status})`;
+    if (!key) return 'set AW_STAGING_TEST_KEY to test the stored path';
+    const a = await send(true);
+    const b = await send(true);
     return (a.status === 200 && b.status === 200) || `${a.status}/${b.status}`;
   });
 }

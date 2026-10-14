@@ -146,69 +146,96 @@ export function corpusIdFor(sha256) {
 }
 
 /**
- * Applies a plan to ANALYTICS_DB. Safe to re-run at any point: the corpus,
- * every ledger row and every event are written with INSERT OR IGNORE keyed by
- * their identities, so a partial or repeated run never duplicates anything.
- * Lines whose identity is already stored (from an earlier snapshot) are
- * recorded as already_present. Returns a reconciliation report.
+ * The import as an ordered list of idempotent SQL statements ({ sql, args }).
+ * The same list is executed by applyPlan (Boss, tests) and rendered to a .sql
+ * file by the offline tool, so both paths behave identically:
+ *   1. the corpus row (INSERT OR IGNORE by SHA-256);
+ *   2. one ledger row per line (INSERT OR IGNORE by corpus + line). For a page
+ *      line the disposition is decided in SQL: already_present when an earlier
+ *      corpus stored or imported the same identity (even if since deleted),
+ *      before_retention_cutoff when older than an applied deletion cutoff,
+ *      otherwise imported;
+ *   3. one event per page line, inserted only when its ledger row says
+ *      imported and it is not older than an applied deletion cutoff;
+ *   4. one coverage row per corpus.
+ * Re-running any prefix or the whole list never duplicates or resurrects data.
  */
-export async function applyPlan(db, plan, { actor, now, chunkSize = 40 }) {
+export function importStatements(plan, { actor, now }) {
   const corpusId = corpusIdFor(plan.sha256);
-  const existing = await db.prepare('SELECT corpus_id FROM analytics_import_corpora WHERE content_sha256 = ?').bind(plan.sha256).first();
-  const importable = plan.records.filter((r) => r.disposition === 'imported');
-
-  // Identities stored by an earlier corpus: still present, or imported once and
-  // later removed by a Delete Before Date. Neither is inserted again.
-  const present = new Set();
-  for (let i = 0; i < importable.length; i += 80) {
-    const ids = importable.slice(i, i + 80).map((r) => r.recordId);
-    const marks = ids.map(() => '?').join(',');
-    const { results } = await db.prepare(
-      `SELECT event_uid FROM visitor_events WHERE event_uid IN (${marks}) AND COALESCE(import_corpus_id, '') <> ?
-       UNION SELECT record_id FROM analytics_import_records
-        WHERE record_id IN (${marks}) AND corpus_id <> ? AND disposition IN ('imported', 'already_present')`,
-    ).bind(...ids, corpusId, ...ids, corpusId).all();
-    for (const row of results) present.add(row.event_uid);
-  }
-  // Raw rows older than an applied retention cutoff are never brought back.
-  const floorRow = await db.prepare(
-    "SELECT MAX(cutoff_at) AS floor FROM analytics_operator_log WHERE action = 'delete_before'",
-  ).first();
-  const retentionFloor = floorRow && floorRow.floor != null ? Number(floorRow.floor) : null;
-
-  await db.prepare(
-    `INSERT OR IGNORE INTO analytics_import_corpora
+  const floor = "(SELECT COALESCE(MAX(cutoff_at), -1) FROM analytics_operator_log WHERE action = 'delete_before')";
+  const out = [{
+    sql: `INSERT OR IGNORE INTO analytics_import_corpora
        (corpus_id, content_sha256, source_system, parser_version, time_zone, line_count, first_record_at, last_record_at, imported_at, actor, summary_json)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  ).bind(corpusId, plan.sha256, SOURCE_SYSTEM, PARSER_VERSION, OWNER_TZ, plan.lineCount, plan.firstAt, plan.lastAt, now, actor,
-    JSON.stringify(plan.summary)).run();
-
-  for (let i = 0; i < plan.records.length; i += chunkSize) {
-    const statements = [];
-    for (const r of plan.records.slice(i, i + chunkSize)) {
-      let disposition = r.disposition;
-      if (disposition === 'imported' && present.has(r.recordId)) disposition = 'already_present';
-      if (disposition === 'imported' && retentionFloor != null && r.row.occurred_at < retentionFloor) disposition = 'before_retention_cutoff';
-      if (disposition === 'imported') {
-        const row = { ...r.row, received_at: now, import_corpus_id: corpusId, import_record_id: r.recordId };
-        statements.push(db.prepare(
-          `INSERT OR IGNORE INTO visitor_events (${EVENT_COLUMNS.join(', ')}) VALUES (${EVENT_COLUMNS.map(() => '?').join(', ')})`,
-        ).bind(...EVENT_COLUMNS.map((c) => row[c] ?? '')));
-      }
-      statements.push(db.prepare(
-        `INSERT OR IGNORE INTO analytics_import_records (corpus_id, line_no, record_id, disposition, event_uid, detail)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-      ).bind(corpusId, r.lineNo, r.recordId, disposition, disposition === 'imported' || disposition === 'already_present' ? r.recordId : null, r.detail || ''));
+    args: [corpusId, plan.sha256, SOURCE_SYSTEM, PARSER_VERSION, OWNER_TZ, plan.lineCount, plan.firstAt, plan.lastAt, now, actor, JSON.stringify(plan.summary)],
+  }];
+  for (const r of plan.records) {
+    if (r.disposition !== 'imported') {
+      out.push({
+        sql: `INSERT OR IGNORE INTO analytics_import_records (corpus_id, line_no, record_id, disposition, event_uid, detail) VALUES (?, ?, ?, ?, NULL, ?)`,
+        args: [corpusId, r.lineNo, r.recordId, r.disposition, r.detail || ''],
+      });
+      continue;
     }
-    await db.batch(statements);
+    out.push({
+      sql: `INSERT OR IGNORE INTO analytics_import_records (corpus_id, line_no, record_id, disposition, event_uid, detail)
+       SELECT ?, ?, ?,
+         CASE
+           WHEN EXISTS (SELECT 1 FROM visitor_events WHERE event_uid = ? AND COALESCE(import_corpus_id, '') <> ?)
+             OR EXISTS (SELECT 1 FROM analytics_import_records WHERE record_id = ? AND corpus_id <> ? AND disposition IN ('imported', 'already_present'))
+             THEN 'already_present'
+           WHEN ? < ${floor} THEN 'before_retention_cutoff'
+           ELSE 'imported'
+         END, ?, ?`,
+      args: [corpusId, r.lineNo, r.recordId, r.recordId, corpusId, r.recordId, corpusId, r.row.occurred_at, r.recordId, r.detail || ''],
+    });
+    const row = { ...r.row, received_at: now, import_corpus_id: corpusId, import_record_id: r.recordId };
+    out.push({
+      sql: `INSERT OR IGNORE INTO visitor_events (${EVENT_COLUMNS.join(', ')})
+       SELECT ${EVENT_COLUMNS.map(() => '?').join(', ')}
+        WHERE EXISTS (SELECT 1 FROM analytics_import_records WHERE corpus_id = ? AND line_no = ? AND disposition = 'imported')
+          AND ? >= ${floor}`,
+      args: [...EVENT_COLUMNS.map((c) => row[c] ?? ''), corpusId, r.lineNo, r.row.occurred_at],
+    });
   }
+  if (plan.firstAt != null) {
+    out.push({
+      sql: `INSERT INTO analytics_coverage (kind, started_at, ended_at, note, created_at)
+       SELECT 'legacy_corpus', ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM analytics_coverage WHERE kind = 'legacy_corpus' AND note = ?)`,
+      args: [plan.firstAt, plan.lastAt, `${corpusId} ${plan.lineCount} lines`, now, `${corpusId} ${plan.lineCount} lines`],
+    });
+  }
+  return out;
+}
 
-  if (!existing && plan.firstAt != null) {
-    await db.prepare(
-      `INSERT INTO analytics_coverage (kind, started_at, ended_at, note, created_at) VALUES ('legacy_corpus', ?, ?, ?, ?)`,
-    ).bind(plan.firstAt, plan.lastAt, `${corpusId} ${plan.lineCount} lines`, now).run();
+/** Applies a plan to ANALYTICS_DB in atomic chunks. Safe to re-run at any point. */
+export async function applyPlan(db, plan, { actor, now, chunkSize = 40 }) {
+  const statements = importStatements(plan, { actor, now });
+  for (let i = 0; i < statements.length; i += chunkSize) {
+    await db.batch(statements.slice(i, i + chunkSize).map((s) => db.prepare(s.sql).bind(...s.args)));
   }
   return reconcile(db, plan);
+}
+
+/** A SQL literal for the offline .sql rendering. */
+export function sqlLiteral(value) {
+  if (value === null || value === undefined) return 'NULL';
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) throw new Error('non-finite number');
+    return String(value);
+  }
+  return `'${String(value).replace(/\u0000/g, '').replace(/'/g, "''")}'`;
+}
+
+/** Renders the statements as a .sql text for `wrangler d1 execute --file`. */
+export function renderSql(statements) {
+  return statements.map((s) => {
+    let i = 0;
+    // Collapse the template's whitespace first, so values are never altered.
+    const text = s.sql.replace(/\s+/g, ' ').trim().replace(/\?/g, () => sqlLiteral(s.args[i++]));
+    if (i !== s.args.length) throw new Error('placeholder/argument mismatch');
+    return `${text};`;
+  }).join('\n') + '\n';
 }
 
 /** Ledger and event counts for one corpus, with the invariants checked. */
