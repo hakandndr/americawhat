@@ -198,3 +198,10 @@ test('a production-branch write is refused by a staging Boss', async () => {
   const res = await post(ctx, '/published/delete', { id: 'aw-0135', confirm: 'aw-0135' });
   assert.match(loc(res), /must not write main/);
 });
+
+test('untrusted feed URLs are never rendered as javascript: links', async () => {
+  const { safeHref, h } = await import('../workers/boss/src/html.mjs');
+  assert.equal(safeHref('javascript:alert(1)'), '#');
+  assert.equal(safeHref('data:text/html,x'), '#');
+  assert.equal(safeHref('https://example.com/a?b="c"'), h('https://example.com/a?b=%22c%22'));
+});

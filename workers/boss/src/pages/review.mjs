@@ -5,7 +5,7 @@
 import { buildReview, CATEGORIES, isOriginalSourceUrl, REJECTION_REASONS, STATUSES } from '../../../shared/editorial-signals.mjs';
 import { approveBatch, rejectBatch, serialize } from '../editorial.mjs';
 import { CONTENT_PATHS } from '../github.mjs';
-import { h, hidden, page, select } from '../html.mjs';
+import { h, hidden, page, safeHref, select } from '../html.mjs';
 import { formatLa } from '../../../shared/time.mjs';
 
 const REASON_OPTIONS = Object.entries(REJECTION_REASONS).map(([k, v]) => [k, `${k} — ${v}`]);
@@ -31,13 +31,13 @@ function entryCard(entry, i) {
     entry.drafted ? '<span class="tag ok">comment drafted</span>' : '',
   ].join('');
   const search = `https://www.google.com/search?q=${encodeURIComponent(`${rep.title} ${rep.source_domain || ''}`)}`;
-  const members = entry.members.map((m) => `<li>${h(m.source_name || m.source_domain)} <span class="muted">${h(m.source_domain)} · ${h(m.date)}</span> — <a href="${h(m.external_url)}" rel="noreferrer noopener" target="_blank">link</a>${m.id === rep.id ? ' <b>(shown)</b>' : ''}</li>`).join('');
+  const members = entry.members.map((m) => `<li>${h(m.source_name || m.source_domain)} <span class="muted">${h(m.source_domain)} · ${h(m.date)}</span> — <a href="${safeHref(m.external_url)}" rel="noreferrer noopener" target="_blank">link</a>${m.id === rep.id ? ' <b>(shown)</b>' : ''}</li>`).join('');
   return `<div class="card">
   ${hidden(`${prefix}id`, rep.id)}${hidden(`${prefix}others`, others.join(','))}
   <div>${tags}</div>
   <p><b>${h(rep.title)}</b><br><span class="muted">${h(rep.source_name)} · ${h(rep.source_domain)} · ${h(rep.date)} · fetched as ${h(rep.category)}</span></p>
   ${rep.excerpt ? `<p class="muted">${h(rep.excerpt)}</p>` : ''}
-  <p class="muted">Read the source before approving. <a href="${h(rep.external_url)}" rel="noreferrer noopener" target="_blank">Open the fetched link</a> · <a href="${h(search)}" rel="noreferrer noopener" target="_blank">find the original article</a></p>
+  <p class="muted">Read the source before approving. <a href="${safeHref(rep.external_url)}" rel="noreferrer noopener" target="_blank">Open the fetched link</a> · <a href="${safeHref(search)}" rel="noreferrer noopener" target="_blank">find the original article</a></p>
   <details><summary>Edit the story (${h(entry.copies)} candidate${entry.copies === 1 ? '' : 's'})</summary>
   <div class="grid">
     <div><label>Title</label><input name="${prefix}title" value="${h(rep.title)}"></div>

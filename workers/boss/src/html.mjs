@@ -64,6 +64,14 @@ export function errorPage(status, message) {
   return new Response(`<!doctype html><meta charset="utf-8"><title>${status}</title><p>${h(message)}</p>`, { status, headers: BOSS_HEADERS });
 }
 
+/** An href only for http(s) URLs (feed data is untrusted); anything else becomes "#". */
+export function safeHref(url) {
+  try {
+    const u = new URL(String(url ?? ''));
+    return u.protocol === 'https:' || u.protocol === 'http:' ? h(u.href) : '#';
+  } catch { return '#'; }
+}
+
 export function hidden(name, value) {
   return `<input type="hidden" name="${h(name)}" value="${h(value)}">`;
 }
