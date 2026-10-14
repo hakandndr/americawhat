@@ -1,5 +1,5 @@
 import data from "../data/published.json";
-import { slugify } from "./slug.js";
+import { assignSlugs } from "./slug.js";
 
 // ── Item schema (canonical fields) ───────────────────────────────
 // Required:  id, title, comment, category, date
@@ -17,15 +17,9 @@ function sourceUrlOf(item) {
 }
 
 // Enrich each published item with a unique, stable slug + derived status.
-const seen = new Map();
-export const items = data.items.map((item) => {
-  let base = item.slug ? slugify(item.slug) : slugify(item.title);
-  if (!base) base = item.id;
-  let slug = base;
-  const count = seen.get(base) ?? 0;
-  if (count > 0) slug = `${base}-${count + 1}`;
-  seen.set(base, count + 1);
-
+const slugs = assignSlugs(data.items);
+export const items = data.items.map((item, index) => {
+  const slug = slugs[index];
   const status = item.status || item.type || (sourceUrlOf(item) ? "REAL" : "UNVERIFIED");
   return { ...item, slug, status };
 });
