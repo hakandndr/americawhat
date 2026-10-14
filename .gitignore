@@ -32,3 +32,4 @@ tmp/
 .cache/
 reports/
 coverage/
+.venv/

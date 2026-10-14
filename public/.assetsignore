@@ -1,0 +1,16 @@
+# Files that exist in dist/ only for the legacy Hostinger deploy. They must
+# never be uploaded as Cloudflare static assets.
+*.php
+**/*.php
+.htaccess
+**/.htaccess
+analytics
+analytics/**
+studio
+studio/**
+boss
+boss/**
+aw_votes.json
+**/aw_votes.json
+*.txt.bak
+.ftp-deploy-sync-state.json

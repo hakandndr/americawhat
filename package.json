@@ -6,10 +6,19 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
+    "build:og": "python scripts/gen-og.py",
+    "verify:static": "node scripts/build/verify-static.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.1.6",
     "astro": "^4.16.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.147.0"
+  },
+  "engines": {
+    "node": ">=22 <23"
   }
 }

@@ -1,12 +1,19 @@
 const API = "/analytics";
 
 // ── Analytics beacon ──
+// One POST per page view. `evt` is a per-view id so a retried delivery can
+// never be counted twice. The same URL works on both hosts during migration.
 (function () {
   try {
-    const p = location.pathname || "/";
-    const r = encodeURIComponent(document.referrer || "");
-    fetch(`${API}/log_df.php?path=${encodeURIComponent(p)}&referrer=${r}`, {
-      method: "GET",
+    const body = new URLSearchParams({
+      path: location.pathname || "/",
+      referrer: document.referrer || "",
+      evt: crypto && crypto.randomUUID ? crypto.randomUUID() : "",
+    });
+    fetch(`${API}/log_df.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
       keepalive: true,
     }).catch(() => {});
   } catch (e) {}
