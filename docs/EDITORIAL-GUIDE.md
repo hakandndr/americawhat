@@ -106,7 +106,7 @@ case.** Three real examples from this project:
   himself, had women's underwear and sex toys in his car, and had a prior
   indecent-exposure conviction. **Rejected.**
 - *"Bizarre 'Cat in the Hat' trend prompts police warning"* — sounded whimsical.
-  It was an AI-generated image trend used to make violent threats against named
+  It was a fabricated-image trend used to make violent threats against named
   schools. **Rejected.**
 - *"Florida man dumped bag of urine, feces and hot sauce on ex"* — reads as
   classic absurd. The actual charge was domestic battery by strangulation.
