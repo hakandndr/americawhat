@@ -46,6 +46,15 @@ async function uploadedText(form) {
   return file.text();
 }
 
+/** Outside production every HTML page carries a visible environment banner. */
+async function environmentBanner(response, env) {
+  if (env.ENVIRONMENT === 'production') return response;
+  if (!(response.headers.get('Content-Type') || '').startsWith('text/html')) return response;
+  const label = env.ENVIRONMENT === 'local' ? 'LOCAL PREVIEW — synthetic data, in-memory GitHub, nothing leaves this machine' : `${String(env.ENVIRONMENT || 'unknown').toUpperCase()} — not production`;
+  const html = (await response.text()).replace('<body>', `<body><div style="background:#ffb347;color:#000;padding:6px 16px;font:600 13px system-ui">${label}</div>`);
+  return new Response(html, response);
+}
+
 export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Date.now() } = {}) {
   const nowSec = () => Math.floor(clock() / 1000);
 
@@ -282,7 +291,8 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
   return {
     async fetch(request, env) {
       try {
-        return await handle(request, env);
+        const response = await handle(request, env);
+        return environmentBanner(response, env);
       } catch (error) {
         console.error(`boss: unhandled ${error instanceof Error ? error.message : String(error)}`);
         return errorPage(500, 'Internal error. Nothing was changed unless a success message was shown.');
