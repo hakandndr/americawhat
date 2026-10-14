@@ -5,9 +5,10 @@ in Git history; dated statements are historical once superseded.
 
 **As of:** 2026-10-14
 
-Status words: **production** (serving americawhat.com), **staging** (deployed to
-an isolated AmericaWhat staging resource), **tested locally** (automated tests
-and/or local workerd), **implemented** (code exists), **planned**.
+Status words: **Implemented** (code exists) · **Tested locally** (automated
+tests and/or local workerd) · **Staging verified** (checked on the deployed
+AmericaWhat staging resources) · **Production verified** · **Blocked** ·
+**Awaiting owner approval**.
 
 ---
 
@@ -18,10 +19,10 @@ and/or local workerd), **implemented** (code exists), **planned**.
   panel at `/boss/` (GitHub Contents API, password login).
 - DNS at Hostinger (`dns-parking.com`); email on Hostinger (MX/SPF/DKIM/DMARC) —
   email stays there by owner decision.
-- `main` head at the start of this work: `276b94d` (fetch commit, 2026-10-14).
-- **Content (verified on `main`, 2026-10-14):** 124 published (highest id
-  `aw-0135`), 125 pending (none drafted), 14 RSS sources, fetch three times a
-  day, all recent fetch runs green. Last panel approval and deploy: 2026-10-01.
+- `origin/main` at `302549b` (fetch commit). **Content (verified on `main`,
+  2026-10-14):** 124 published (highest id `aw-0135`), 130 pending (none
+  drafted), 14 RSS sources, fetch three times a day, recent fetch runs green.
+  Last panel approval and deploy: 2026-10-01.
 - **Reactions (verified via the live read endpoint):** 13 votes on 9 items.
 - **Visitor history:** Hostinger log since 2026-07-07; DNDR holds 1,031
   imported + 29 relayed rows for `site_americawhat` (read-only aggregate query);
@@ -43,33 +44,40 @@ and/or local workerd), **implemented** (code exists), **planned**.
 
 ## Cloudflare-native replacement — branch `dev/cloudflare-native`
 
+Deployed source revision: **`636936f`** (later commits on the branch change
+documentation only). `/api/health` on staging reports `"release":"636936f"`.
+
 | Part | Status | Evidence |
 |---|---|---|
-| Static site on Workers Static Assets (`americawhat-web`) | **staging** | `https://americawhat-web-staging.hakan-c89.workers.dev`, version `3bdcc891-c07a-4163-9ac8-823d13a40ace`; smoke 23/23 |
-| URL/SEO parity with production | **tested locally** | `npm run parity:live`: 131/131 sitemap URLs, 40 sampled pages identical in canonical, title, og:image, JSON-LD; `/about` → 301 |
-| Static upload excludes PHP/config/logs/secrets | **staging** | `verify:static` 0 failures; smoke: 9 forbidden paths answer 404 |
-| Reactions API (atomic, guarded, POST-only) | **staging** | real D1: repeat vote counted once; local workerd: 40 parallel votes = 40 |
-| First-party page-view collector | **staging** | real D1: retried beacon stored once; GET stores nothing |
-| DNDR forwarding (source-first, outbox) | **implemented, tested locally** with a mock binding; **not configured** (needs a DNDR producer — blocked, separate approval) |
-| Legacy log importer (DNDR identity, DST, ledger, idempotent) | **tested locally** (unit + workerd); no real log imported anywhere |
-| Reaction snapshot importer (baseline/delta, refuses decreases) | **tested locally**; no real votes imported |
-| Boss Worker (`americawhat-boss`) | **tested locally** in workerd (`npm run test:boss-preview` 11/11); uploaded to staging as version `9a8d649d-1ed2-4b17-b17d-7f2bafc47fa1` with **no route** (Cloudflare answers 1042) |
-| Boss: Access JWT verification, CSRF/Origin | **tested locally** (forged, expired, wrong audience/issuer/email, missing config) |
-| Boss: weekly review, one-commit approvals, URL protection | **tested locally** against an in-memory GitHub, including a concurrent fetch commit |
-| Boss Analytics, exports, manual Delete Before Date, audit | **tested locally** |
-| D1 `americawhat-app-staging` / `americawhat-analytics-staging` | **staging** (`a3c9ff1f-…`, `306b9ee6-…`), migrations 0001 applied, synthetic rows only |
-| Production Workers, D1, Access application, custom domains | **planned** — not created |
-| CI (`ci.yml`, no deploy, no secrets) | GitHub run on `dev/cloudflare-native`: success |
+| Static site on Workers Static Assets | **Staging verified** | `americawhat-web-staging` version `02c0da48-f3a2-47ad-99e0-8358b9244ac7`; smoke 23/23 |
+| URL/SEO parity with production | **Staging verified** (build vs live) | `npm run parity:live`: 131/131 sitemap URLs, 40 sampled pages identical, `/about` → 301 |
+| Static upload excludes PHP/config/logs/secrets | **Staging verified** | `verify:static` 0 failures; 9 forbidden paths answer 404 |
+| Reactions API (atomic, guarded, POST-only, chunked reads) | **Staging verified** | 124-id read 200 (was 500 before the fix); repeat vote counted once; 40 parallel votes = 40 (local workerd) |
+| Page-view collector, staging gate | **Staging verified** | anonymous beacon → 202, nothing stored; keyed smoke beacon stored once; no new real rows after the gate |
+| DNDR forwarding | **Implemented, tested locally**; **Blocked** (needs a DNDR producer, DNDR-side approval) | mock binding tests |
+| Legacy log importer (SQL statements, Boss and offline .sql) | **Tested locally**; offline path **staging verified** with a synthetic file (applied twice, second run added nothing) | no real log imported |
+| Reaction snapshot importer | **Tested locally** (unit + workerd preview) | no real votes imported |
+| Boss Worker | **Tested locally** (`npm run test:boss-preview` 18/18 in workerd); uploaded to staging as version `85119d25-bc70-4871-a5f2-f9dcb3dbf896` with **no route** (unreachable); Access-protected staging **Awaiting owner approval** (CLOUDFLARE-MIGRATION.md §3a) | |
+| Boss auth, CSRF, atomic publishing, URL protection, analytics, retention, audit | **Tested locally** | `npm test` 100/100 |
+| Production Workers, D1, Access, custom domains | **Awaiting owner approval** — none created | |
+| CI (`ci.yml`, no deploy, no secrets) | green on `025e01c`; latest run: see the final report | |
 
-Test suite: `npm test` — 92 tests, all passing (2026-10-14).
+### Staging data (verified 2026-10-14)
+
+`americawhat-analytics-staging` holds 3 page views from **real** browser visits
+(real IPs and user agents, before the gate), 4 smoke rows and 5 synthetic
+legacy rows; `americawhat-app-staging` holds 3 votes (2 not from tests).
+Nothing was deleted — **Awaiting owner approval** to delete or keep.
 
 ## Known gaps / backlog
 
 1. **Production migration approvals** — the ordered list is in
    `CLOUDFLARE-MIGRATION.md` §7. Nothing beyond staging has been done.
+1a. **Workers plan unknown** — on the Free plan (10 ms CPU) the Weekly review
+   page may hit the CPU limit (measured ~11 ms warm, ~31 ms cold in Node).
 2. **Hostinger inventory and backup** — not done yet (owner action,
-   `CLOUDFLARE-MIGRATION.md` §1). The server's current `log_df.php` must be
-   confirmed to read POST before `dev/cloudflare-native` is merged.
+   `CLOUDFLARE-MIGRATION.md` §1), including the pre-merge checks (server
+   `log_df.php` reads POST; `ftp-diff` shows no PHP/`.htaccess` change).
 3. **Privacy promise already exceeded** — the page says ~90 days; the log is
    older and nothing deletes it (`ANALYTICS.md` §6). Owner decision needed.
 4. **Original source URLs** — 108 of 124 published items and almost all pending
@@ -87,9 +95,10 @@ Test suite: `npm test` — 92 tests, all passing (2026-10-14).
 
 ## Repository
 
-- Local workspace `D:\IT\AmericaWhat\americawhat` fast-forwarded to `276b94d`
-  (it was 57 commits behind; no local work lost). Recovery bundle and backup refs
-  in `.git/aw-backups/20261014-sprint/` and `refs/aw-backup/pre-sprint/*`.
+- Local `main` points at `origin/main` (`302549b`); `origin/main` is merged into
+  `dev/cloudflare-native` (merge `e36b707`), never the reverse. Recovery bundle
+  and backup refs in `.git/aw-backups/20261014-sprint/`,
+  `refs/aw-backup/pre-sprint/*` and `refs/aw-backup/pre-verify/dev` (`025e01c`).
 - Local branch `docs/neutral-tooling-note` (2 commits, owner-authored) is merged
   into `dev/cloudflare-native`; the branch itself is kept.
 - Remote branch `staging/dndr-analytics` untouched.

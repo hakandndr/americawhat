@@ -9,7 +9,7 @@ file first, then `CURRENT-STATE.md` (what is live, what is only prepared), then
 **Admin panel:** https://americawhat.com/boss/ today (password-protected PHP);
 the replacement is `boss.americawhat.com` behind Cloudflare Access (prepared, not live)
 **Owner:** Hakan Dundar
-**Last updated:** 2026-10-14
+**Last updated:** 2026-10-14 (verification phase)
 
 ---
 
