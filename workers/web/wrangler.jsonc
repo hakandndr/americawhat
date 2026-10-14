@@ -18,13 +18,13 @@
     "run_worker_first": true
   },
   "d1_databases": [
-    { "binding": "APP_DB", "database_name": "americawhat-app-staging", "database_id": "REPLACE_WITH_STAGING_APP_DB_ID", "migrations_dir": "../../migrations/app" },
-    { "binding": "ANALYTICS_DB", "database_name": "americawhat-analytics-staging", "database_id": "REPLACE_WITH_STAGING_ANALYTICS_DB_ID", "migrations_dir": "../../migrations/analytics" }
+    { "binding": "APP_DB", "database_name": "americawhat-app-staging", "database_id": "a3c9ff1f-05c2-4ed6-bb9e-4ca41f4cc9e2", "migrations_dir": "../../migrations/app" },
+    { "binding": "ANALYTICS_DB", "database_name": "americawhat-analytics-staging", "database_id": "306b9ee6-2529-4f95-b43c-c7cd9dbf0a3c", "migrations_dir": "../../migrations/analytics" }
   ],
   "vars": {
     "ENVIRONMENT": "staging",
-    "SITE_HOSTNAME": "americawhat-web-staging.workers.dev",
-    "PUBLIC_ORIGINS": "REPLACE_WITH_STAGING_WORKERS_DEV_ORIGIN"
+    "SITE_HOSTNAME": "americawhat-web-staging.hakan-c89.workers.dev",
+    "PUBLIC_ORIGINS": "https://americawhat-web-staging.hakan-c89.workers.dev"
   },
   "observability": { "enabled": true },
   "env": {
