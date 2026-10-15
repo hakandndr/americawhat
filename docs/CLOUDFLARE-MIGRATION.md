@@ -10,6 +10,13 @@ approval. Nothing in this document has been executed in production.
 
 ## 0. Status of the preparation
 
+En son preflight: Boss renk commit’i `0f3fe02`, 117/18 yerel kontroller başarılı;
+web staging hâlâ `636936f`, aktif version UUID ve D1 uyumu gerçek API/SELECT
+ile doğrulandı. Boss Access app 0/AUD boş/secret eksik ve URL kapalıdır.
+[STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) bu durumun kanıtı ve sonraki
+ayrı onaylı staging-only rollout/rollback reçetesidir. Migration gerekmiyor;
+üretim/DNS/Hostinger/mail/final dosyalar bu adımın kapsamında değildir.
+
 2026-10-14 güvenlik/Boss sprinti: araç zinciri ve navy/kırmızı Boss yalnızca
 `codex/security-boss` üzerinde entegre/test edildi. Canlı staging hâlâ
 `636936f`; production dağıtımı yapılmadı. Güncel salt okunur kanıt/bilinmeyenler

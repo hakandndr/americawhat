@@ -23,7 +23,7 @@ Yalnızca renk eşlemesinde gereken erişilebilirlik istisnaları:
 - Public `--dim-2` #6d7ea6 kartta 4,18:1; küçük Boss etiketinde kullanılmaz.
   Aynı public paletteki `--dim` kartta 6,47:1 ve tüm küçük etiketlerde korunur.
 - Beyaz yazı public kırmızıda 4,23:1; buton yazısı `--on-accent:#000` ile
-  kırmızıda 4,97:1, coral hover’da 6,78:1 olur. Buton boyutu/yazı tipi aynı.
+  kırmızıda 4,97:1, coral hover’da 6,72:1 olur. Buton boyutu/yazı tipi aynı.
 - Ayraçlar ince public tonlarında kalır; form/secondary button/choice sınırları
   `--control-line:var(--muted)` ile ≥3:1, focus coral ile ≥3:1 olur.
 - Yeşil başarı, amber uyarı, mavi bilgi renkleri korunur. Hata/destructive

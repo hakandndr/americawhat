@@ -1,5 +1,25 @@
 # americawhat — Operations
 
+## Geçerli staging ön kontrolü (2026-10-14)
+
+Boss renk commit’i `0f3fe02`, dal/worktree `codex/security-boss` /
+`D:\IT\AmericaWhat\americawhat\tmp\security-boss`. 117 test/18 workerd;
+public kaynak aynı. [STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md), geçerli
+Access dashboard adımları, exact version UUID’leri, content merge ve staging-only
+deploy/rollback planıdır; aşağıdaki eski deploy reçetelerini doğrudan çalıştırma.
+Bu sprint yalnızca yerel/salt okunur; uzak yazım onayı yoktur.
+
+Web staging `636936f`, aktif version `02c0da48-f3a2-47ad-99e0-8358b9244ac7`.
+Boss URL kapalı/Access app yok/AUD ve secrets eksik. Mevcut D1 ID/DDL uyumlu;
+bu aday için migration apply/reset/seed gerekmez. Uzak rollback uygulanmadı;
+önceki version hedefi ve CLI sözdizimi okundu, gerçek prova ayrı onay bekler.
+
+Salt okunur Wrangler işlemlerinde bu makinedeki geçersiz ortam token’ı 9109
+üretirse yalnızca o shell’de `Remove-Item Env:CLOUDFLARE_API_TOKEN` kullanıp
+mevcut doğru OAuth oturumunu doğrula; sistem/env profiline dokunma. Secret
+değerini terminale/rapora yazma. Boss token’ının repo/branch ayrımı planda
+açıklanır; sahibinin production write credential’ını staging’de kullanma.
+
 ## Güncel güvenlik/Boss çalışma alanı (2026-10-14)
 
 `D:\IT\AmericaWhat\americawhat\tmp\security-boss`, `codex/security-boss`.

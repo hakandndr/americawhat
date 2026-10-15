@@ -1,6 +1,22 @@
 # americawhat — Handoff
 
-## Güncel devir — güvenlik ve Boss sprinti (2026-10-14)
+## Son devir — Boss renkleri ve staging preflight (2026-10-14)
+
+`codex/security-boss` üzerinde `3730297` sonrası Boss-only renk commit’i
+`0f3fe02`; sonrasında preflight belgeleri. Çalışma alanı aynı `tmp/security-boss`.
+Public kaynak, backend, tablo/form/layout aynı. 117 test, 18 local workerd,
+162 sayfa/parity ve audit 0. Sahibi güncel local Boss’u 18828’de inceleyebilir.
+
+Sonraki ayrıca onaylı iş [STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) planıdır.
+Staging gerçekten `636936f`, version UUID’si kaydedildi. D1 uyumlu; migration
+gerekmez. Boss Access app 0, AUD boş ve iki secret eksik; URL kapalı kalmalı.
+Production repo PAT’i branch ismiyle izole olmaz; ayrı sandbox content repo
+önerisi/sunucu tarafı ref koruması onaylanmadan gerçek editorial test yok.
+Güncel main içerik merge’i, staging config commit’i ve tam SHA doğrulaması
+henüz yapılmadı. Gerçek rollback provası da ayrı izin bekler. Push/deploy/merge
+yapılmadı; Hostinger mail/legacy/manual retention kararları değişmedi.
+
+## Önceki devir — güvenlik ve Boss sprinti (2026-10-14)
 
 Çalışmaya `D:\IT\AmericaWhat\americawhat\tmp\security-boss` /
 `codex/security-boss` üzerinde devam edilir. Onaylı `design/staging-refinement`

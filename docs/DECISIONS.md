@@ -166,6 +166,24 @@ başarılıdır. Gerçek staging Access/CPU/credential testleri ayrı onaylı so
 Yeni uzak main içerikleri için sıradan merge planı hazırlanır; bu sprintte
 merge/push/deploy veya gerçek veri işlemi yapılmaz. Ayrıntı INTEGRATION-SPRINT.md.
 
+## D-27 Boss renk uyumu, public kaynağı değiştirmeden
+
+Sahibi mevcut layout’u beğendi; yalnızca renk uyumu istedi. `0f3fe02` public
+night/card/ink/dim/red/red-hot/line değerlerini ayrı Boss CSS token’larına
+eşler. İnce ayraçlar aynı; küçük metin ve form/focus sınırlarında erişilebilir
+public ton seçimi, kırmızı butonda kontrast için siyah metin istisnası vardır.
+Layout/typography/spacing/backend aynı; 117 test/18 workerd. Ayrıntı BOSS-THEME.md.
+
+## D-28 Staging preflight dağıtım izni değildir; Git credential izolasyonu
+
+Web staging `636936f` ve iki D1 şeması gerçek salt okunur kanıtla doğrulandı;
+yeni migration gerekmiyor. Boss Access uygulaması yok, AUD/secret eksik,
+URL kapalı kalır. Content merge/config tamamlandıktan sonra tam SHA pinlenerek
+ayrı onayla staging rollout/test/rollback provası yapılır. Fine-grained PAT’in
+branch scope’u yoktur; ayrı staging içerik reposu önerisi veya production
+ref’lerine etkili server-side engel sahibi onayı bekler. Uzak kaynak/kimlik/
+workflow/tarihçe bu sprintte değiştirilmez. STAGING-PREFLIGHT.md geçerli plandır.
+
 ## Open questions (owner)
 
 1. Legacy geçmişin korunması karara bağlandı (D-24); final log/oy snapshot’ları, reconciliation ve manuel retention uygulama zamanı cutover hazırlığında tamamlanmalı.
