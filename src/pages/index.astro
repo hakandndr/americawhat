@@ -23,6 +23,7 @@ const trendingStories = items.map((item) => ({ id: item.id, title: item.title, h
     </div>
   </section>
 
+  {/* Hidden and empty here; the web Worker fills it (workers/web/src/trending.mjs). */}
   <section class="trending" id="trending" hidden>
     <div class="trending-head"><span class="trending-flag">Trending</span> — most-reacted right now</div>
     <ol class="trending-list" id="trending-list"></ol>
@@ -33,42 +34,7 @@ const trendingStories = items.map((item) => ({ id: item.id, title: item.title, h
 
   <script id="trending-stories" type="application/json" set:html={JSON.stringify(trendingStories).replace(/</g, "\u003c")} />
 
-  <script>
-    // ── Trending: top-5 by total reactions (client-side, live) ──
-    (async function () {
-      const stories = JSON.parse(document.getElementById("trending-stories")?.textContent || "[]");
-      if (!stories.length) return;
-      const ids = stories.map((story) => story.id);
-      let data = {};
-      try {
-        const res = await fetch("/analytics/get_votes.php?ids=" + ids.join(","));
-        data = await res.json();
-      } catch (e) {
-        return;
-      }
-      const esc = (s) =>
-        String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-      const rows = [];
-      stories.forEach((story) => {
-        const id = story.id;
-        const counts = (data && data[id]) || {};
-        const total = Object.values(counts).reduce((a, b) => a + (parseInt(b, 10) || 0), 0);
-        rows.push({ title: story.title, href: story.href, total });
-      });
-      const top = rows.filter((r) => r.total > 0).sort((a, b) => b.total - a.total).slice(0, 5);
-      if (top.length < 3) return; // stay hidden until there's real signal
-      const ol = document.getElementById("trending-list");
-      const sec = document.getElementById("trending");
-      if (!ol || !sec) return;
-      ol.innerHTML = top
-        .map(
-          (r, i) =>
-            `<li><a href="${esc(r.href)}"><span class="trending-rank">${i + 1}</span><span class="trending-title">${esc(r.title)}</span><span class="trending-count">${r.total}</span></a></li>`
-        )
-        .join("");
-      sec.hidden = false;
-    })();
-  </script>
+  <script src="../scripts/trending.js"></script>
 
   <script src="../scripts/tracking.js"></script>
 </Base>

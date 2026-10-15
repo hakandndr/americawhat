@@ -154,7 +154,7 @@ if (process.argv.includes('--serve')) {
     if (!href) return false;
     const response = await fetch(`${ORIGIN}${href}`);
     const html = await response.text();
-    return response.status === 200 && html.includes('Back to Analytics') && html.includes('Activity history') && html.includes('snapshot ALL #');
+    return response.status === 200 && html.includes('Back to Analytics') && html.includes('Activity history') && html.includes('snapshot Global #');
   });
   await check('POST with a foreign Origin refused', async () => (await fetch(`${ORIGIN}/review/apply`, { method: 'POST', headers: { Origin: 'https://evil.example', 'Content-Type': 'application/x-www-form-urlencoded' }, body: `csrf=${csrfFrom(reviewHtml)}&count=0` })).status === 403);
   await check('reject one candidate = one commit on the content branch', async () => {

@@ -60,7 +60,8 @@ test('filtered ID gaps, view counts, days, both exports and durable ALL/TODAY/IP
   for (let p = 1; p <= plan.pages.length; p++) {
     const result = await read(db, { ...f, p });
     for (const row of result.page.rows) {
-      assert.equal(row.today_no, db.sqlite.prepare('SELECT COUNT(*) n FROM visitor_events WHERE la_day=? AND id<=?').get(row.la_day, row.id).n);
+      assert.equal(row.today_no, db.sqlite.prepare('SELECT COUNT(*) n FROM visitor_events WHERE la_day=? AND (occurred_at<? OR (occurred_at=? AND id<=?))').get(row.la_day, row.occurred_at, row.occurred_at, row.id).n);
+      assert.equal(row.day_total, db.sqlite.prepare('SELECT COUNT(*) n FROM visitor_events WHERE la_day=?').get(row.la_day).n);
       assert.equal(row.ip_visits, db.sqlite.prepare('SELECT COUNT(*) n FROM visitor_events WHERE ip=?').get(row.ip).n);
     }
     all.push(...result.page.rows.map(row => row.id));
@@ -94,7 +95,7 @@ test('page UI has direct First/Previous/select/Next/Last with filtered ranges, U
     const { document } = parseHTML(html); const nav = document.querySelector('[aria-label="Visitor event pages"]');
     assert.equal(document.querySelectorAll('#analytics-page option').length, 19);
     assert.equal(document.querySelector('#analytics-page option[selected]').getAttribute('value'), String(p));
-    assert.ok(document.querySelector('#analytics-page').textContent.includes('Page 1 · ALL # 940–891'));
+    assert.ok(document.querySelector('#analytics-page').textContent.includes('Page 1 · Global # 940–891'));
     assert.equal(nav.querySelectorAll('[aria-disabled="true"]').length, p === 8 ? 0 : 2);
     for (const link of nav.querySelectorAll('a')) assert.equal(new URL(link.getAttribute('href'), 'https://boss.example').searchParams.get('snapshot'), '940');
     assert.equal(document.querySelector('#analytics-filters [name="p"]'), null);

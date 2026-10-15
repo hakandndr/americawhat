@@ -59,6 +59,19 @@ test('stream: newest first, ALL # durable, TODAY # per LA day, IP VISITS all tim
   // Filters never renumber TODAY #.
   const filtered = await stream(db, filters('class=automated&range=today'));
   assert.equal(filtered.rows[0].today_no, 3);
+  assert.equal(filtered.rows[0].day_total, 3);
+});
+
+test('Day # follows time order within the PT day; Global # stays the stored id', async () => {
+  const db = await seeded();
+  // A later write of an older event gets a higher Global # but an earlier Day #.
+  await native(db, { at: laMidnight('2026-10-14') + 60, ip: '192.0.2.200' });
+  const rows = (await stream(db, filters('range=today&limit=25'))).rows;
+  const late = rows.find((r) => r.ip === '192.0.2.200');
+  assert.equal(late.id, Math.max(...rows.map((r) => r.id)), 'newest Global #');
+  assert.equal(late.today_no, 1, 'earliest event of the day is Day # 1');
+  assert.deepEqual(rows.map((r) => r.today_no).sort((x, y) => x - y), [1, 2, 3, 4]);
+  assert.ok(rows.every((r) => r.day_total === 4));
 });
 
 test('filters: origin, page prefix, literal % and _', async () => {

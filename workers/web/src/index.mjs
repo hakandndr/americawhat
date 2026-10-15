@@ -8,6 +8,7 @@
 //   Compatibility with the URLs the current pages call (same on Hostinger):
 //   GET  /analytics/get_votes.php?ids=   POST /analytics/vote.php   (form)
 //   POST /analytics/log_df.php           (form: path, referrer, evt)
+//   GET  /  is the static homepage with its Trending strip filled (trending.mjs)
 // No GET request changes state. Anything else under /analytics/ is 404, so no
 // PHP source, log or JSON file can ever be served from this Worker.
 
@@ -17,6 +18,7 @@ import { nowSeconds } from '../../shared/time.mjs';
 import { buildNativeEvent, storeNativeEvent } from './collector.mjs';
 import { dndrPageEvent, forwardAndRecord, forwardingEnabled } from './dndr-forward.mjs';
 import { parseIds, readCounts, recordReaction } from './reactions.mjs';
+import { isHomepageRequest, serveHomepage } from './trending.mjs';
 
 const PUBLISHED_IDS = new Set((publishedData.items || publishedData).map((it) => it.id).filter(Boolean));
 
@@ -167,6 +169,7 @@ export default {
       console.error(`web: unhandled ${error instanceof Error ? error.message : String(error)}`);
       response = json({ status: 'error', error: 'internal' }, 500);
     }
+    if (!response && isHomepageRequest(request)) response = await serveHomepage(request, env);
     if (!response) response = permanentSlashRedirect(request, await env.ASSETS.fetch(request));
     if (env.ENVIRONMENT !== 'production') {
       response = new Response(response.body, response);

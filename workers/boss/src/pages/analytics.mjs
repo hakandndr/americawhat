@@ -7,7 +7,7 @@
 import { formatLa, formatLaSeconds, nextDay } from '../../../shared/time.mjs';
 import { bars, h, hidden, page, select } from '../html.mjs';
 import { analyticsQuery as qs, ipActivityHref, validIpAddress } from '../analytics-links.mjs';
-import { eventDetails, eventTime } from './analytics-event.mjs';
+import { DAY_TIP, GLOBAL_TIP, classCell, clientCell, eventDetails, eventTime, numberCells, pageCell, placeCell } from './analytics-event.mjs';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const shortDay = (day) => `${MONTHS[Number(day.slice(5, 7)) - 1]} ${Number(day.slice(8, 10))}`;
@@ -75,7 +75,7 @@ function paginationControls(f, stream) {
     : `<a data-analytics-nav class="btn secondary" href="/analytics${qs(f, { p: number })}">${label}</a>`;
   const base = `/analytics${qs(f)}`;
   const fields = [...new URL(base, 'https://boss.local').searchParams].map(([key, value]) => hidden(key, value)).join('');
-  const options = pages.map(p => `<option value="${p.number}"${p.number === current ? ' selected' : ''}>Page ${p.number} · ALL # ${p.firstId}–${p.lastId}</option>`).join('');
+  const options = pages.map(p => `<option value="${p.number}"${p.number === current ? ' selected' : ''}>Page ${p.number} · Global # ${p.firstId}–${p.lastId}</option>`).join('');
   return `<div class="table-foot"><span class="faint small">${total ? `Rows ${(current - 1) * f.limit + 1}–${Math.min(current * f.limit, total)} of ${total} matching · page ${current} of ${last}` : '0 matching records · no pages'}</span>
 <nav class="actions" aria-label="Visitor event pages">
 ${link(1, 'First', current <= 1)}${link(current - 1, 'Previous', current <= 1)}
@@ -85,22 +85,21 @@ ${link(current + 1, 'Next', current >= last)}${link(last, 'Last', current >= las
 }
 
 function eventRow(r, f, current) {
-  const place = [r.city, r.region].filter(Boolean).join(' / ');
-  const agent = r.agent || r.source_label;
-  const client = [r.device_class, r.browser, r.os].filter(Boolean).join(' · ');
-  const origin = [r.origin, agent].filter(Boolean).join(' · ');
   const href = h(ipActivityHref(r.ip, f, current));
   const linkable = validIpAddress(r.ip);
   return `<tr role="row">
-<td role="cell" class="num" data-label="ALL #">${h(r.id)}<span class="sub">TODAY # ${h(r.today_no)}</span></td>
+${numberCells(r)}
 <td role="cell" data-label="Date and time (PT)">${eventTime(r)}</td>
 <td role="cell" data-label="IP address">${linkable ? `<a class="ip-link mono clip" href="${href}" title="${h(r.ip)}">${h(r.ip)}</a>` : `<span class="mono clip">${h(r.ip || '—')}</span>`}</td>
-<td role="cell" class="num" data-label="IP Visits">${linkable ? `<a class="ip-link" href="${href}" aria-label="${h(r.ip_visits)} retained page views for ${h(r.ip)}">${h(r.ip_visits)}</a>` : h(r.ip_visits)}</td>
-<td role="cell" data-label="Country · place">${r.country ? h(r.country) : dash}${place ? `<span class="sub clip" title="${h(place)}">${h(place)}</span>` : ''}</td>
-<td role="cell" class="wide" data-label="Page · referrer"><span class="clip" title="${h(r.page)}">${h(r.page)}</span><span class="sub clip" title="${h(r.referrer_raw || r.referrer)}">${h(r.referrer || '—')}</span></td>
-<td role="cell" data-label="Device · source · class"><span class="clip" title="${h(client)}">${h(client || '—')}</span><span class="sub clip" title="${h(`${r.automation} · ${origin}`)}"><span class="cls${r.automation === 'human' ? ' human' : ''}">${h(r.automation)}</span>${h(origin)}</span></td>
+<td role="cell" class="num" data-label="IP Visits">${linkable ? `<a class="ip-link" href="${href}" title="Retained page views from this exact address, all dates and sources" aria-label="${h(r.ip_visits)} retained page views for ${h(r.ip)}">${h(r.ip_visits)}</a>` : h(r.ip_visits)}</td>
+${placeCell(r)}
+${pageCell(r)}
+${clientCell(r)}
+${classCell(r)}
 <td role="cell" class="more" data-label="Details">${eventDetails(r)}</td></tr>`;
 }
+
+export const STREAM_HEAD = (cols) => `<thead role="rowgroup"><tr role="row">${cols.map(([label, title, cls]) => `<th role="columnheader" scope="col"${cls ? ` class="${cls}"` : ''}${title ? ` title="${h(title)}"` : ''}>${label}</th>`).join('')}</tr></thead>`;
 
 export function renderAnalytics({ identity, flash, f, sum, days = [], tops, streamPage, retention, coverage, corpora, outbox }) {
   const chips = [['today', 'Today'], ['7d', '7 days'], ['30d', '30 days'], ['all', 'All time']]
@@ -147,9 +146,9 @@ ${overview(v, rangeLabel, days)}
 </form></section>
 
 <section id="analytics-events" class="section" aria-labelledby="h-events">
-<div class="stream-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · ALL # is durable and never renumbered · <span class="warn">*</span> approximate time</p></div>
-<p class="faint small">IP Visits counts all currently retained page views for the exact address, across all filters. These are events, not people or sessions. Open an IP or its count for its activity; Details shows every raw field.</p>
-<div class="table-card"><table class="events-table" role="table"><thead role="rowgroup"><tr role="row"><th role="columnheader" class="num" scope="col">ALL #</th><th role="columnheader" scope="col">DATE AND TIME (PT)</th><th role="columnheader" scope="col">IP ADDRESS</th><th role="columnheader" class="num" scope="col">IP VISITS</th><th role="columnheader" scope="col">COUNTRY · PLACE</th><th role="columnheader" scope="col">PAGE · REFERRER</th><th role="columnheader" scope="col">DEVICE · SOURCE · CLASS</th><th role="columnheader" scope="col"><span class="visually-hidden">DETAILS</span></th></tr></thead>
+<div class="stream-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · <span class="warn">*</span> approximate time</p></div>
+<dl class="stream-key"><div><dt>Global #</dt><dd>permanent database ID; never reused or renumbered, gaps are deleted records</dd></div><div><dt>Day #</dt><dd>order within the Pacific Time day, 1 = first event, counted over every retained event (filters never change it)</dd></div><div><dt>IP Visits</dt><dd>retained page views from that exact address, all dates — events, not people</dd></div></dl>
+<div class="table-card"><table class="events-table" role="table">${STREAM_HEAD([['GLOBAL #', GLOBAL_TIP, 'num'], ['DAY #', DAY_TIP, 'num'], ['DATE AND TIME (PT)'], ['IP ADDRESS'], ['IP VISITS', 'Retained page views from this exact address, all dates and sources. Not people or sessions.', 'num'], ['COUNTRY · PLACE'], ['PAGE · REFERRER'], ['BROWSER · OS · DEVICE'], ['CLASS · SOURCE · AGENT'], ['<span class="visually-hidden">DETAILS</span>']])}
 <tbody role="rowgroup">${rows || '<tr role="row"><td role="cell" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table>
 ${paginationControls(f, streamPage)}</div>
 </section>

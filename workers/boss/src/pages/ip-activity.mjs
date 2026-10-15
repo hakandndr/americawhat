@@ -1,7 +1,8 @@
 import {formatLaSeconds} from '../../../shared/time.mjs';
 import {h,page,hidden} from '../html.mjs';
 import {analyticsBack,analyticsQuery} from '../analytics-links.mjs';
-import {eventDetails,eventTime} from './analytics-event.mjs';
+import {DAY_TIP,GLOBAL_TIP,classCell,clientCell,eventDetails,eventTime,numberCells,pageCell,placeCell} from './analytics-event.mjs';
+import {STREAM_HEAD} from './analytics.mjs';
 
 export function renderIpActivity({identity,flash,activity,back,limit}) {
   const {address,totals:t,history:s}=activity;
@@ -10,11 +11,12 @@ export function renderIpActivity({identity,flash,activity,back,limit}) {
   const href=p=>{const q=new URLSearchParams(params);q.set('p',String(p));return `/analytics/ip?${q}`;};
   const nav=(p,label,disabled)=>disabled?`<span class="btn secondary" aria-disabled="true">${label}</span>`:`<a class="btn secondary" href="${h(href(p))}">${label}</a>`;
   const rows=s.rows.map(r=>`<tr role="row">
-<td role="cell" class="num" data-label="ALL #">${h(r.id)}</td>
+${numberCells(r)}
 <td role="cell" data-label="Date and time (PT)">${eventTime(r)}</td>
-<td role="cell" class="wide" data-label="Page · referrer"><span class="clip" title="${h(r.path)}">${h(r.path)}</span><span class="sub clip" title="${h(r.referrer_raw)}">${h(r.referrer || '—')}</span></td>
-<td role="cell" data-label="Country · place">${h(r.country || '—')}<span class="sub clip">${h([r.city,r.region].filter(Boolean).join(' / '))}</span></td>
-<td role="cell" data-label="Device · source · class"><span class="clip">${h([r.device_class,r.browser,r.os].filter(Boolean).join(' · ') || '—')}</span><span class="sub clip" title="${h([r.automation,r.origin,r.agent || r.source_label].filter(Boolean).join(' · '))}"><span class="cls${r.automation==='human'?' human':''}">${h(r.automation)}</span>${h([r.origin,r.agent || r.source_label].filter(Boolean).join(' · '))}</span></td>
+${pageCell(r,r.path)}
+${placeCell(r)}
+${clientCell(r)}
+${classCell(r)}
 <td role="cell" class="more" data-label="Details">${eventDetails(r)}</td></tr>`).join('');
   const exports=analyticsQuery({ip:address,snapshot:s.snapshot,range:'all'},{format:'csv'});
   const body=`<section class="overview" aria-label="Current retained activity for this address">
@@ -25,8 +27,8 @@ export function renderIpActivity({identity,flash,activity,back,limit}) {
 <div class="stat"><b>${Number(t.human || 0)} / ${Number(t.automated || 0)}</b>human / automated records</div>
 </div></div></section>
 <section class="section" aria-labelledby="h-ip-history"><div class="stream-head"><h2 id="h-ip-history">Activity history</h2><div class="actions activity-exports"><span class="faint small">Export this history</span><a class="btn secondary" href="/analytics/export${h(exports)}">CSV</a><a class="btn secondary" href="/analytics/export${h(exports.replace('format=csv','format=ndjson'))}">NDJSON</a></div></div>
-<p class="faint small">Newest first · ${s.total} retained events at snapshot ALL # ${s.snapshot}. Totals above include all currently retained events; history and exports keep this snapshot.</p>
-<div class="table-card"><table class="events-table activity-table" role="table"><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col" class="num">ALL #</th><th role="columnheader" scope="col">Date and time (PT)</th><th role="columnheader" scope="col">Page · referrer</th><th role="columnheader" scope="col">Country · place</th><th role="columnheader" scope="col">Device · source · class</th><th role="columnheader" scope="col"><span class="visually-hidden">Details</span></th></tr></thead><tbody role="rowgroup">${rows || '<tr role="row"><td role="cell" class="empty">No retained events for this address in this snapshot.</td></tr>'}</tbody></table>
+<p class="faint small">Newest first · ${s.total} retained events at snapshot Global # ${s.snapshot}. Totals above include all currently retained events; history and exports keep this snapshot.</p>
+<div class="table-card"><table class="events-table activity-table" role="table">${STREAM_HEAD([['GLOBAL #', GLOBAL_TIP, 'num'], ['DAY #', DAY_TIP, 'num'], ['DATE AND TIME (PT)'], ['PAGE · REFERRER'], ['COUNTRY · PLACE'], ['BROWSER · OS · DEVICE'], ['CLASS · SOURCE · AGENT'], ['<span class="visually-hidden">DETAILS</span>']])}<tbody role="rowgroup">${rows || '<tr role="row"><td role="cell" class="empty">No retained events for this address in this snapshot.</td></tr>'}</tbody></table>
 <div class="table-foot"><span class="small faint">${s.total?`Page ${s.current} of ${s.pages.length} · ${s.total} events`:'0 matching events'}</span><nav class="actions" aria-label="IP activity pages">${nav(1,'First',s.current<=1)}${nav(s.current-1,'Previous',s.current<=1)}
 <form action="/analytics/ip" method="get" class="actions">${[...params].map(([k,v])=>hidden(k,v)).join('')}<label for="ip-page">Page</label><select id="ip-page" name="p"${s.pages.length?'':' disabled'}>${s.pages.map(p=>`<option value="${p.number}"${s.current===p.number?' selected':''}>${p.number}</option>`).join('') || '<option>1</option>'}</select><button class="secondary"${s.pages.length?'':' disabled'}>Go</button></form>
 ${nav(s.current+1,'Next',s.current>=s.pages.length)}${nav(s.pages.length,'Last',s.current>=s.pages.length)}</nav></div></div></section>`;

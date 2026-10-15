@@ -62,7 +62,7 @@ test('analytics layout: metrics, filters, event table, then breakdowns, then dat
     at('id="h-filters"'),
     at('/analytics/export?format=csv'),
     at('id="h-events"'),
-    at('scope="col">ALL #</th>'),
+    at('>GLOBAL #</th>'),
     at('id="h-breakdowns"'),
     at('<h3>Top pages</h3>'),
     at('<h3>Countries</h3>'),
@@ -72,7 +72,7 @@ test('analytics layout: metrics, filters, event table, then breakdowns, then dat
     at('Delete analytics records before a date'),
   ];
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
-  for (const col of ['TODAY #', 'IP VISITS', 'DATE AND TIME (PT)', 'IP ADDRESS', 'SOURCE', 'CLASS', 'COUNTRY', 'PAGE', 'REFERRER', 'DEVICE', 'DETAIL']) at(col);
+  for (const col of ['GLOBAL #', 'DAY #', 'IP VISITS', 'DATE AND TIME (PT)', 'IP ADDRESS', 'SOURCE', 'CLASS', 'COUNTRY', 'PAGE', 'REFERRER', 'DEVICE', 'DETAIL']) at(col);
   assert.match(html, /distinct IP addresses <span class="muted">\(not people\)<\/span>/);
   assert.doesNotMatch(html, /unique (people|visitors)/i);
 });

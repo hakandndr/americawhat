@@ -3,8 +3,12 @@
 // analytics database handle.
 //
 // Metric definitions (see docs/ANALYTICS.md):
-//   ALL #      visitor_events.id — durable, never renumbered; deletions leave gaps
-//   TODAY #    position of the row among all rows of its LA day, in id order
+//   Global #   visitor_events.id (ALL #) — AUTOINCREMENT, never reused or
+//              renumbered; deletions leave gaps
+//   Day #      today_no: position of the row among all retained rows of its PT
+//              day in time order (occurred_at, then id), out of day_total;
+//              filters never change it. Only an import of older events into
+//              an existing day can move later rows of that day.
 //   IP VISITS  retained page_view rows with exactly that address, all time
 //   Addresses  distinct address strings in the view — not people
 
@@ -12,6 +16,11 @@ import { daysBefore, isDay, laDay, laDayBounds, laMidnight, nextDay } from '../.
 
 export const RETENTION_DAYS = 90;
 const LIMITS = [25, 50, 100];
+
+// Selected next to visitor_events.* wherever rows are shown (see Day # above).
+const DAY_NUMBERS = `(SELECT COUNT(*) FROM visitor_events t WHERE t.la_day = visitor_events.la_day
+        AND (t.occurred_at < visitor_events.occurred_at OR (t.occurred_at = visitor_events.occurred_at AND t.id <= visitor_events.id))) AS today_no,
+      (SELECT COUNT(*) FROM visitor_events t WHERE t.la_day = visitor_events.la_day) AS day_total`;
 
 function escapeLike(text) {
   return String(text).replace(/[\\%_]/g, (c) => `\\${c}`);
@@ -127,7 +136,7 @@ export async function stream(db, f) {
   const args = f.before != null ? [...w.args, f.before] : w.args;
   const { results } = await db.prepare(
     `SELECT visitor_events.*,
-            (SELECT COUNT(*) FROM visitor_events t WHERE t.la_day = visitor_events.la_day AND t.id <= visitor_events.id) AS today_no
+            ${DAY_NUMBERS}
        FROM visitor_events ${sql}
       ORDER BY id DESC LIMIT ?`,
   ).bind(...args, f.limit + 1).all();
@@ -145,7 +154,7 @@ async function decorateRows(db, rows) {
     ).bind(...chunk).all();
     for (const c of counts) visits.set(c.ip, Number(c.n));
   }
-  return rows.map((r) => ({ ...r, today_no: Number(r.today_no), ip_visits: visits.get(r.ip) || 0 }));
+  return rows.map((r) => ({ ...r, today_no: Number(r.today_no), day_total: Number(r.day_total), ip_visits: visits.get(r.ip) || 0 }));
 }
 
 /** One filtered ID scan returns page boundaries, not event bodies. No OFFSET or persistent state.
@@ -174,14 +183,14 @@ export async function pagination(db, f) {
   return { pages, current, total: pages.reduce((n, row) => n + row.rows, 0), snapshot: Number(results[0].upper_id) };
 }
 
-/** Hydrate a bounded primary-key interval; TODAY # and IP VISITS retain global definitions. */
+/** Hydrate a bounded primary-key interval; Day # and IP VISITS retain global definitions. */
 export async function numberedStream(db, f, plan) {
   const selected = plan.pages[plan.current - 1];
   if (!selected) return { ...plan, rows: [], changed: false };
   const w = whereFor({ ...f, snapshot: plan.snapshot });
   const { results } = await db.prepare(`
     SELECT visitor_events.*,
-      (SELECT COUNT(*) FROM visitor_events t WHERE t.la_day = visitor_events.la_day AND t.id <= visitor_events.id) AS today_no
+      ${DAY_NUMBERS}
     FROM visitor_events ${w.sql ? `${w.sql} AND` : 'WHERE'} id BETWEEN ? AND ?
     ORDER BY id DESC LIMIT ?
   `).bind(...w.args, selected.lastId, selected.firstId, f.limit).all();
@@ -216,11 +225,12 @@ export async function ipActivity(db, { address, p = 1, limit = 50, snapshot = nu
     SUM(origin = 'native') AS native, SUM(origin = 'legacy') AS legacy
     FROM visitor_events WHERE ip = ?`).bind(address).first();
   const selected = plan.pages[plan.current - 1];
-  const rows = selected ? (await db.prepare(`SELECT * FROM visitor_events
+  const rows = selected ? (await db.prepare(`SELECT visitor_events.*, ${DAY_NUMBERS} FROM visitor_events
     WHERE ip = ? AND id <= ? AND occurred_at BETWEEN ? AND ?
       AND (occurred_at != ? OR id <= ?) AND (occurred_at != ? OR id >= ?)
     ORDER BY occurred_at DESC, id DESC LIMIT ?`)
-    .bind(address,plan.snapshot,selected.lastTime,selected.firstTime,selected.firstTime,selected.firstId,selected.lastTime,selected.lastId,limit).all()).results : [];
+    .bind(address,plan.snapshot,selected.lastTime,selected.firstTime,selected.firstTime,selected.firstId,selected.lastTime,selected.lastId,limit).all()).results
+    .map((row) => ({ ...row, today_no: Number(row.today_no), day_total: Number(row.day_total) })) : [];
   return { address, totals, history:{ ...plan,rows }, changed:selected ? rows.length!==selected.rows : false };
 }
 

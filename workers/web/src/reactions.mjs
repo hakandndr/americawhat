@@ -54,6 +54,21 @@ export async function readCounts(db, ids) {
 }
 
 /**
+ * [{ item_id, total }] — items with any reaction, most reacted first. One
+ * statement with a fixed number of bound parameters; `limit` bounds the rows
+ * read, and leaves room for ids the caller no longer lists.
+ */
+export async function readTopTotals(db, limit = MAX_IDS_PER_READ) {
+  const { results } = await db.prepare(
+    `SELECT item_id, SUM(count) AS total FROM reaction_counts
+     WHERE reaction IN (${REACTIONS.map(() => '?').join(',')})
+     GROUP BY item_id HAVING total > 0
+     ORDER BY total DESC, item_id LIMIT ?`,
+  ).bind(...REACTIONS, limit).all();
+  return results.map((row) => ({ item_id: row.item_id, total: Number(row.total) }));
+}
+
+/**
  * Validates and records one reaction.
  * Returns { status: 'ok', counted, counts } or { status: 'error', error, http }.
  */

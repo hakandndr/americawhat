@@ -48,7 +48,12 @@ body{
 }
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
-main.wrap{width:100%}
+/* Page layout: body is a column at least as tall as the viewport (header,
+   optional hero, main, footer). main takes whatever height a short page leaves
+   and centres its single .page-body in it, so the naturally sized footer sits
+   at the bottom of the viewport. Long pages leave nothing over and flow as
+   before; .page-body keeps the usual block margins of the page sections. */
+main.wrap{flex:1 0 auto;width:100%;display:flex;flex-direction:column;justify-content:center}
 body>*{flex-shrink:0}
 
 /* ── Accessibility: visible keyboard focus + skip link ── */
@@ -383,12 +388,9 @@ body>*{flex-shrink:0}
 }
 
 /* ── Footer ──
-   The footer is the floor of every page: a darker surface that takes whatever
-   height the viewport has left (body is a column, see above). Short pages end
-   on the footer band instead of on an empty stretch of page; long pages leave
-   no space to fill, so the footer keeps its natural height. */
+   Natural height on a darker surface; the page layout above keeps it at the
+   bottom of the viewport on short pages. */
 .site-foot{
-  flex:1 0 auto;
   background:var(--night-deep);
   border-top:1px solid var(--line);
   padding:24px 20px calc(32px + env(safe-area-inset-bottom,0px));
