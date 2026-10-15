@@ -85,7 +85,7 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
   <div class="stat"><b>${v.addresses}</b>distinct IP addresses <span class="muted">(not people)</span></div>
 </div></section>
 
-<section class="section" aria-labelledby="h-filters"><form method="get" action="/analytics" class="card" id="analytics-filters">${hidden('range', f.range)}
+<section class="section" aria-labelledby="h-filters"><form method="get" action="/analytics" class="card" id="analytics-filters" data-view-url="/analytics${h(qs(f, { p: streamPage.current }))}">${hidden('range', f.range)}
   <div class="section-head"><h2 id="h-filters">Filters</h2><p class="faint small">Days are Pacific Time. Empty fields match everything.</p></div>
   <div class="filters">
     <fieldset><legend>When &amp; source</legend><div class="grid">

@@ -4,6 +4,15 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
   const form = document.getElementById('analytics-filters');
   if (!form) return;
   const status = document.getElementById('analytics-status');
+  function viewUrl(source, fallback) {
+    const target = new URL(source.getAttribute('data-view-url') || fallback.href, location.origin);
+    if (target.origin !== location.origin || target.pathname !== '/analytics') throw new Error('view URL');
+    return target;
+  }
+  // Freeze the first history entry too; Back must not silently include later appends.
+  const initial = viewUrl(form, new URL(location.href));
+  initial.hash = location.hash;
+  if (location.href !== initial.href) window.history.replaceState(null, '', initial.pathname + initial.search + initial.hash);
   const regions = ['analytics-retention', 'analytics-metrics', 'analytics-events', 'analytics-breakdowns'];
   let timer, controller, generation = 0, composing = false;
   function message(text, error = false) {
@@ -55,6 +64,7 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
       const incoming = new DOMParser().parseFromString(await response.text(), 'text/html');
       if (version !== generation) return;
       if (!incoming.getElementById('analytics-filters') || regions.some(id => !incoming.getElementById(id))) throw new Error('session');
+      const committed = viewUrl(incoming.getElementById('analytics-filters'), url);
       for (const id of regions) document.getElementById(id).replaceWith(incoming.getElementById(id));
       const lede = document.querySelector('.page-head .lede');
       if (lede) lede.textContent = incoming.querySelector('.page-head .lede').textContent;
@@ -62,7 +72,7 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
       if (range) range.replaceWith(incoming.querySelector('[aria-label="Date range"]'));
       const links = incoming.querySelectorAll('[data-analytics-export]');
       document.querySelectorAll('[data-analytics-export]').forEach((link, i) => link.setAttribute('href', links[i].getAttribute('href')));
-      if (history && location.pathname + location.search !== url.pathname + url.search) window.history.pushState(null, '', url.pathname + url.search);
+      if (location.pathname + location.search !== committed.pathname + committed.search) window.history[history ? 'pushState' : 'replaceState'](null, '', committed.pathname + committed.search);
       if (pager) { const heading = document.getElementById('h-events'); heading.setAttribute('tabindex', '-1'); heading.focus(); }
       message('Updated.');
     } catch (error) {

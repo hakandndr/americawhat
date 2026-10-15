@@ -8,22 +8,25 @@ const markup = (label = 'initial') => `<html><body><div class="page-head"><p cla
 <form id="analytics-filters"><input name="range" value="all"><input name="from"><input name="to"><input name="country"><input name="ip"><input name="place"><input name="page"><input name="referrer"><input name="browser"><select name="device"><option value="">all</option><option value="mobile">mobile</option></select><select name="limit"><option value="50">50</option><option value="100">100</option></select><button>Apply</button><a data-analytics-reset href="/analytics">Reset</a><span id="analytics-status"></span><a data-analytics-export href="/analytics/export?format=csv">CSV</a><a data-analytics-export href="/analytics/export?format=ndjson">ND</a></form>
 <div id="analytics-retention">global</div><div id="analytics-metrics">${label}</div><section id="analytics-events"><h2 id="h-events">Events</h2><a data-analytics-nav href="/analytics?country=ger&p=19&snapshot=940">Last</a><form id="analytics-pager" data-page-url="/analytics?country=ger&snapshot=940"><select id="analytics-page" name="p"><option value="1">1</option><option value="19">19</option></select><button>Go</button></form></section><div id="analytics-breakdowns">${label}</div></body></html>`;
 const flush = () => new Promise(resolve => setImmediate(resolve));
-function setup() {
-  const { window, document } = parseHTML(markup());
+function setup(initialUrl = '') {
+  const { window, document } = parseHTML(markup().replace('<form id="analytics-filters"', `<form ${initialUrl ? `data-view-url="${initialUrl}"` : ''} id="analytics-filters"`));
   // linkedom exposes select.value as read-only; real HTMLSelectElement has a setter.
   Object.defineProperty(window.HTMLSelectElement.prototype, 'value', { configurable: true,
     get() { return this.querySelector('option[selected]')?.value ?? this.querySelector('option')?.value ?? ''; },
     set(value) { for (const option of this.querySelectorAll('option')) option.toggleAttribute('selected', option.value === value); },
   });
   const location = new URL('https://boss.example/analytics?p=8&snapshot=940');
-  const requests = [], pushes = [], timers = new Map(); let nextTimer = 0;
-  window.history = { pushState(_state, _title, url) { pushes.push(url); location.href = new URL(url, location).href; } };
+  const requests = [], pushes = [], replacements = [], timers = new Map(); let nextTimer = 0;
+  window.history = {
+    pushState(_state, _title, url) { pushes.push(url); location.href = new URL(url, location).href; },
+    replaceState(_state, _title, url) { replacements.push(url); location.href = new URL(url, location).href; },
+  };
   vm.runInNewContext(ANALYTICS_SCRIPT, { document, window, location, DOMParser, URL, AbortController,
     setTimeout(fn, delay) { const id = ++nextTimer; timers.set(id, { fn, delay }); return id; }, clearTimeout(id) { timers.delete(id); },
     fetch(url, options) { return new Promise((resolve, reject) => requests.push({ url: new URL(url), options, resolve, reject })); },
   });
   const form = document.getElementById('analytics-filters');
-  return { document, window, location, form, requests, pushes, timers,
+  return { document, window, location, form, requests, pushes, replacements, timers,
     input(name, value, type = 'input') { const control = form.querySelector(`[name="${name}"]`); control.value = value; control.dispatchEvent(new window.Event(type, { bubbles: true })); },
     async tick() { for (const [id, { fn, delay }] of [...timers]) { assert.equal(delay, 350); timers.delete(id); fn(); } await flush(); },
     async answer(index, label) { requests[index].resolve(new Response(markup(label), { headers: { 'Content-Type': 'text/html' } })); await flush(); },
@@ -93,4 +96,15 @@ test('page selector and keyboard Go navigate directly; subsequent text input cle
   assert.equal(c.requests[2].url.searchParams.has('p'), false); assert.equal(c.requests[2].url.searchParams.has('snapshot'), false);
   await c.answer(2, 'first filtered'); await c.answer(1, 'stale page');
   assert.equal(c.document.getElementById('analytics-metrics').textContent, 'first filtered');
+});
+
+test('initial and successful history entries pin the server page/snapshot, so Back cannot shift after new arrivals', async () => {
+  const c = setup('/analytics?p=1&amp;snapshot=940');
+  assert.equal(c.location.searchParams.get('snapshot'), '940'); assert.equal(c.location.searchParams.get('p'), '1');
+  assert.equal(c.replacements.length, 1);
+  c.input('country', 'ger'); await c.tick();
+  c.requests[0].resolve(new Response(markup('Germany').replace('<form id="analytics-filters"', '<form data-view-url="/analytics?country=ger&amp;p=1&amp;snapshot=941" id="analytics-filters"'), { headers: { 'Content-Type': 'text/html' } }));
+  await flush();
+  assert.equal(c.location.searchParams.get('snapshot'), '941'); assert.equal(c.location.searchParams.get('p'), '1');
+  assert.equal(c.pushes.length, 1);
 });
