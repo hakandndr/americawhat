@@ -1,5 +1,24 @@
 # americawhat — Current State
 
+## Son durum — deployment hazırlığı tamamlandı, Access owner doğrulaması esas (2026-10-15)
+
+Access app932d247c-4d98-479e-a8c8-50da8a0550d1 / team/AUD / owner-only All
+traffic dashboard doğrulaması kabul edilir. Mevcut OAuth API403 yalnız izin
+sınırıdır; proje kapısı veya uygulama yokluğu değildir. Aynı GET tekrarlanmadı.
+Yeni staging repo+branch allowlist'i yanlış hedefte hiçbir GitHub isteği yapmaz;
+JWT null/array/primitive bölümleri de401 ile kapanır. 139 test ve18 local
+workerd başarılı; public kaynak/OG125 ve production config korunur.
+
+[STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT.md) geçerli kısa yürütme belgesidir:
+owner-only offline secret hazırlığı; frozen kod+secret'ı tek unpublished
+version'a upload; exact UUID ile ayrı activation; aynı UUID ile rollback/
+re-promote; Access login, editorial ve gerçek CPU/D1 ölçümü. Secret put veya
+dashboard Deploy kullanılmaz. Tüm config/secret adları/D1 ID'leri belgede.
+Final source SHA ve frozen paket hash'leri reports/predeploy-release-manifest.json.
+Owner PAT scope doğrulaması/korumalı secret dosyası ve sonraki açık upload/
+deploy/URL test onayı kalır. API read izin genişletmesi zorunlu değildir.
+Bu sprint uzak yazım/upload/deploy/URL açma/gerçek veri işlemi yapılmadı.
+
 ## Son durum — onaylı staging altyapı hazırlığı (2026-10-15)
 
 Private/fork olmayan `hakandndr/americawhat-staging-content` onayla başlatıldı.

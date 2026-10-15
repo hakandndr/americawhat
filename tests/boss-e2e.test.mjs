@@ -37,7 +37,7 @@ function setup() {
   const env = {
     APP_DB: D1Sqlite.app(), ANALYTICS_DB: D1Sqlite.analytics(), ENVIRONMENT: 'staging',
     BOSS_ACCESS_TEAM_DOMAIN: TEAM, BOSS_ACCESS_AUD: AUD, BOSS_ALLOWED_EMAILS: 'hakan@dndr.net',
-    BOSS_CSRF_SECRET: 'csrf', BOSS_ORIGIN: ORIGIN, GITHUB_TOKEN: 'tok', BOSS_GITHUB_REPOSITORY: 'hakandndr/americawhat',
+    BOSS_CSRF_SECRET: 'csrf', BOSS_ORIGIN: ORIGIN, GITHUB_TOKEN: 'tok', BOSS_GITHUB_REPOSITORY: 'hakandndr/americawhat-staging-content',
     BOSS_GITHUB_BRANCH: 'content-staging', BOSS_COMMIT_AUTHOR_NAME: 'Hakan Dundar', BOSS_COMMIT_AUTHOR_EMAIL: 'hakan@dndr.net',
   };
   const fetchImpl = async (url, init) => {

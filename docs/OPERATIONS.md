@@ -1,5 +1,24 @@
 # americawhat — Operations
 
+## Geçerli deployment prosedürü — 2026-10-15
+
+[STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT.md) yeni canonical uygulama sırasıdır.
+Access owner dashboard doğrulaması kabul edilir; API403 kapı değildir/tekrarlanmaz.
+Git staging hedefi server-side allowlist ile yalnız sandbox/content-staging.
+Secrets için **offline** prepare-staging-secrets.ps1, sonra ayrı onayla frozen
+kod+secrets-file ile versions upload (activation yok). Normal secret put/bulk
+ve dashboard Deploy otomatik canlı deployment yaratabileceğinden kullanılmaz.
+Token/CSRF çıktısı, Git'e kopyalama, debug/transcript veya production token yok.
+
+Final SHA/hash'ler reports/predeploy-release-manifest.json; frozen bundle/config/
+assets reports/predeploy-candidate.zip. Aynı SHA+paket doğrulandıktan sonra exact
+uploaded UUID'ler test ve rollback/re-promote boyunca kullanılır; ordinary deploy
+ve main'den rebuild yapılmaz. Config source workers.dev/previews=false; yalnız
+ayrı onaylı Access arkasında test URL açılışı unversioned settings receipt'ine
+yazılır. Bu sprint hiçbir upload/deploy/URL/secret uzak değişikliği yoktur.
+139 test/18 local workerd; gerçek Access login/CPU/D1/rollback sonraki kontrollü
+onaylı turdur. Önceki22-test infra sonuçları tarihsel ve korunur.
+
 ## Staging altyapısı sonrası geçerli kapı (2026-10-15)
 
 Sandbox repo oluşturuldu/seed edildi: yalnız4 JSON; main ve content-staging

@@ -1,5 +1,24 @@
 # americawhat — Handoff
 
+## Son devir — kontrollü deployment için hazır yerel RC (2026-10-15)
+
+Access dashboard owner doğrulaması kabul edildi;403'ü tekrar deneme/uygulama
+yeniden oluşturma/ek API izni isteme. Staging Git client artık yalnız bağımsız
+sandbox/content-staging'e çıkar; yanlış hedefte ağ isteği0. JWT signature/
+issuer/AUD/time/email fail closed; malformed JSON bölümleri401.139 unit/
+integration +18 workerd geçti. Eski test fixture'ları doğru sandbox hedefine
+uyarlandı; auth veya testler gevşetilmedi. Public/OG125/production config aynı.
+
+Güncel tek prosedür STAGING-DEPLOYMENT.md; eski API read kapısı ve ordinary
+deploy/secret put reçeteleri bu aşama için geçersizdir. Offline yardımcı script
+scripts/release/prepare-staging-secrets.ps1 sentetik tokenla JSON/CSRF/owner-only
+ACL kontrolü aldı; hiçbir network/deploy yapmaz. Gerçek tokenı owner gizli prompt'ta girer.
+İki secret+frozen kod tek versions upload; sonra ayrı exact UUID activation.
+Test/rollback sırasında rebuild veya source/config değiştirme yok; URL test
+açılışı version dışı ayrı onaylı settings receipt'idir. Deploy/rollback/gerçek
+platform testleri henüz yapılmadı. Final SHA/artifact envanteri
+reports/predeploy-release-manifest.json; OG ve paket backup'larını koru.
+
 ## Son devir — staging sandbox kuruldu (2026-10-15)
 
 Dal/worktree aynı: codex/staging-rc / tmp/security-boss. Sahibi açık onayından

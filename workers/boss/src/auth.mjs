@@ -84,6 +84,9 @@ export async function authenticate(request, env, { fetchImpl = fetch, now = () =
   } catch {
     return { ok: false, status: 401, error: 'Malformed assertion.' };
   }
+  if (!header || typeof header !== 'object' || Array.isArray(header) || !payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return { ok: false, status: 401, error: 'Malformed assertion.' };
+  }
   if (header.alg !== 'RS256') return { ok: false, status: 401, error: 'Unexpected algorithm.' };
 
   let keys;

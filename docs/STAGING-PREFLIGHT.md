@@ -1,5 +1,18 @@
 # AmericaWhat — Boss renk uyumu ve staging preflight
 
+## Yeni geçerli karar — owner doğrulamasıyla deployment hazırlığı (2026-10-15)
+
+Access dashboard'da owner tarafından doğrulandı; aşağıdaki eski API izni
+bekleme kapısı artık geçerli değildir. Aynı403 isteği tekrarlanmaz, app/policy
+yeniden oluşturulmaz. **[STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT.md)** güncel
+config/secret/immutable artifact/versions upload/activation/rollback prosedürüdür.
+Staging Git allowlist'i yanlış repo/ref'te ağ isteği göndermeden reddeder;
+runtime PAT ayrıca sandbox-only olmalıdır. JWT kontrolleri zayıflatılmadı.
+139 test/18 workerd; owner-only offline secret aracı ve yayımlanmamış version
+yöntemi hazırdır. Canonical manifest reports/predeploy-release-manifest.json.
+Upload/deploy/URL açılışı bu sprintte yapılmaz. Eski bölümdeki ordinary deploy/
+secret yöntemleri ve API403 kapısı tarihsel kayıttır; yeni prosedür esas alınır.
+
 ## Güncel altyapı kaydı — 2026-10-15, açık sahip onayı sonrası
 
 Önceki "sandbox yok / Access uygulaması yok / AUD boş" kayıtları eski gözlem

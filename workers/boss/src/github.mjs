@@ -31,6 +31,9 @@ export function githubConfig(env) {
   if (!/^[\w./-]+$/.test(branch)) errors.push('BOSS_GITHUB_BRANCH missing');
   // Only the production Boss may write the production branch.
   if (environment !== 'production' && (branch === 'main' || branch === 'master')) errors.push(`a ${environment || 'non-production'} Boss must not write ${branch}`);
+  if (environment === 'staging' && (repo !== 'hakandndr/americawhat-staging-content' || branch !== 'content-staging')) {
+    errors.push('staging Boss must target hakandndr/americawhat-staging-content on content-staging');
+  }
   if (!env.BOSS_COMMIT_AUTHOR_NAME || !env.BOSS_COMMIT_AUTHOR_EMAIL) errors.push('commit author not configured');
   return {
     ok: errors.length === 0,

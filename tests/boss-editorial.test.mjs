@@ -23,7 +23,7 @@ function approval(pendingId, over = {}) {
 }
 
 function env(over = {}) {
-  return { GITHUB_TOKEN: 'test-token', BOSS_GITHUB_REPOSITORY: 'hakandndr/americawhat', BOSS_GITHUB_BRANCH: 'content-staging', ENVIRONMENT: 'staging', BOSS_COMMIT_AUTHOR_NAME: 'Hakan Dundar', BOSS_COMMIT_AUTHOR_EMAIL: 'hakan@dndr.net', ...over };
+  return { GITHUB_TOKEN: 'test-token', BOSS_GITHUB_REPOSITORY: 'hakandndr/americawhat-staging-content', BOSS_GITHUB_BRANCH: 'content-staging', ENVIRONMENT: 'staging', BOSS_COMMIT_AUTHOR_NAME: 'Hakan Dundar', BOSS_COMMIT_AUTHOR_EMAIL: 'hakan@dndr.net', ...over };
 }
 
 function repo(pending = pendingFixture()) {
