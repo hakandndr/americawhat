@@ -1,6 +1,37 @@
 # americawhat — Operations
 
-## Güncel sınırlı UI çalışması — yerel önizleme (2026-10-14)
+## Güncel güvenlik/Boss çalışma alanı (2026-10-14)
+
+`D:\IT\AmericaWhat\americawhat\tmp\security-boss`, `codex/security-boss`.
+Node 22.12+ / <23; Astro 7.3.8, sitemap 3.7.4, Wrangler 4.151.0.
+Tam/dev hariç audit çıkışı 0; 115 test, build/statik/public parity ve
+18 sentetik Boss workerd kontrolü geçti. [Sprint raporu](INTEGRATION-SPRINT.md)
+güncel kanıt ve ayrı onay sonrası içerik uzlaştırma reçetesidir.
+
+```powershell
+Set-Location D:\IT\AmericaWhat\americawhat\tmp\security-boss
+npm ci
+npm test
+npm run build
+npm run verify:static
+$env:BOSS_PREVIEW_PORT = '18828'
+npm run test:boss-preview
+# Test bittikten sonra elle incelemek için (aynı anda ikisini çalıştırma):
+npm run preview:boss
+```
+
+Boss `http://127.0.0.1:18828/`; +1 workerd, +2 fake GitHub.
+Windows bu makinede 8819–9018 aralığını ayırıyor; sistem ayarı değiştirilmedi.
+Preview her başlangıçta yalnızca bu worktree’nin `.wrangler/boss-preview-state`
+sentetik verisini yeniden kurar; başka önizlemeleri kapatmaz. Gerçek Access
+JWT doğrulaması üretimde korunur; yerel imzalı kimlik yalnızca local/loopback’tedir.
+Web önizlemesi `http://127.0.0.1:8817/`, ayrı `.wrangler/web-test` D1 state’i.
+Web başlatma ve tekrar üretme reçetesi sprint raporundadır.
+
+Aşağıdaki eski UI/audit/port reçeteleri önceki worktree’ye ait tarihsel kayıttır.
+Bu sprintte push/merge/deploy ve gerçek veri işlemi yetkisi yoktur.
+
+## Önceki sınırlı UI çalışması — yerel önizleme (2026-10-14)
 
 Son polish footer CSS sıkılaştırması ve hedefsiz header tagline kaldırılmasıdır;
 Trending değişmedi. Güncel görevde bağımlılık kurulmadı/yükseltilmedi; aşağıdaki

@@ -148,6 +148,24 @@ metniyle tutarlı olmalıdır. DNDR’ye tarihsel olaylar tekrar aktarılıp çi
 Hostinger web/PHP ileride emekli olur; EMAIL hizmeti kalır. Eski legacy import
 seçenekleri tarihsel değerlendirmedir; kararı yeniden sormak gerekmez.
 
+## D-25 Onaylı güvenlik yükseltmesi, public dondurma korunarak
+
+2026-10-14 sprint izniyle `16b10a4` tabanından ayrı `codex/security-boss`
+oluşturuldu. `d266964` Astro 7.3.8/sitemap 3.7.4/Wrangler 4.151.0 yükseltmesidir;
+force/overrides yok, audit 0. Public kaynak aynı; compiler whitespace farkı
+DOM/CSS sözleşmesi ve derlenmiş istemci testiyle doğrulanır. Renkleri korumak
+için CSS minification kapalıdır. D-23 önceki salt okunur aşamaya aittir.
+
+## D-26 Seçici Boss yerel entegrasyonu ve uzlaştırma sınırı
+
+Planın dokuz Boss/test/preview dosyası seçildi; reddedilmiş public deneyler
+alınmadı. Ek Published navigation testleri ve yalnızca kendi sentetik state’ini
+temizleyen preview koruması vardır. Auth/CSRF/atomik yayınlama/import/manuel
+retention ve Hostinger mail kararı korunur. 115 test, 18 sentetik workerd kontrolü
+başarılıdır. Gerçek staging Access/CPU/credential testleri ayrı onaylı sonraki adımdır.
+Yeni uzak main içerikleri için sıradan merge planı hazırlanır; bu sprintte
+merge/push/deploy veya gerçek veri işlemi yapılmaz. Ayrıntı INTEGRATION-SPRINT.md.
+
 ## Open questions (owner)
 
 1. Legacy geçmişin korunması karara bağlandı (D-24); final log/oy snapshot’ları, reconciliation ve manuel retention uygulama zamanı cutover hazırlığında tamamlanmalı.

@@ -106,6 +106,15 @@ export async function top(db, f, column, limit = 10) {
   return results.map((r) => ({ value: r.value, n: Number(r.n) }));
 }
 
+/** Records per LA day in the view (read-only), oldest first, at most `days` most recent days. */
+export async function daily(db, f, days = 60) {
+  const w = whereFor(f);
+  const { results } = await db.prepare(
+    `SELECT la_day AS day, COUNT(*) AS n, SUM(automation = 'human') AS human FROM visitor_events ${w.sql} GROUP BY la_day ORDER BY la_day DESC LIMIT ?`,
+  ).bind(...w.args, days).all();
+  return results.map((r) => ({ day: r.day, n: Number(r.n), human: Number(r.human || 0) })).reverse();
+}
+
 /** One page of the raw stream, newest first, keyset on id. */
 export async function stream(db, f) {
   const w = whereFor(f);

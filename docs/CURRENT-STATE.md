@@ -1,8 +1,26 @@
 # americawhat — Current State
 
-Güvenlik sprinti Phase A (yalnızca yerel): `codex/security-boss`, `D:\IT\AmericaWhat\americawhat\tmp\security-boss`, başlangıç `16b10a4`. Astro 7.3.8 / sitemap 3.7.4 / Wrangler 4.151.0; npm ci ve audit 0, 106 test, build/statik/SEO/DOM-CSS ve yerel web/Boss workerd doğrulandı. Public src değişmedi; Boss UI henüz alınmadı. Ayrıntı SECURITY-REMEDIATION.md.
+## Geçerli durum — güvenlik ve Boss sprinti (2026-10-14)
 
-## Güncel yerel UI durumu — 2026-10-14
+Yalnızca yerel `codex/security-boss`, worktree
+`D:\IT\AmericaWhat\americawhat\tmp\security-boss`; başlangıç onaylı `16b10a4`.
+Güvenlik commit’i `d266964`: Astro 7.3.8 / sitemap 3.7.4 / Wrangler 4.151.0;
+tam ve dev hariç npm audit **0**. Sonraki ayrı Boss entegrasyonu navy/kırmızı
+altı bölümü, Published filtre/sayfalama ve salt okunur günlük Analytics’i içerir.
+115/115 test, 18/18 sentetik Boss workerd kontrolü, 162 sayfa build/statik/
+DOM-CSS eşdeğerliği başarılı. Public `src/` başlangıçla aynı; grafik test yok.
+
+Uzak main `b1312bf`: published aynı 124, pending 131, seen-id 11.373;
+yerel pending 130, seen-id 11.348. Uzlaştırma **yapılmadı**. Canlı staging
+hâlâ `636936f`, production Hostinger; bu sprint dağıtılmadı. Boss staging
+anonim GET’i 404; gerçek Access/plan/production kaynakları doğrulanmış değildir.
+Yerel önizlemeler web `http://127.0.0.1:8817/`, Boss `http://127.0.0.1:18828/`.
+Ayrıntı, kanıtlar ve onay sonrası komutlar: [INTEGRATION-SPRINT.md](INTEGRATION-SPRINT.md),
+[SECURITY-REMEDIATION.md](SECURITY-REMEDIATION.md). Push/merge/deploy/gerçek veri
+işlemi yapılmadı. Aşağıdaki önceki UI/audit notları tarihsel kayıttır; güncel
+sürüm, açık sayısı ve Boss uygulama durumu için bu bölüm geçerlidir.
+
+## Önceki yerel UI durumu — 2026-10-14 (sprint öncesi)
 
 Son polish (`e7d2116` sonrası): proje sahibi mevcut kamusal yönü ve Trending
 çalışmasını kabul etti. Trending incelenmedi/değiştirilmedi; ana sayfa ve istemci

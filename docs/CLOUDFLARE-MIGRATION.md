@@ -10,6 +10,12 @@ approval. Nothing in this document has been executed in production.
 
 ## 0. Status of the preparation
 
+2026-10-14 güvenlik/Boss sprinti: araç zinciri ve navy/kırmızı Boss yalnızca
+`codex/security-boss` üzerinde entegre/test edildi. Canlı staging hâlâ
+`636936f`; production dağıtımı yapılmadı. Güncel salt okunur kanıt/bilinmeyenler
+ve sonraki onay kapıları [INTEGRATION-SPRINT.md](INTEGRATION-SPRINT.md) içindedir;
+aşağıdaki eski kaynak envanteri yeniden hesap düzeyinde doğrulanmış sayılmaz.
+
 2026-10-14 güncel karar notu: Hostinger web/PHP ileride emekli olur, EMAIL
 kalır. Tam legacy log geçmişi ve oylar korunur; final snapshot cutover’a yakın
 sağlanacaktır. Manuel retention/90 gün hedefi ve gizlilik doğruluğu geçerlidir;

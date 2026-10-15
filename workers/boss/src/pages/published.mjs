@@ -5,6 +5,7 @@ import { computeSlugs } from '../editorial.mjs';
 import { h, hidden, page, select } from '../html.mjs';
 
 export const FIELD_NAMES = ['title', 'comment', 'category', 'source_url', 'source_name', 'date', 'status', 'city', 'state'];
+const PER_PAGE = 40;
 
 export function fieldsFromForm(form) {
   return Object.fromEntries(FIELD_NAMES.map((k) => [k, String(form.get(k) ?? '')]));
@@ -18,49 +19,82 @@ function itemForm(item, csrf, action, submitLabel) {
   return `<form method="post" action="${h(action)}" class="card">
   ${hidden('csrf', csrf)}${item.id ? hidden('id', item.id) : ''}
   <div class="grid">
-    <div><label>Title</label><input name="title" value="${h(item.title || '')}"></div>
-    <div><label>Category</label>${select('category', CATEGORIES.map((c) => [c, c]), item.category || 'bureaucracy')}</div>
-    <div><label>Original source URL</label><input name="source_url" value="${h(item.source_url || '')}"></div>
-    <div><label>Source name</label><input name="source_name" value="${h(item.source_name || '')}"></div>
-    <div><label>Date</label><input name="date" value="${h(item.date || new Date().toISOString().slice(0, 10))}"></div>
-    <div><label>Status</label>${select('status', STATUSES.map((s) => [s, s]), item.status || 'REAL')}</div>
-    <div><label>City</label><input name="city" value="${h(item.city || '')}"></div>
-    <div><label>State</label><input name="state" value="${h(item.state || '')}"></div>
+    <div><label for="p-title">Title</label><input id="p-title" name="title" value="${h(item.title || '')}"></div>
+    <div><label for="p-category">Category</label>${select('category', CATEGORIES.map((c) => [c, c]), item.category || 'bureaucracy', ' id="p-category"')}</div>
+    <div><label for="p-source_url">Original source URL</label><input id="p-source_url" name="source_url" value="${h(item.source_url || '')}" placeholder="https://"></div>
+    <div><label for="p-source_name">Source name</label><input id="p-source_name" name="source_name" value="${h(item.source_name || '')}"></div>
+    <div><label for="p-date">Date</label><input id="p-date" name="date" value="${h(item.date || new Date().toISOString().slice(0, 10))}"></div>
+    <div><label for="p-status">Status</label>${select('status', STATUSES.map((s) => [s, s]), item.status || 'REAL', ' id="p-status"')}</div>
+    <div><label for="p-city">City</label><input id="p-city" name="city" value="${h(item.city || '')}"></div>
+    <div><label for="p-state">State</label><input id="p-state" name="state" value="${h(item.state || '')}"></div>
   </div>
-  <label>Comment — exactly two sentences</label><textarea name="comment">${h(item.comment || '')}</textarea>
-  <div class="actions">
-    <label><input type="checkbox" name="ovs" value="1"> allow ≠ 2 sentences</label>
-    <label><input type="checkbox" name="ova" value="1"> allow aggregator link</label>
-    <button type="submit">${h(submitLabel)}</button>
+  <label for="p-comment" style="margin-top:12px">Comment — exactly two sentences</label><textarea id="p-comment" name="comment">${h(item.comment || '')}</textarea>
+  <div class="form-foot">
+    <div class="opts"><label><input type="checkbox" name="ovs" value="1"> allow ≠ 2 sentences</label>
+    <label><input type="checkbox" name="ova" value="1"> allow aggregator link</label></div>
+    <div class="actions"><a class="btn ghost" href="/published">Cancel</a><button type="submit">${h(submitLabel)}</button></div>
   </div>
 </form>`;
 }
 
-export function renderPublishedList({ identity, flash, items, query }) {
+function pager(current, pages, link) {
+  if (pages <= 1) return '';
+  const shown = [...new Set([1, current - 1, current, current + 1, pages])].filter((n) => n >= 1 && n <= pages).sort((a, b) => a - b);
+  const parts = [];
+  shown.forEach((n, i) => {
+    if (i && n - shown[i - 1] > 1) parts.push('<span class="gap" aria-hidden="true">…</span>');
+    parts.push(n === current ? `<span class="on" aria-current="page">${n}</span>` : `<a href="${link(n)}">${n}</a>`);
+  });
+  return `<nav class="pager" aria-label="Pages">${current > 1 ? `<a href="${link(current - 1)}" rel="prev">← Newer</a>` : ''}${parts.join('')}${current < pages ? `<a href="${link(current + 1)}" rel="next">Older →</a>` : ''}</nav>`;
+}
+
+export function renderPublishedList({ identity, flash, items, query, cat = '', pageNo = 1 }) {
   const q = String(query || '').toLowerCase();
+  const category = CATEGORIES.includes(cat) ? cat : '';
   const slugs = computeSlugs(items);
   const rows = items.map((it, i) => ({ it, slug: slugs[i] }))
+    .filter(({ it }) => !category || it.category === category)
     .filter(({ it }) => !q || `${it.id} ${it.title} ${it.category} ${it.city || ''} ${it.state || ''}`.toLowerCase().includes(q));
+  const pages = Math.max(1, Math.ceil(rows.length / PER_PAGE));
+  const current = Math.min(Math.max(1, Number.parseInt(pageNo, 10) || 1), pages);
+  const slice = rows.slice((current - 1) * PER_PAGE, current * PER_PAGE);
+  const link = (n) => {
+    const p = new URLSearchParams();
+    if (query) p.set('q', query);
+    if (category) p.set('cat', category);
+    if (n > 1) p.set('p', String(n));
+    const s = p.toString();
+    return `/published${s ? `?${h(s)}` : ''}`;
+  };
+  const statusCell = (s) => (s && s !== 'REAL' ? `<span class="tag warn">${h(s)}</span>` : `<span class="faint">${h(s || '')}</span>`);
   const body = `
-<form method="get" action="/published" class="actions"><input name="q" value="${h(query || '')}" placeholder="search" style="max-width:320px"><button class="secondary">Search</button>
-<a class="btn" href="/published/new">Add a story manually</a></form>
-<p class="muted">${rows.length} of ${items.length} items · newest first · URLs shown are the live article paths and never change on edit.</p>
-<div class="scroll"><table><thead><tr><th>ID</th><th>Date</th><th>Category</th><th>Title</th><th>Place</th><th>Status</th><th>URL</th><th></th></tr></thead><tbody>
-${rows.map(({ it, slug }) => `<tr><td>${h(it.id)}</td><td>${h(it.date)}</td><td>${h(it.category)}</td><td class="wrap">${h(it.title)}</td><td>${h([it.city, it.state].filter(Boolean).join(', '))}</td><td>${h(it.status || '')}</td><td>/item/${h(slug)}/</td><td><a href="/published/edit?id=${encodeURIComponent(it.id)}">edit</a></td></tr>`).join('')}
-</tbody></table></div>`;
-  return page({ title: 'Published', active: '/published', identity, flash, body });
+<form method="get" action="/published" class="toolbar" role="search">
+  <input name="q" value="${h(query || '')}" placeholder="Search id, title, category, place" aria-label="Search published stories">
+  ${select('cat', [['', 'All categories'], ...CATEGORIES.map((c) => [c, c])], category, ' aria-label="Category" style="width:auto"')}
+  <button class="secondary">Search</button>${q || category ? '<a class="btn ghost" href="/published">Clear</a>' : ''}
+</form>
+<div class="table-card"><div class="scroll"><table><thead><tr><th scope="col">ID</th><th scope="col">Date</th><th scope="col">Category</th><th scope="col">Title</th><th scope="col">Place</th><th scope="col">Status</th><th scope="col">Live URL</th><th scope="col"><span class="faint">Edit</span></th></tr></thead><tbody>
+${slice.map(({ it, slug }) => `<tr><td class="mono">${h(it.id)}</td><td>${h(it.date)}</td><td><span class="tag">${h(it.category)}</span></td><td class="wrap">${h(it.title)}</td><td>${h([it.city, it.state].filter(Boolean).join(', ')) || '<span class="faint">—</span>'}</td><td>${statusCell(it.status)}</td><td class="mono"><span class="clip" title="/item/${h(slug)}/">/item/${h(slug)}/</span></td><td><a href="/published/edit?id=${encodeURIComponent(it.id)}">edit</a></td></tr>`).join('') || '<tr><td colspan="8" class="empty">No published story matches this search.</td></tr>'}
+</tbody></table></div>
+<div class="table-foot"><span class="faint small">${rows.length ? `${(current - 1) * PER_PAGE + 1}–${Math.min(current * PER_PAGE, rows.length)} of ` : ''}${rows.length} matching · ${items.length} published in total</span>${pager(current, pages, link)}</div></div>`;
+  return page({
+    title: 'Published', active: '/published', identity, flash, body,
+    headActions: '<a class="btn" href="/published/new">Add a story manually</a>',
+    lede: `${rows.length} of ${items.length} items · newest first · URLs shown are the live article paths and never change on edit.`,
+  });
 }
 
 export function renderEdit({ identity, flash, item, csrf }) {
   const body = `${itemForm(item, csrf, '/published/edit', 'Save (one commit)')}
-<form method="post" action="/published/delete" class="card">
+<form method="post" action="/published/delete" class="card danger-zone">
   ${hidden('csrf', csrf)}${hidden('id', item.id)}
-  <p class="bad">Delete this story from the site. Its URL will stop working; type the id to confirm.</p>
-  <div class="actions"><input name="confirm" placeholder="${h(item.id)}" style="max-width:200px"><button class="danger" type="submit">Delete</button></div>
+  <h2>Delete this story</h2>
+  <p>Removes the story from the site; its URL will stop working. Type the id <b class="mono">${h(item.id)}</b> to confirm.</p>
+  <div class="actions"><label for="del-confirm" class="muted">Story id</label><input id="del-confirm" name="confirm" placeholder="${h(item.id)}" style="max-width:200px" autocomplete="off"><button class="danger" type="submit">Delete</button></div>
 </form>`;
-  return page({ title: `Edit ${item.id}`, active: '/published', identity, flash, body });
+  return page({ title: `Edit ${item.id}`, active: '/published', identity, flash, body, lede: 'Saving creates one commit. The live URL stays the same even if the title changes.' });
 }
 
 export function renderNew({ identity, flash, csrf }) {
-  return page({ title: 'Add a story', active: '/published', identity, flash, body: itemForm({}, csrf, '/published/new', 'Publish (one commit)') });
+  return page({ title: 'Add a story', active: '/published', identity, flash, body: itemForm({}, csrf, '/published/new', 'Publish (one commit)'), lede: 'A manually added story is published with one commit, after the same checks as the weekly review.' });
 }

@@ -9,8 +9,8 @@ import { authenticate } from './auth.mjs';
 import { checkCsrf, csrfToken } from './csrf.mjs';
 import { addManual, deletePublished, editPublished, EditorialError, publishedItems, serialize } from './editorial.mjs';
 import { CONTENT_PATHS, createGitHub, githubConfig } from './github.mjs';
-import { errorPage, flashFrom, htmlResponse, redirect } from './html.mjs';
-import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, stream, summary, top } from './analytics-db.mjs';
+import { errorPage, flashFrom, htmlResponse, redirect, envBar } from './html.mjs';
+import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, stream, summary, top, daily } from './analytics-db.mjs';
 import { exportResponse } from './export.mjs';
 import { describeResults, parseReviewForm, renderReview, reviewCompute, reviewSummary } from './pages/review.mjs';
 import { fieldsFromForm, overridesFromForm, renderEdit, renderNew, renderPublishedList } from './pages/published.mjs';
@@ -50,8 +50,8 @@ async function uploadedText(form) {
 async function environmentBanner(response, env) {
   if (env.ENVIRONMENT === 'production') return response;
   if (!(response.headers.get('Content-Type') || '').startsWith('text/html')) return response;
-  const label = env.ENVIRONMENT === 'local' ? 'LOCAL PREVIEW — synthetic data, in-memory GitHub, nothing leaves this machine' : `${String(env.ENVIRONMENT || 'unknown').toUpperCase()} — not production`;
-  const html = (await response.text()).replace('<body>', `<body><div style="background:#ffb347;color:#000;padding:6px 16px;font:600 13px system-ui">${label}</div>`);
+  const label = env.ENVIRONMENT === 'local' ? 'LOCAL PREVIEW — synthetic data and an in-memory GitHub on this computer; nothing here reaches production GitHub, D1 or the live site' : `${String(env.ENVIRONMENT || 'unknown').toUpperCase()} — not production`;
+  const html = (await response.text()).replace('<body>', `<body>${envBar(label)}`);
   return new Response(html, response);
 }
 
@@ -123,7 +123,7 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
     if (path === '/published' && method === 'GET') {
       try {
         const snap = await gh.snapshot([CONTENT_PATHS.published]);
-        return htmlResponse(renderPublishedList({ identity, flash, items: publishedItems(JSON.parse(snap.files[CONTENT_PATHS.published])), query: url.searchParams.get('q') }));
+        return htmlResponse(renderPublishedList({ identity, flash, items: publishedItems(JSON.parse(snap.files[CONTENT_PATHS.published])), query: url.searchParams.get('q'), cat: url.searchParams.get('cat') || '', pageNo: url.searchParams.get('p') || 1 }));
       } catch (error) { return errorPage(502, `Could not read content from GitHub: ${error.message}`); }
     }
     if (path === '/published/new' && method === 'GET') return htmlResponse(renderNew({ identity, flash, csrf }));
@@ -166,13 +166,13 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
     const adb = env.ANALYTICS_DB;
     if (path === '/analytics' && method === 'GET') {
       const f = parseFilters(url.searchParams, now);
-      const [sum, page, country, referrer, agent, streamPage, retention, coverage, corpora, outbox] = await Promise.all([
-        summary(adb, f), top(adb, f, 'page'), top(adb, f, 'country'), top(adb, f, 'referrer'), top(adb, f, 'agent'), stream(adb, f), retentionStatus(adb, now),
+      const [sum, days, page, country, referrer, agent, streamPage, retention, coverage, corpora, outbox] = await Promise.all([
+        summary(adb, f), daily(adb, f), top(adb, f, 'page'), top(adb, f, 'country'), top(adb, f, 'referrer'), top(adb, f, 'agent'), stream(adb, f), retentionStatus(adb, now),
         adb.prepare('SELECT * FROM analytics_coverage ORDER BY id').all().then((r) => r.results),
         adb.prepare('SELECT corpus_id, content_sha256, line_count, summary_json FROM analytics_import_corpora ORDER BY imported_at').all().then((r) => r.results),
         adb.prepare('SELECT state, COUNT(*) AS n FROM dndr_outbox GROUP BY state').all().then((r) => r.results),
       ]);
-      return htmlResponse(renderAnalytics({ identity, flash, f, sum, tops: { page, country, referrer, agent }, streamPage, retention, coverage, corpora, outbox }));
+      return htmlResponse(renderAnalytics({ identity, flash, f, sum, days, tops: { page, country, referrer, agent }, streamPage, retention, coverage, corpora, outbox }));
     }
     if (path === '/analytics/export' && method === 'GET') {
       const format = url.searchParams.get('format') === 'ndjson' ? 'ndjson' : 'csv';

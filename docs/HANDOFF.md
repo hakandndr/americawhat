@@ -1,6 +1,24 @@
 # americawhat — Handoff
 
-## Güncel devir notu — 2026-10-14
+## Güncel devir — güvenlik ve Boss sprinti (2026-10-14)
+
+Çalışmaya `D:\IT\AmericaWhat\americawhat\tmp\security-boss` /
+`codex/security-boss` üzerinde devam edilir. Onaylı `design/staging-refinement`
+`16b10a4` ve deneysel `design/editorial-casefiles` `40274dc` değişmedi.
+Güvenlik `d266964` ayrı commit; seçici Boss entegrasyonu sonraki ayrı commit’tir.
+Public tasarım/Trending donmuş ve `src/` birebir korunmuştur. Audit 0,
+115 test ve 18 yerel Boss workerd kontrolü başarılı; görsel tarayıcı testi yok.
+
+[INTEGRATION-SPRINT.md](INTEGRATION-SPRINT.md) son sonuçları, uzak main içerik
+farkını, onay sonrası merge reçetesini ve staging/production kapılarını içerir.
+Sonraki iş aynı commit’in **ayrıca onaylı** gerçek Cloudflare staging doğrulamasıdır.
+Uzak main `b1312bf` bu dala henüz birleştirilmedi; daha yeni RSS içeriğini koru.
+Canlı staging `636936f`; Boss Access/plan/production provisioning bekler.
+Final FTP log/oy dosyalarını şimdi isteme; cutover’a yakın alınır. Hostinger mail
+kalır, retention manueldir, DNDR’ye tarihsel tekrar sayım yapılmaz.
+Bu sprintte push, merge, deploy veya gerçek veri değişikliği yapılmadı.
+
+## Önceki devir notu — 2026-10-14 (sprint öncesi)
 
 Son görev `e7d2116` sonrasındaki küçük footer CSS/header polish’idir; bu dalın
 HEAD’i tek yerel polish + dokümantasyon commit’idir. Footer merkezde kalır,

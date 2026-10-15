@@ -1,7 +1,15 @@
 # AmericaWhat — Boss seçici entegrasyon hazırlığı
 
-2026-10-14. **Yalnızca salt okunur analiz; entegrasyon yapılmadı.**
-Bu planın varlığı merge/deploy/Access/D1 işlemlerine izin değildir.
+2026-10-14 güncellemesi: aşağıdaki dokuz dosya whitelist’i `codex/security-boss`
+üzerinde **yerel olarak uygulandı**, `8da9839` dar ekran düzeltmesi dahil.
+Ek Published router testleri ve preview state dizini koruması eklendi.
+115/115 test ve 18/18 sentetik workerd kontrolü başarılı. Auth/JWT/CSRF,
+Git yayınlama, retention/import çekirdeği, şemalar ve public `src/` değişmedi.
+Ayrıntı: [INTEGRATION-SPRINT.md](INTEGRATION-SPRINT.md).
+Gerçek Access/D1/uzak Boss yapılandırması veya dağıtımı yapılmadı.
+
+Aşağıdaki analiz ve gelecek uygulama sırası ilk hazırlığın tarihsel kaydıdır;
+uzak merge/deploy/Access/D1 işlemlerine izin değildir.
 
 ## Doğrulanmış dal ilişkisi
 

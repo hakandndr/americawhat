@@ -12,20 +12,31 @@
 
 import http from 'node:http';
 import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { spawn, spawnSync } from 'node:child_process';
 import { FakeGitHub } from '../../tests/helpers/fake-github.mjs';
 import { AUD, TEAM, makeSigner } from '../../tests/helpers/access-jwt.mjs';
 import { assignSlugs } from '../../src/lib/slug.js';
 import { syntheticAnalyticsSql, syntheticAppSql, syntheticPanelLog } from './synthetic-data.mjs';
 
-const PROXY_PORT = 8788;
-const WORKER_PORT = 8789;
-const GITHUB_PORT = 8790;
+// Ports: BOSS_PREVIEW_PORT (default 8788) for the browser, +1 for workerd, +2
+// for the in-memory GitHub, so a second checkout can run its own preview.
+const PROXY_PORT = Number(process.env.BOSS_PREVIEW_PORT) || 8788;
+const WORKER_PORT = PROXY_PORT + 1;
+const GITHUB_PORT = PROXY_PORT + 2;
 const ORIGIN = `http://127.0.0.1:${PROXY_PORT}`;
 const CONFIG = 'workers/boss/wrangler.jsonc';
 // A dedicated local state directory, emptied at every start: the preview never
 // shares a database with anything else and always starts from the same data.
-const STATE = '.wrangler/boss-preview-state';
+const WORKSPACE = fs.realpathSync(fileURLToPath(new URL('../../', import.meta.url)));
+if (fs.realpathSync(process.cwd()) !== WORKSPACE) throw new Error('Run the Boss preview from its AmericaWhat worktree root.');
+const STATE = path.join(WORKSPACE, '.wrangler', 'boss-preview-state');
+for (const target of [path.dirname(STATE), STATE]) {
+  if (!fs.existsSync(target)) continue;
+  const rel = path.relative(WORKSPACE, fs.realpathSync(target));
+  if (!rel || rel === '..' || rel.startsWith('..' + path.sep) || path.isAbsolute(rel)) throw new Error('Preview state must stay inside this worktree.');
+}
 const signer = makeSigner('local-preview');
 const env = { ...process.env };
 delete env.CLOUDFLARE_API_TOKEN;
