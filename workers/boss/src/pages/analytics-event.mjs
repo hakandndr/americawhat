@@ -20,28 +20,39 @@ function when(row) {
   return `<time datetime="${h(isoUtc(row.occurred_at))}" title="${h(day)} · ${h(time)} · ${h(isoUtc(row.occurred_at))}">${h(day.replace(/, \d{4}$/,''))} · ${h(time.replace(/ PT$/,''))}</time>${approx}`;
 }
 
+/** Country code and city on the first line, country name and region under it; full value in the title. */
+function place(r) {
+  const city=r.city||r.region||'';
+  const region=r.region&&r.city&&!r.city.includes(r.region)?r.region:'';
+  if(!r.country&&!city) return dash;
+  const full=[r.country,r.country_code,r.region,r.city].filter(Boolean).join(' · ');
+  const first=r.country_code?`<b class="cc">${h(r.country_code)}</b>${city?` ${h(city)}`:''}`:h(city||r.country);
+  const second=[city||r.country_code?r.country:'',region].filter(Boolean).join(' · ');
+  return `<span class="two" title="${h(full)}"><span>${first}</span><span class="sub">${h(second||' ')}</span></span>`;
+}
+
 /** Column list for one table. `ip` is { href(row), linkable(row) } on the Analytics stream, absent on IP activity. */
 export function eventColumns({ip}={}) {
   const cols=[
     {key:'all',label:'ALL #',tip:ALL_TIP,w:'48px',num:true,cell:(r)=>`<span title="${h(ALL_TIP)}">${h(r.id)}</span>`},
     {key:'day',label:'DAY #',tip:DAY_TIP,w:'52px',num:true,cell:(r)=>r.today_no>0?`<span title="Event ${h(r.today_no)} of ${h(r.day_total)} on ${h(r.la_day)} (PT), in time order over every retained event that day">${h(r.today_no)}<span class="of">/${h(r.day_total)}</span></span>`:dash},
-    {key:'time',label:'DATE / TIME (PT)',w:'122px',cell:when},
+    {key:'time',label:'DATE / TIME (PT)',w:'118px',cell:when},
   ];
   if (ip) cols.push(
-    {key:'ip',label:'IP ADDRESS',w:'112px',cell:(r)=>ip.linkable(r)?`<a class="ip-link mono" href="${h(ip.href(r))}" title="${h(r.ip)} — open activity">${h(r.ip)}</a>`:`<span class="mono" title="${h(r.ip||'')}">${h(r.ip||'—')}</span>`},
-    {key:'visits',label:'IP VISITS',tip:VISITS_TIP,w:'58px',num:true,cell:(r)=>ip.linkable(r)?`<a class="ip-link" href="${h(ip.href(r))}" title="${h(VISITS_TIP)}" aria-label="${h(r.ip_visits)} retained page views for ${h(r.ip)}">${h(r.ip_visits)}</a>`:h(r.ip_visits)},
+    {key:'ip',label:'IP ADDRESS',w:'108px',cell:(r)=>ip.linkable(r)?`<a class="ip-link mono" href="${h(ip.href(r))}" title="${h(r.ip)} — open activity">${h(r.ip)}</a>`:`<span class="mono" title="${h(r.ip||'')}">${h(r.ip||'—')}</span>`},
+    {key:'visits',label:'IP VISITS',tip:VISITS_TIP,w:'52px',num:true,cell:(r)=>ip.linkable(r)?`<a class="ip-link" href="${h(ip.href(r))}" title="${h(VISITS_TIP)}" aria-label="${h(r.ip_visits)} retained page views for ${h(r.ip)}">${h(r.ip_visits)}</a>`:h(r.ip_visits)},
   );
   cols.push(
     {key:'source',label:'SOURCE',tip:'Which writer stored the row: native (this site) or legacy (imported Hostinger log).',w:'54px',cell:(r)=>`<span class="src ${r.origin==='legacy'?'legacy':'native'}">${h(r.origin)}</span>`},
-    {key:'event',label:'EVENT',w:'64px',drop:'lg',cell:(r)=>text(r.event)},
+    {key:'event',label:'EVENT',w:'60px',drop:'lg',cell:(r)=>text(r.event)},
     {key:'actor',label:'ACTOR',tip:'Class stored at ingestion: human or automated. Never rewritten.',w:'72px',cell:(r)=>`<span class="actor ${r.automation==='human'?'human':'auto'}">${h(r.automation)}</span>`},
-    {key:'agent',label:'AGENT',tip:'Agent family from the user agent, or the legacy crawler label. Not verified.',w:'minmax(72px,.6fr)',drop:'md',cell:(r)=>text(r.agent||r.source_label)},
-    {key:'place',label:'COUNTRY · CITY',w:'minmax(96px,.7fr)',cell:(r)=>{const city=[r.city,r.region].filter(Boolean).join(', ');const full=[r.country,r.country_code,city].filter(Boolean).join(' · ');return r.country||city?`<span title="${h(full)}"><b class="cc">${h(r.country_code||r.country||'—')}</b>${city?` <span class="faint">${h(r.city||r.region)}</span>`:''}</span>`:dash;}},
-    {key:'page',label:'PAGE',w:'minmax(160px,2.6fr)',wide:true,cell:(r)=>text(r.page??r.path,r.path&&r.path!==r.page?`${r.page} (path ${r.path})`:r.page)},
-    {key:'referrer',label:'REFERRER',w:'minmax(90px,.7fr)',drop:'md',cell:(r)=>text(r.referrer||'—',r.referrer_raw||r.referrer)},
+    {key:'agent',label:'AGENT',tip:'Agent family from the user agent, or the legacy crawler label. Not verified.',w:'minmax(68px,.5fr)',drop:'md',cell:(r)=>text(r.agent||r.source_label)},
+    {key:'place',label:'COUNTRY · CITY',w:'minmax(160px,1.3fr)',cell:place},
+    {key:'page',label:'PAGE',w:'minmax(124px,2fr)',wide:true,cell:(r)=>text(r.page??r.path,r.path&&r.path!==r.page?`${r.page} (path ${r.path})`:r.page)},
+    {key:'referrer',label:'REFERRER',w:'minmax(84px,.6fr)',drop:'md',cell:(r)=>text(r.referrer||'—',r.referrer_raw||r.referrer)},
     {key:'device',label:'DEVICE',w:'56px',drop:'lg',cell:(r)=>text(r.device_class)},
-    {key:'browser',label:'BROWSER · OS',w:'minmax(104px,.8fr)',cell:(r)=>{const v=[r.browser,r.os].filter(Boolean).join(' · ');return v?`<span title="${h(r.user_agent||v)}">${h(v)}</span>`:dash;}},
-    {key:'more',label:'<span class="visually-hidden">DETAILS</span>',w:'64px',cell:eventDetails},
+    {key:'browser',label:'BROWSER · OS',w:'minmax(96px,.7fr)',cell:(r)=>{const v=[r.browser,r.os].filter(Boolean).join(' · ');return v?`<span title="${h(r.user_agent||v)}">${h(v)}</span>`:dash;}},
+    {key:'more',label:'<span class="visually-hidden">DETAILS</span>',w:'60px',cell:eventDetails},
   );
   return cols;
 }

@@ -224,7 +224,7 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .events-table td>span,.events-table td>a,.events-table td>time{overflow:hidden;text-overflow:ellipsis}
 .events-table time{font-variant-numeric:tabular-nums}
 .events-table .c-all{color:var(--text);font-weight:600}.events-table .of{color:var(--faint);font-size:11px;margin-left:1px}
-.events-table td.c-page{color:var(--text)}.events-table .cc{font-weight:600;color:var(--text);margin-right:2px}.events-table .c-time{color:var(--text)}
+.events-table td.c-page{color:var(--text)}.events-table .cc{font-weight:700;color:var(--text);margin-right:2px}.events-table .two{display:flex;flex-direction:column;min-width:0}.events-table .two>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.events-table .two .sub{color:var(--faint);font-size:11px;line-height:1.3}.events-table .c-time{color:var(--text)}
 .events-table td.empty{grid-column:1/-1;white-space:normal}
 .src,.actor{font-size:11.5px;font-weight:600}.src.native{color:var(--muted)}.src.legacy{color:var(--warn)}
 .actor::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;background:currentColor;vertical-align:1px}.actor.human{color:var(--info)}.actor.auto{color:var(--muted)}
@@ -239,10 +239,10 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .ip-address{font-size:17px;font-weight:600;color:var(--text);margin:0 0 10px;overflow-wrap:anywhere}.activity-overview .kv{max-width:none}.activity-kpis{grid-template-columns:repeat(2,minmax(0,1fr));margin:0;padding:0;border:0}.activity-exports{gap:6px 8px}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 /* Narrower desktops drop the columns marked lg, then md (their values stay in Details). */
-@media (max-width:1431px){.events-table tr{grid-template-columns:var(--cols-lg)}.events-table .hide-lg{display:none}}
-@media (max-width:1291px){.events-table tr{grid-template-columns:var(--cols-md)}.events-table .hide-md{display:none}}
+@media (max-width:1415px){.events-table tr{grid-template-columns:var(--cols-lg)}.events-table .hide-lg{display:none}}
+@media (max-width:1275px){.events-table tr{grid-template-columns:var(--cols-md)}.events-table .hide-md{display:none}}
 /* Below that, each event becomes a labelled card with every column. */
-@media (max-width:1109px){
+@media (max-width:1099px){
   .events-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
   .events-table tr{grid-template-columns:repeat(4,minmax(0,1fr));gap:0 14px;padding:10px 14px;align-items:start}
   .events-table :is(.hide-lg,.hide-md){display:block}
