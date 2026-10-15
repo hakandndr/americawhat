@@ -1,5 +1,7 @@
 # AmericaWhat — Bağımlılık güvenlik değerlendirmesi
 
+Güncel sprint: aşağıdaki 21 bulguluk kayıt tarihsel başlangıçtır. Ayrı `codex/security-boss` dalında izinli yükseltme tamamlandı; temiz npm ci ve güncel audit 0 bulgu verdi. Sonuç ve sınırlar SECURITY-REMEDIATION.md’dedir. Onaylı eski dal korunur; uzak dağıtım yok.
+
 2026-10-14 (America/Los_Angeles). Başlangıç: `design/staging-refinement` / `e7d2116`.
 Bu çalışma **salt okunur audit ve planlamadır**. Paket kurulumu/yükseltmesi,
 `npm audit fix`, lockfile yeniden üretimi veya altyapı değişikliği yapılmadı.

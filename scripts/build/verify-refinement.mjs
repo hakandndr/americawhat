@@ -8,6 +8,7 @@ import { parseHTML } from 'linkedom';
 import data from '../../src/data/published.json' with { type: 'json' };
 import { assignSlugs } from '../../src/lib/slug.js';
 import { CATEGORIES } from '../../src/data/categories.js';
+import { elementContract } from './html-contract.mjs';
 
 const root = path.resolve('dist');
 const documentAt = (file) => parseHTML(fs.readFileSync(file, 'utf8')).document;
@@ -20,7 +21,7 @@ const items = data.items;
 const sorted = [...items].sort((a, b) => a.date < b.date ? 1 : -1);
 const slugs = assignSlugs(items);
 const home = page('/');
-const referenceCards = staging ? new Map([...documentAt(staging).querySelectorAll('.card[data-id]')].map((c) => [c.dataset.id, c.outerHTML])) : null;
+const referenceCards = staging ? new Map([...documentAt(staging).querySelectorAll('.card[data-id]')].map((c) => [c.dataset.id, elementContract(c)])) : null;
 const walked = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walked(path.join(dir, e.name)) : [path.join(dir, e.name)]);
 const pages = walked(root).filter((p) => p.endsWith('.html'));
 
@@ -39,7 +40,7 @@ for (let n = 1; n <= Math.ceil(items.length / 12); n++) {
     assert.equal(card.querySelector('.card-comment').textContent, item.comment);
     assert.equal(card.querySelector('.source a')?.getAttribute('href') || '', item.sourceUrl ?? item.source_url ?? '');
     assert.deepEqual([...card.querySelectorAll('.react-btn')].map((b) => b.dataset.reaction), ['wat', 'lol', 'same', 'dead']);
-    if (referenceCards) assert.equal(card.outerHTML, referenceCards.get(item.id), `Staging card changed: ${item.id}`);
+    if (referenceCards) assert.deepEqual(elementContract(card), referenceCards.get(item.id), `Staging card changed: ${item.id}`);
   }
 }
 assert.deepEqual(feedIds, sorted.map((it) => it.id));
@@ -101,8 +102,8 @@ if (baseline) {
   const rss = (dir) => fs.readFileSync(path.join(dir, 'rss.xml'), 'utf8').replace(/<lastBuildDate>.*?<\/lastBuildDate>/, '<lastBuildDate/>');
   assert.equal(rss(root), rss(baseline));
   const oldHome = documentAt(path.join(baseline, 'index.html'));
-  assert.equal(home.querySelector('.hero').outerHTML, oldHome.querySelector('.hero').outerHTML);
-  assert.equal(home.querySelector('.subscribe').outerHTML, oldHome.querySelector('.subscribe').outerHTML);
+  assert.deepEqual(elementContract(home.querySelector('.hero')), elementContract(oldHome.querySelector('.hero')));
+  assert.deepEqual(elementContract(home.querySelector('.subscribe')), elementContract(oldHome.querySelector('.subscribe')));
   const oldURLs = [...fs.readFileSync(path.join(baseline, 'sitemap-0.xml'), 'utf8').matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
   for (const url of oldURLs) assert.ok(sitemap.includes(`<loc>${url}</loc>`), url);
 }
@@ -116,4 +117,4 @@ vm.runInNewContext(randomScript.textContent, {
 });
 randomClick({ preventDefault() {} });
 assert.ok(slugs.some((slug) => randomWindow.location.href === `/item/${slug}/`));
-console.log(JSON.stringify({ pages: pages.length, stories: items.length, feedChunks: Math.ceil(items.length / 12), internalLinks: links, stagingCardsIdentical: !!staging, baselineMetadataIdentical: !!baseline, result: 'PASS' }, null, 2));
+console.log(JSON.stringify({ pages: pages.length, stories: items.length, feedChunks: Math.ceil(items.length / 12), internalLinks: links, stagingCardContractsIdentical: !!staging, baselineMetadataIdentical: !!baseline, result: 'PASS' }, null, 2));

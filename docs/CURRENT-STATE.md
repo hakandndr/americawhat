@@ -1,5 +1,7 @@
 # americawhat — Current State
 
+Güvenlik sprinti Phase A (yalnızca yerel): `codex/security-boss`, `D:\IT\AmericaWhat\americawhat\tmp\security-boss`, başlangıç `16b10a4`. Astro 7.3.8 / sitemap 3.7.4 / Wrangler 4.151.0; npm ci ve audit 0, 106 test, build/statik/SEO/DOM-CSS ve yerel web/Boss workerd doğrulandı. Public src değişmedi; Boss UI henüz alınmadı. Ayrıntı SECURITY-REMEDIATION.md.
+
 ## Güncel yerel UI durumu — 2026-10-14
 
 Son polish (`e7d2116` sonrası): proje sahibi mevcut kamusal yönü ve Trending
