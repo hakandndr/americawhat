@@ -102,8 +102,8 @@ test('Published query and stored headlines stay escaped in the integrated UI', a
 test('Boss navy/red theme retains the narrow-screen static submit-bar correction', async () => {
   const { document } = await setup().get();
   const css = document.querySelector('style').textContent;
-  assert.ok(css.includes('--bg:#0b1426'));
-  assert.ok(css.includes('--accent:#df4d66'));
+  assert.ok(css.includes('--bg:#0b1120'));
+  assert.ok(css.includes('--accent:#e23b4e'));
   const mobile = css.slice(css.indexOf('@media (max-width:760px)'));
   assert.ok(mobile.includes('.sticky-submit{position:static;box-shadow:none}'));
 });
