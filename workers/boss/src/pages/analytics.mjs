@@ -7,7 +7,7 @@
 import { formatLa, formatLaSeconds, nextDay } from '../../../shared/time.mjs';
 import { bars, h, hidden, page, select } from '../html.mjs';
 import { analyticsQuery as qs, ipActivityHref, validIpAddress } from '../analytics-links.mjs';
-import { DAY_TIP, GLOBAL_TIP, classCell, clientCell, eventDetails, eventTime, numberCells, pageCell, placeCell } from './analytics-event.mjs';
+import { columnStyle, eventColumns, eventHead, eventRow } from './analytics-event.mjs';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const shortDay = (day) => `${MONTHS[Number(day.slice(5, 7)) - 1]} ${Number(day.slice(8, 10))}`;
@@ -26,40 +26,56 @@ function continuousDays(days) {
   return out;
 }
 
+// The chart can narrow to the last 30 or 7 days of the view without a new
+// request (CSS only: radio inputs outside the filter form). Every window keeps
+// zero days as zero bars and is scaled to its own peak.
+const WINDOWS = [['all', 'Whole view', Infinity], ['30', '30 days', 30], ['7', '7 days', 7]];
+
+function axisLabels(days) {
+  const every = Math.ceil(days.length / 6);
+  return days.map((d, i) => (i === 0 || i === days.length - 1 || (i % every === 0 && days.length - 1 - i >= every / 2) ? shortDay(d.day) : ''));
+}
+
 function dailyChart(records) {
   const days = continuousDays(records);
-  const head = '<div class="panel-head"><h3>Page views per day (PT)</h3><span class="keys"><span class="key human">human</span><span class="key automated">automated</span></span></div>';
+  const keys = '<span class="keys"><span class="key human">human</span><span class="key automated">automated</span></span>';
   if (days.length < 2) {
     const note = days.length ? `Every record in this view is from ${h(shortDay(days[0].day))}; widen the range for a daily trend.` : 'No records in this view.';
-    return `<div class="panel chart-panel">${head}<div class="chart-empty">${note}</div></div>`;
+    return `<div class="panel chart-panel"><div class="panel-head"><h3>Page views per day (PT)</h3>${keys}</div><div class="chart-empty">${note}</div></div>`;
   }
-  const max = Math.max(...days.map((d) => d.n), 1);
-  const peak = days.find((d) => d.n === max);
-  const total = days.reduce((sum, d) => sum + d.n, 0);
-  const every = Math.ceil(days.length / 6);
+  const windows = WINDOWS.filter(([, , n], i) => i === 0 || days.length > n).map(([id, label, n]) => {
+    const list = days.slice(-Math.min(n, days.length));
+    const max = Math.max(...list.map((d) => d.n), 1);
+    const peak = list.find((d) => d.n === max);
+    return { id, label, first: days.length - list.length, max, peak, total: list.reduce((s, d) => s + d.n, 0), labels: axisLabels(list) };
+  });
   const cols = days.map((d, i) => {
-    const label = i === 0 || i === days.length - 1 || (i % every === 0 && days.length - 1 - i >= every / 2) ? shortDay(d.day) : '';
-    const height = d.n ? Math.max(2, Math.round((d.n / max) * 100)) : 0;
-    return `<span class="col" title="${h(d.day)}: ${d.n} page views · ${d.human} human · ${d.n - d.human} automated"><span class="plot"><span class="bar" style="height:${height}%"><i style="height:${share(d.human, d.n)}%"></i></span></span><span class="x">${h(label)}</span></span>`;
+    const vars = windows.filter((w) => i >= w.first).map((w) => `--h-${w.id}:${d.n ? Math.max(2, Math.round((d.n / w.max) * 100)) : 0}%`).join(';');
+    const inWindows = windows.filter((w) => i >= w.first).map((w) => `in-${w.id}`).join(' ');
+    const labels = windows.filter((w) => i >= w.first).map((w) => `<span class="x-${w.id}">${h(w.labels[i - w.first])}</span>`).join('');
+    return `<span class="col ${inWindows}" style="${vars}" title="${h(d.day)}: ${d.n} page views · ${d.human} human · ${d.n - d.human} automated"><span class="plot"><span class="day-bar"><i style="height:${share(d.human, d.n)}%"></i></span></span><span class="x">${labels}</span></span>`;
   }).join('');
-  return `<div class="panel chart-panel">${head}<p class="faint small">${days.length} days · ${total} page views · peak ${max} on ${h(shortDay(peak.day))} · hover a bar for its day</p>
-<div class="chart${days.length > 60 ? ' dense' : ''}" tabindex="0" role="img" aria-label="Page views per day from ${h(days[0].day)} to ${h(days[days.length - 1].day)}: ${total} in total, peak ${max} on ${h(peak.day)}. Scroll horizontally for long histories."><span class="peak" aria-hidden="true"><span>peak ${max}</span></span><span class="cols">${cols}</span></div></div>`;
+  const picker = windows.length > 1 ? `<span class="chart-window" role="radiogroup" aria-label="Chart window">${windows.map((w) => `<input type="radio" name="chart-window" id="cw-${w.id}" value="${w.id}"${w.id === 'all' ? ' checked' : ''}><label for="cw-${w.id}">${h(w.label)}</label>`).join('')}</span>` : '';
+  const notes = windows.map((w) => `<span class="note-${w.id}">${days.length - w.first} days · ${w.total} page views · peak ${w.max} on ${h(shortDay(w.peak.day))}</span>`).join('');
+  const peaks = windows.map((w) => `<span class="peak-${w.id}">peak ${w.max}</span>`).join('');
+  return `<div class="panel chart-panel"><div class="panel-head"><h3>Page views per day (PT)</h3>${picker}${keys}</div><p class="faint small chart-note">${notes}</p>
+<div class="chart${days.length > 60 ? ' dense' : ''}" tabindex="0" role="img" aria-label="Page views per day from ${h(days[0].day)} to ${h(days[days.length - 1].day)}: ${windows[0].total} in total, peak ${windows[0].max} on ${h(windows[0].peak.day)}. Hover a bar for its day; scroll horizontally for long histories."><span class="peak" aria-hidden="true">${peaks}</span><span class="cols">${cols}</span></div></div>`;
 }
 
 function overview(v, rangeLabel, days) {
   const human = share(v.human, v.events);
   const automated = v.events ? 100 - human : 0;
   return `<section id="analytics-metrics" class="overview" aria-labelledby="h-metrics">
-<div class="panel kpi-primary"><h2 id="h-metrics" class="eyebrow">In view · ${h(rangeLabel)}</h2>
-<div class="stat"><b>${v.events}</b>page views in view</div>
-<div class="split" role="img" aria-label="${v.human} human and ${v.automated} automated page views"><span class="human" style="width:${human}%"></span><span class="automated" style="width:${automated}%"></span></div>
-<div class="keys"><span class="key human">${human}% human</span><span class="key automated">${automated}% automated</span></div>
+<div class="panel kpi-panel"><h2 id="h-metrics" class="eyebrow">In view · ${h(rangeLabel)}</h2>
+<div class="kpi-main"><div class="stat"><b>${v.events}</b>page views in view</div>
+<div class="kpi-split"><div class="split" role="img" aria-label="${v.human} human and ${v.automated} automated page views"><span class="human" style="width:${human}%"></span><span class="automated" style="width:${automated}%"></span></div>
+<div class="keys"><span class="key human">${human}% human</span><span class="key automated">${automated}% automated</span></div></div></div>
 <div class="kpis">
   <div class="stat"><b>${v.human}</b>human</div>
   <div class="stat"><b>${v.automated}</b>automated</div>
   <div class="stat"><b>${v.native}</b>native</div>
   <div class="stat"><b>${v.legacy}</b>legacy</div>
-  <div class="stat span"><b>${v.addresses}</b>distinct IP addresses <span class="muted">(not people)</span></div>
+  <div class="stat" title="Distinct IP addresses in the view — not people"><b>${v.addresses}</b>distinct IPs <span class="muted">(not people)</span></div>
 </div></div>
 ${dailyChart(days)}
 </section>`;
@@ -75,7 +91,7 @@ function paginationControls(f, stream) {
     : `<a data-analytics-nav class="btn secondary" href="/analytics${qs(f, { p: number })}">${label}</a>`;
   const base = `/analytics${qs(f)}`;
   const fields = [...new URL(base, 'https://boss.local').searchParams].map(([key, value]) => hidden(key, value)).join('');
-  const options = pages.map(p => `<option value="${p.number}"${p.number === current ? ' selected' : ''}>Page ${p.number} · Global # ${p.firstId}–${p.lastId}</option>`).join('');
+  const options = pages.map(p => `<option value="${p.number}"${p.number === current ? ' selected' : ''}>Page ${p.number} · ALL # ${p.firstId}–${p.lastId}</option>`).join('');
   return `<div class="table-foot"><span class="faint small">${total ? `Rows ${(current - 1) * f.limit + 1}–${Math.min(current * f.limit, total)} of ${total} matching · page ${current} of ${last}` : '0 matching records · no pages'}</span>
 <nav class="actions" aria-label="Visitor event pages">
 ${link(1, 'First', current <= 1)}${link(current - 1, 'Previous', current <= 1)}
@@ -83,23 +99,6 @@ ${link(1, 'First', current <= 1)}${link(current - 1, 'Previous', current <= 1)}
 ${link(current + 1, 'Next', current >= last)}${link(last, 'Last', current >= last)}
 </nav></div>`;
 }
-
-function eventRow(r, f, current) {
-  const href = h(ipActivityHref(r.ip, f, current));
-  const linkable = validIpAddress(r.ip);
-  return `<tr role="row">
-${numberCells(r)}
-<td role="cell" data-label="Date and time (PT)">${eventTime(r)}</td>
-<td role="cell" data-label="IP address">${linkable ? `<a class="ip-link mono clip" href="${href}" title="${h(r.ip)}">${h(r.ip)}</a>` : `<span class="mono clip">${h(r.ip || '—')}</span>`}</td>
-<td role="cell" class="num" data-label="IP Visits">${linkable ? `<a class="ip-link" href="${href}" title="Retained page views from this exact address, all dates and sources" aria-label="${h(r.ip_visits)} retained page views for ${h(r.ip)}">${h(r.ip_visits)}</a>` : h(r.ip_visits)}</td>
-${placeCell(r)}
-${pageCell(r)}
-${clientCell(r)}
-${classCell(r)}
-<td role="cell" class="more" data-label="Details">${eventDetails(r)}</td></tr>`;
-}
-
-export const STREAM_HEAD = (cols) => `<thead role="rowgroup"><tr role="row">${cols.map(([label, title, cls]) => `<th role="columnheader" scope="col"${cls ? ` class="${cls}"` : ''}${title ? ` title="${h(title)}"` : ''}>${label}</th>`).join('')}</tr></thead>`;
 
 export function renderAnalytics({ identity, flash, f, sum, days = [], tops, streamPage, retention, coverage, corpora, outbox }) {
   const chips = [['today', 'Today'], ['7d', '7 days'], ['30d', '30 days'], ['all', 'All time']]
@@ -109,7 +108,8 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
   const retentionLine = retention.overdue
     ? `${retention.overdueRecords} raw records are older than the ${retention.targetDays}-day target (oldest ${h(formatLa(retention.oldestAt))}, ${retention.oldestAgeDays} days). Nothing is deleted automatically.`
     : `No raw record is older than ${retention.targetDays} days${retention.oldestAt ? ` (oldest ${h(formatLa(retention.oldestAt))})` : ''}.`;
-  const rows = streamPage.rows.map(r=>eventRow(r,f,streamPage.current)).join('');
+  const cols = eventColumns({ ip: { linkable: (r) => validIpAddress(r.ip), href: (r) => ipActivityHref(r.ip, f, streamPage.current) } });
+  const rows = streamPage.rows.map((r) => eventRow(cols, r)).join('');
   const rangeLabel = f.range === 'custom' ? `${f.from || '…'} → ${f.to || '…'}` : ({ today: 'today', '7d': 'last 7 days', '30d': 'last 30 days', all: 'all time' })[f.range];
   const headActions = `<nav class="seg" aria-label="Date range">${chips}</nav>`;
   const secondary = [f.origin, f.cls, f.device, f.place, f.referrer, f.browser].filter(Boolean).length + (Number(f.limit) === 50 ? 0 : 1);
@@ -146,9 +146,8 @@ ${overview(v, rangeLabel, days)}
 </form></section>
 
 <section id="analytics-events" class="section" aria-labelledby="h-events">
-<div class="stream-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · <span class="warn">*</span> approximate time</p></div>
-<dl class="stream-key"><div><dt>Global #</dt><dd>permanent database ID; never reused or renumbered, gaps are deleted records</dd></div><div><dt>Day #</dt><dd>order within the Pacific Time day, 1 = first event, counted over every retained event (filters never change it)</dd></div><div><dt>IP Visits</dt><dd>retained page views from that exact address, all dates — events, not people</dd></div></dl>
-<div class="table-card"><table class="events-table" role="table">${STREAM_HEAD([['GLOBAL #', GLOBAL_TIP, 'num'], ['DAY #', DAY_TIP, 'num'], ['DATE AND TIME (PT)'], ['IP ADDRESS'], ['IP VISITS', 'Retained page views from this exact address, all dates and sources. Not people or sessions.', 'num'], ['COUNTRY · PLACE'], ['PAGE · REFERRER'], ['BROWSER · OS · DEVICE'], ['CLASS · SOURCE · AGENT'], ['<span class="visually-hidden">DETAILS</span>']])}
+<div class="stream-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · <span class="warn">*</span> approximate time · hover a header for its meaning; Details shows every raw field</p></div>
+<div class="table-card"><table class="events-table" role="table" style="${columnStyle(cols)}">${eventHead(cols)}
 <tbody role="rowgroup">${rows || '<tr role="row"><td role="cell" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table>
 ${paginationControls(f, streamPage)}</div>
 </section>

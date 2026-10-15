@@ -95,7 +95,7 @@ test('page UI has direct First/Previous/select/Next/Last with filtered ranges, U
     const { document } = parseHTML(html); const nav = document.querySelector('[aria-label="Visitor event pages"]');
     assert.equal(document.querySelectorAll('#analytics-page option').length, 19);
     assert.equal(document.querySelector('#analytics-page option[selected]').getAttribute('value'), String(p));
-    assert.ok(document.querySelector('#analytics-page').textContent.includes('Page 1 · Global # 940–891'));
+    assert.ok(document.querySelector('#analytics-page').textContent.includes('Page 1 · ALL # 940–891'));
     assert.equal(nav.querySelectorAll('[aria-disabled="true"]').length, p === 8 ? 0 : 2);
     for (const link of nav.querySelectorAll('a')) assert.equal(new URL(link.getAttribute('href'), 'https://boss.example').searchParams.get('snapshot'), '940');
     assert.equal(document.querySelector('#analytics-filters [name="p"]'), null);

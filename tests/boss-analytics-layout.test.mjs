@@ -62,7 +62,7 @@ test('analytics layout: metrics, filters, event table, then breakdowns, then dat
     at('id="h-filters"'),
     at('/analytics/export?format=csv'),
     at('id="h-events"'),
-    at('>GLOBAL #</th>'),
+    at('>ALL #</th>'),
     at('id="h-breakdowns"'),
     at('<h3>Top pages</h3>'),
     at('<h3>Countries</h3>'),
@@ -72,8 +72,9 @@ test('analytics layout: metrics, filters, event table, then breakdowns, then dat
     at('Delete analytics records before a date'),
   ];
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
-  for (const col of ['GLOBAL #', 'DAY #', 'IP VISITS', 'DATE AND TIME (PT)', 'IP ADDRESS', 'SOURCE', 'CLASS', 'COUNTRY', 'PAGE', 'REFERRER', 'DEVICE', 'DETAIL']) at(col);
-  assert.match(html, /distinct IP addresses <span class="muted">\(not people\)<\/span>/);
+  for (const col of ['ALL #', 'DAY #', 'DATE / TIME (PT)', 'IP ADDRESS', 'IP VISITS', 'SOURCE', 'EVENT', 'ACTOR', 'AGENT', 'COUNTRY · CITY', 'PAGE', 'REFERRER', 'DEVICE', 'BROWSER · OS', 'DETAILS']) at(`>${col}</`);
+  assert.doesNotMatch(html, /GLOBAL #/i);
+  assert.match(html, /distinct IPs <span class="muted">\(not people\)<\/span>/);
   assert.doesNotMatch(html, /unique (people|visitors)/i);
 });
 
@@ -97,7 +98,7 @@ test('full daily history is not truncated and has keyboard-accessible overflow c
   const { html, days } = await render();
   assert.match(html, /\.chart\{[^}]*overflow-x:auto/);
   const span = (Date.parse(days[days.length - 1].day) - Date.parse(days[0].day)) / 86400000 + 1;
-  assert.equal(html.match(/<span class="col" title=/g).length, span, 'every PT day from first to last record has a bar, quiet days included');
+  assert.equal(html.match(/<span class="col in-all/g).length, span, 'every PT day from first to last record has a bar, quiet days included');
   assert.match(html, /class="chart( dense)?" tabindex="0"/);
   assert.match(html, /#analytics-page\{max-width:100%\}/);
 });
