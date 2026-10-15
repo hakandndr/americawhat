@@ -2,6 +2,23 @@
 
 ## Güncel yerel UI durumu — 2026-10-14
 
+Son polish (`e7d2116` sonrası): proje sahibi mevcut kamusal yönü ve Trending
+çalışmasını kabul etti. Trending incelenmedi/değiştirilmedi; ana sayfa ve istemci
+betikleri Git karşılaştırmasında aynı. Footer yalnızca CSS ile sıkılaştırıldı;
+hedefsiz dekoratif header tagline kaldırıldı. About footer’da korunur.
+Kategori/arşiv/sıralama/Load More için yeni işlevsel kusur saptanmadı.
+
+Güncel salt okunur audit: 21 paket / 45 advisory; dev hariç 19. İki yerel Worker
+paketi ve altı tarayıcı JS paketinde üçüncü taraf npm girdisi yok; bu bulgu
+build/dev riskini ortadan kaldırmaz. Paket/lockfile hash’leri değişmedi.
+[Bağımlılık değerlendirmesi](DEPENDENCY-AUDIT.md) P0/P1/P2 planını içerir.
+[Boss entegrasyon planı](BOSS-INTEGRATION-PLAN.md) yalnızca hazırlıktır;
+`72689b4` ve `8da9839` mobil hunk’ı alınmadı. Backend bu dalda zaten mevcut.
+106 test/build/statik ve mevcut SEO/kart kontrolleri yeniden geçti. Grafik
+test ve Buttondown gönderimi yapılmadı. Tam legacy log/oy koruma, manuel
+retention ve Hostinger mail’in kalması kesin kararlardır; final snapshot ve
+üretim hazırlığı/onayları bekler.
+
 **Geçerli kamusal görsel karar:** Cloudflare staging görünümü korunur. V1/V2/V3
 kamusal yeniden tasarımları reddedilmiş tarihsel deneylerdir. Sadece Load More,
 Random? → Categories → Archive menüsü ve sade footer onaylıdır.

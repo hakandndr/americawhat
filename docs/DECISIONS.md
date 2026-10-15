@@ -124,9 +124,33 @@ iyileştirmeleri korunur. Ayrıntı/testler: DESIGN-REDESIGN.md. Yeni öneriler
 (bağımlılık güvenlik bakımı, gerçek cihaz kontrolü, ileride ayrı Boss entegrasyonu)
 onaylı UI kapsamından ayrıdır.
 
+## D-22 Kamusal son polish ve kabul edilen Trending (2026-10-14)
+
+Proje sahibi mevcut kamusal yönü ve reaksiyonla görünen Trending’i kabul etti.
+Trending değişmez. Footer merkezde, yalnızca daha kompakt/ikincil newsletter ile
+kalır. Header’daki hedefsiz tagline kaldırılır; About footer’da korunur. Yeni
+kategori/arşiv işlevi veya görsel tasarım değişikliği gerekmedi.
+
+## D-23 Güvenlik audit’i ve Boss hazırlığı uygulama izni değildir
+
+Güncel 21 paket / 45 advisory; dev hariç 19. Audit’in paket etiketleri gerçek
+runtime kapsamından ayrılır; ayrıntı DEPENDENCY-AUDIT.md’dedir. Bu aşamada paket/
+lockfile değişmez. Ayrı onaylı güvenlik bakımı merge öncesi önceliklidir.
+Boss için BOSS-INTEGRATION-PLAN.md’deki seçici dosya/test stratejisi önerilir;
+entegrasyon, Access veya D1 işlemi bu oturumda uygulanmaz.
+
+## D-24 Legacy geçmiş ve manuel retention kararı kesinleştirildi
+
+Tam aw_panel_log.txt geçmişi ve aw_votes.json sayaçları korunur; son production
+snapshot’ları cutover’a yakın sağlanır. Silme yalnızca manuel operatör işlemidir,
+otomatik analytics silme yoktur. 90 gün hedefi gerçek manuel uygulama ve gizlilik
+metniyle tutarlı olmalıdır. DNDR’ye tarihsel olaylar tekrar aktarılıp çift sayılmaz.
+Hostinger web/PHP ileride emekli olur; EMAIL hizmeti kalır. Eski legacy import
+seçenekleri tarihsel değerlendirmedir; kararı yeniden sormak gerekmez.
+
 ## Open questions (owner)
 
-1. Legacy data older than 90 days: option A, B or C of the ANALYTICS.md §6 memo (A recommended).
+1. Legacy geçmişin korunması karara bağlandı (D-24); final log/oy snapshot’ları, reconciliation ve manuel retention uygulama zamanı cutover hazırlığında tamamlanmalı.
 2. Monthly page/country aggregates: keep all cells, or drop cells below a threshold.
 3. Weekly vs twice-weekly review; reduce fetches to once a day.
 4. DNDR: approve the gap import and a native producer for AmericaWhat.

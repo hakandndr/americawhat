@@ -2,6 +2,32 @@
 
 Tarih: 2026-10-14, America/Los_Angeles. Durum: yalnızca yerel uygulama.
 
+## Son kamusal UI polish — e7d2116 sonrası
+
+Proje sahibi yerel tasarım yönünü ve Trending’in reaksiyonlardan sonra görünmesini
+kabul etti. Trending yeniden incelenmedi/yazılmadı/taşınmadı; ilgili ana sayfa ve
+istemci kaynakları değişmedi.
+
+Yalnızca iki ürün dosyası değişti: Base.astro içindeki hedefsiz dekoratif tagline
+span kaldırıldı (About zaten footer’da); global.css’in mevcut footer bölümünde
+üst/alt padding 28/48 → 24/32 px, contact/nav/newsletter/attribution üst boşlukları
+10/20/26/22 → 8/16/18/14 px oldu. Newsletter başlığı 16 → 14 px, yardımcı metni
+13 → 12 px, form yazısı 14 → 13 px ve form padding’i küçültüldü; dar ekranda
+sarılmış Subscribe kontrolü merkezlenir. Logo/e-posta/yasal linkler, mevcut
+renkler, Buttondown action/method/target/submit davranışı ve DNDR atfı korunur.
+Yeni kolon, renk, metin veya dekorasyon yok.
+
+Kategori sayıları (7 kategori), arşiv/sayfalama, sıralama/tekrarsızlık, footer
+hedefleri ve Load More kontrollerinde yeni işlevsel kusur bulunmadı. 106/106 test,
+162 sayfa, 0 statik güvenlik hatası, 3.652 iç bağlantı, 124 staging-eş kart ve
+önceki metadata/URL karşılaştırması yeniden geçti. Yerel workerd önizlemesinde 10 parça GET’iyle 124 haberin tamamı tekrarsız
+yüklendi; bu turda oy/beacon/form POST’u veya veri yazımı yapılmadı.
+Grafik/mobil yerleşim testi yapılmadı; proje sahibi manuel inceleyecek.
+
+Güvenlik ve Boss için yalnızca [audit](DEPENDENCY-AUDIT.md) ve
+[entegrasyon hazırlığı](BOSS-INTEGRATION-PLAN.md) yapıldı. Aşağıdaki ilk uygulama
+kaydı tarihsel kapsamını korur; hiçbir yükseltme veya Boss merge’i yapılmadı.
+
 ## Geçerli tasarım kararı
 
 Onaylı kamusal görsel temel, [Cloudflare staging](https://americawhat-web-staging.hakan-c89.workers.dev/) görünümüdür.

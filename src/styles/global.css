@@ -564,12 +564,17 @@ select.form-input{appearance:none;-webkit-appearance:none;cursor:pointer}
 .category-directory li+li{margin-top:22px}
 .category-directory p{margin-top:6px}
 .foot-inner{max-width:992px;margin:0 auto}
+.site-foot{padding:24px 20px 32px}
 .site-foot .logo{display:inline-block;color:var(--ink)}
 .site-foot .logo b{color:var(--red-hot)}
-.foot-contact{display:block;margin-top:10px;color:var(--red-hot);overflow-wrap:anywhere}
-.site-foot .foot-nav{border-top:0;padding-top:0;margin-top:20px;gap:10px 18px}
-.site-foot .subscribe{background:transparent;border:0;border-radius:0;padding:0;margin:26px auto 0;text-align:center}
-.foot-credit{margin-top:22px;font-size:12px}
+.foot-contact{display:block;margin-top:8px;color:var(--red-hot);overflow-wrap:anywhere}
+.site-foot .foot-nav{border-top:0;padding-top:0;margin-top:16px;gap:10px 18px}
+.site-foot .subscribe{background:transparent;border:0;border-radius:0;padding:0;margin:18px auto 0;text-align:center}
+.site-foot .subscribe-copy b{font-size:14px;font-weight:600;margin-bottom:2px}
+.site-foot .subscribe-copy > span{font-size:12px;margin-bottom:9px}
+.site-foot .subscribe-row{justify-content:center}
+.site-foot .subscribe input,.site-foot .subscribe button{font-size:13px;padding:9px 12px}
+.foot-credit{margin-top:14px;font-size:12px}
 .foot-credit a:hover{color:var(--red-hot)}
 @media(max-width:420px){
   .site-head-inner{flex-wrap:wrap;gap:10px 16px}

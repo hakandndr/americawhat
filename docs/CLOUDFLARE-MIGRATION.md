@@ -10,6 +10,15 @@ approval. Nothing in this document has been executed in production.
 
 ## 0. Status of the preparation
 
+2026-10-14 güncel karar notu: Hostinger web/PHP ileride emekli olur, EMAIL
+kalır. Tam legacy log geçmişi ve oylar korunur; final snapshot cutover’a yakın
+sağlanacaktır. Manuel retention/90 gün hedefi ve gizlilik doğruluğu geçerlidir;
+otomatik analytics silme yoktur. Eski legacy import seçeneklerini yeniden
+karara açmak yerine final dosyalar, reconciliation, manuel işlem planı ve ayrı
+üretim izinleri tamamlanır. DNDR’ye tarihsel tekrar aktarım/çift sayım yapılmaz.
+Son UI polish/güvenlik audit’i/Boss hazırlığı yalnızca yereldir; bu runbook’un
+üretim adımları bu oturumda uygulanmadı.
+
 See `CURRENT-STATE.md` for the exact deployed versions. In short: implementation
 on branch `dev/cloudflare-native` (never merged; `origin/main` merged into it,
 not the reverse); `americawhat-web-staging` on
@@ -150,9 +159,9 @@ disable Access on it, which also removes its policy.
 
 ## 4. App cutover (owner-approved window)
 
-Prerequisites: §1 done; DNS on Cloudflare (§2); §3 done; staging smoke and
-`npm run parity:live` green on the exact commit; legacy-import decision taken
-(ANALYTICS.md §6).
+Önkoşullar: §1 tamam; DNS Cloudflare’da (§2); §3 tamam; aynı commit üzerinde
+staging smoke ve `npm run parity:live` başarılı; final log/oy snapshot’ları ile
+reconciliation/manuel retention planı hazır (ANALYTICS.md §6).
 
 1. **Reaction baseline S1:** download `aw_votes.json`; Boss → Reactions →
    upload, check the plan, apply with the SHA prefix (baseline).
@@ -161,7 +170,8 @@ Prerequisites: §1 done; DNS on Cloudflare (§2); §3 done; staging smoke and
    `npm run analytics:legacy -- sql <file> --out private/legacy-s1.sql` and
    `npx wrangler d1 execute americawhat-analytics-production --remote --env production --file private/legacy-s1.sql --config workers/web/wrangler.jsonc`
    (run it twice: the second run must add nothing). Check the reconciliation in
-   Boss, apply the legacy decision (ANALYTICS.md §6 memo), delete the .sql file.
+   Boss. Tam geçmiş korunur; retention silmesi ayrı manuel operatör işlemidir.
+   Geçici .sql dosyası doğrulama sonrasında kaldırılır (ANALYTICS.md §6).
 3. Deploy `americawhat-web --env production` (custom domains `americawhat.com`
    and `www.americawhat.com`). This replaces the Hostinger A/AAAA/CNAME answers.
 4. Smoke: `npm run smoke -- https://americawhat.com` (read checks only),
@@ -204,7 +214,7 @@ Prerequisites: §1 done; DNS on Cloudflare (§2); §3 done; staging smoke and
    (ships the POST beacon and the new slug function to Hostinger; no visible change).
 4. DNS move (§2).
 5. Production provisioning (§3), including the plan check and the Access application.
-6. Legacy-import decision (ANALYTICS.md §6 memo) and the real imports (§4.1–4.2).
+6. Final log/oy snapshot’ları, reconciliation ve ayrı izinli gerçek importlar (§4.1–4.2); tam geçmişi koruma kararı verilmiştir, retention yalnızca manueldir.
 7. App cutover (§4.3).
 8. DNDR-side: gap import, native producer, retention of the AmericaWhat copy (separate project).
 9. Privacy page update (ANALYTICS.md §6).

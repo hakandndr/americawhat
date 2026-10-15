@@ -2,6 +2,19 @@
 
 ## Güncel devir notu — 2026-10-14
 
+Son görev `e7d2116` sonrasındaki küçük footer CSS/header polish’idir; bu dalın
+HEAD’i tek yerel polish + dokümantasyon commit’idir. Footer merkezde kalır,
+newsletter ikincildir. `wait, what.` bir link değil hedefsiz span olduğundan
+kaldırıldı; About footer’da zaten vardı. Trending kullanıcı tarafından doğrulandı
+ve değiştirilmedi. Kategori/arşivde ek işlevsel kusur bulunmadı.
+
+Güvenlik bulguları ve sürüm/erişilebilirlik tablosu DEPENDENCY-AUDIT.md’de;
+Boss’un seçilecek dokuz dosyası, Access/test/rollback planı
+BOSS-INTEGRATION-PLAN.md’dedir. Bunlar uygulanmış güvenlik yükseltmesi veya Boss
+entegrasyonu değildir. Paket ve lockfile aynı; yalnızca yerel test/build/dry-run
+çalıştırıldı. 106 test ve 162 sayfalık çıktı doğrulaması geçti. Tarihsel log/oy
+koruma kararları geçerlidir; gerçek veri üzerinde işlem yapılmadı.
+
 Proje sahibi kamusal tasarım olarak **mevcut Cloudflare staging görünümünü**
 onayladı. V1/V2/V3 kamusal yeniden tasarımları reddedildi; deneysel daldaki
 önceki tasarım önerileri geçerli talimat sayılmaz.

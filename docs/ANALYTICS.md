@@ -147,6 +147,14 @@ the staging databases, or keep them.
 
 ## 6. Retention (OWNER DECISION: 90-day target, manual only)
 
+Güncel proje sahibi kararı (2026-10-14, D-24): tam tarihsel log ve mevcut oylar
+korunarak taşınacak; final production snapshot cutover’a yakın sağlanacak.
+Analytics silme yalnızca manuel işlem, 90 gün ise gizlilik metniyle tutarlı
+uygulanması gereken hedeftir. Aşağıdaki A/B/C memo’su tarihsel seçeneklerdir;
+importun tam yapılması yeniden açık karar değildir. Memo’daki “hemen silme”
+önerisi otomatik işlem veya bu oturum için silme yetkisi değildir. DNDR tarihsel
+olayları yeniden saymayacak; başka projeye yazım ayrı izin gerektirir.
+
 Implemented (TESTED LOCALLY, workerd):
 
 - Retention status on the Analytics screen and on Health: records older than

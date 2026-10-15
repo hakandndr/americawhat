@@ -2,6 +2,20 @@
 
 ## Güncel sınırlı UI çalışması — yerel önizleme (2026-10-14)
 
+Son polish footer CSS sıkılaştırması ve hedefsiz header tagline kaldırılmasıdır;
+Trending değişmedi. Güncel görevde bağımlılık kurulmadı/yükseltilmedi; aşağıdaki
+`npm ci` yalnızca yeni checkout için eski kurulum reçetesidir. Mevcut worktree’de
+OG, yerel state ve test anahtarı hazırdır; `npm run build` ve aynı Wrangler
+başlatma komutu yeterlidir. Çalışan başka önizleme durdurulmamalıdır.
+
+Güvenlik kontrolü salt okunur `npm audit --json`, `npm audit --omit=dev --json`
+ve `npm ls --all --json` ile yapıldı. Audit’in çıkış kodu 1 olması beklenen
+mevcut açık durumudur; `audit fix` çalıştırılmadı. Modül kapsamı için iki
+Worker’da yalnızca `deploy --dry-run` (upload yapmaz) ve Astro build metadata
+kancası kullanıldı. 106 test, 162 sayfa, statik/URL/kart kontrolleri geçti.
+Ayrıntı: DEPENDENCY-AUDIT.md. Boss hazırlığı ve ileride izinli entegrasyonun
+test/geri dönüş reçetesi BOSS-INTEGRATION-PLAN.md’de; bugünkü Boss kodu alınmadı.
+
 Onaylı görsel temel Cloudflare staging’dir; V1/V2/V3 kamusal deneyleri geçersizdir.
 Uygulama yalnızca `design/staging-refinement` dalındadır. Bu görevde aşağıdaki
 eski push/deploy/merge reçeteleri **uygulanmaz**. Push, merge veya herhangi bir
@@ -27,7 +41,7 @@ npx wrangler d1 migrations apply americawhat-analytics-staging --local --persist
 if (!(Test-Path workers/web/.dev.vars)) {
   node -e "require('node:fs').writeFileSync('workers/web/.dev.vars', 'REACTION_GUARD_SECRET=' + require('node:crypto').randomBytes(32).toString('hex') + '\n')"
 }
-npx wrangler dev --local --config workers/web/wrangler.jsonc --ip 127.0.0.1 --port 8797 --inspector-port 9297 --persist-to .wrangler/refinement-state --var PUBLIC_ORIGINS:http://127.0.0.1:8797 --var RELEASE_ID:local-refinement
+npx wrangler dev --local --config workers/web/wrangler.jsonc --ip 127.0.0.1 --port 8797 --inspector-port 9297 --persist-to .wrangler/refinement-state --var PUBLIC_ORIGINS:http://127.0.0.1:8797 --var RELEASE_ID:local-polish
 ```
 
 Sadece statik görünüm için daha kısa alternatif:
