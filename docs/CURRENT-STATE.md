@@ -1,5 +1,15 @@
 # americawhat — Current State
 
+## Son durum — tipografi, footer ve Analytics tasarımı staging'de (2026-10-15)
+
+RELEASE_ID 38096fa03f52c87b5049eaf00911f9590a09fa82 aktif. Web
+09efe0f7-3384-49ae-a627-7c15c34f2ba5; Boss 3c28937a-44fd-4f46-b39b-c59d71587d50;
+ikisi %100. Fontlar self-host + preload + font-display:block (fallback flaşı
+yok), footer kısa sayfalarda zemin bandı, Boss tek shell genişliği ve yeniden
+tasarlanmış Analytics/IP activity. 147 test, 19 workerd, 21 canlı smoke PASS.
+Canlı owner-oturumlu Boss görünümü doğrulanmadı. Rollback hedefleri 720be24
+UUID'leri. Ayrıntı [STAGING-DESIGN-ROLLOUT.md](STAGING-DESIGN-ROLLOUT.md).
+
 ## Son durum — footer ve IP Analytics staging'de (2026-10-15)
 
 RELEASE_ID720be24b20df976d34115ad4c5ca59f1d70ae0a6 aktif. Web UUID

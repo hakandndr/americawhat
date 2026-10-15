@@ -1,5 +1,10 @@
 # AmericaWhat staging — gerçekleşen rollout
 
+## Tasarım rollout'u — 15 Ekim 2026
+
+En güncel release 38096fa03f52c87b5049eaf00911f9590a09fa82:
+[STAGING-DESIGN-ROLLOUT.md](STAGING-DESIGN-ROLLOUT.md). Aşağıdaki kayıtlar tarihseldir.
+
 ## Sonraki UX rollout — 15 Ekim 2026
 
 En güncel staging release720be24b20df976d34115ad4c5ca59f1d70ae0a6'dır.

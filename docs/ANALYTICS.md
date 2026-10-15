@@ -1,5 +1,16 @@
 # americawhat — Analytics
 
+## Analytics layout (2026-10-15, release 38096fa)
+
+Boss pages share one 1320px shell. Analytics reads top to bottom: a summary
+panel (page views, human/automated split, secondary counts) beside a stacked
+daily chart that shows every PT day between the first and last record (quiet
+days are zero bars); a compact filter bar whose secondary filters sit under
+"More filters" (open when one is active); the event stream as a two-line grid
+whose Details open as a full-width drawer under the row; breakdowns; data
+operations. Region ids, live filtering, links, pagination, snapshots, exports
+and retention are unchanged. The IP activity page uses the same stream.
+
 ## Responsive log and exact-address activity (2026-10-15)
 
 Analytics uses a wider workspace, seven fixed-layout columns and stacked

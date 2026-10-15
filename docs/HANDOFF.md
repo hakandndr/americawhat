@@ -1,5 +1,12 @@
 # americawhat — Handoff
 
+## Son devir — tasarım düzeltmeleri yayımlandı (2026-10-15)
+
+38096fa staging'de (Web 09efe0f7…, Boss 3c28937a…). Kök nedenler, çözümler,
+doğrulamalar, rollback UUID'leri ve açık Trending kayması
+[STAGING-DESIGN-ROLLOUT.md](STAGING-DESIGN-ROLLOUT.md) içinde. Sonraki adım:
+owner oturumuyla canlı Boss Analytics/IP görünümünün manuel kontrolü.
+
 ## Son devir — footer ve IP Analytics yayımlandı (2026-10-15)
 
 [STAGING-UX-ROLLOUT.md](STAGING-UX-ROLLOUT.md) en güncel durum/kanıt kaydıdır.
