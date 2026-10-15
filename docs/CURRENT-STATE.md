@@ -1,5 +1,14 @@
 # americawhat — Current State
 
+## Son durum — Country · City düzeltmesi, kaynak yedeği, göç planı (2026-10-15)
+
+Boss 209aa9e6bf144052eaa2ff637aad36d8fe63157a, version
+855652dd-d155-42db-a719-9c363256ab42 (%100; rollback 1de0fbdf…); Web c08cdfc
+(1346af78…) değişmedi. Kaynak GitHub'da yeni dal
+`backup/cloudflare-staging-2026-10-15` olarak yedeklendi (yalnız CI tetiklendi,
+başarılı). Production geçiş planı ve güncelliğini yitiren talimatlar
+[PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md).
+
 ## Son durum — Boss tablo düzeni ve hazırlık incelemesi (2026-10-15)
 
 Boss ca3666282996330ee455a38facb776a1c04b9d75 (version

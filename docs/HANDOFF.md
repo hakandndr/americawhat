@@ -1,5 +1,11 @@
 # americawhat — Handoff
 
+## Son devir — yedek dal ve göç planı (2026-10-15)
+
+Uzak yedek: `backup/cloudflare-staging-2026-10-15` (hakandndr/americawhat).
+main'e merge YAPILMAMALI: deploy.yml FTP ile Hostinger'a yayın yapar.
+Sıradaki adımlar [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md).
+
 ## Son devir — Boss tablo ve staging hazırlığı (2026-10-15)
 
 Boss ca36662 staging'de. Sıradaki iş: codex/staging-rc dalının yedeği/merge

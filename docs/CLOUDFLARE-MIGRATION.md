@@ -1,5 +1,10 @@
 # americawhat — Cloudflare migration and release runbook
 
+> **2026-10-15:** Güncel sıra, kaynak durumu ve bu belgenin güncelliğini
+> yitiren bölümleri [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md)
+> içindedir. Merge kaynağı artık `codex/staging-rc` (uzak yedek
+> `backup/cloudflare-staging-2026-10-15`); cutover'dan önce main'e merge yapılmaz.
+
 2026-10-15 RC hazırlığı: geçerli dal codex/staging-rc; main eaef194 normal
 yerel merge4a28f69 ile uzlaştırıldı (published124/pending134/seen11404).
 136 test/18 local workerd, public162 sayfa/parity ve audit0 başarılı.
