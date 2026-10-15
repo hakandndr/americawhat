@@ -4,6 +4,8 @@
 param()
 $ErrorActionPreference = 'Stop'
 if (!$IsWindows -or $PSVersionTable.PSVersion.Major -lt 7) { throw 'Windows PowerShell 7 gerekir.' }
+$confirmation = Read-Host 'Panodaki sandbox PAT bellekte doğrulanıp korumalı yerel dosyaya yazılacak, ardından pano temizlenecek. Onaylamak için EVET yazın'
+if ($confirmation -cne 'EVET') { Write-Output 'İptal edildi; pano okunmadı ve secret dosyası oluşturulmadı.'; return }
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $directory = Join-Path $env:LOCALAPPDATA ('AmericaWhat/staging-secrets/' + [Guid]::NewGuid().ToString('N'))
 $directory = [IO.Path]::GetFullPath($directory)
@@ -18,16 +20,14 @@ $acl.AddAccessRule($rule)
 Set-Acl -LiteralPath $directory -AclObject $acl
 $actual = Get-Acl -LiteralPath $directory
 if (!$actual.AreAccessRulesProtected -or @($actual.Access | Where-Object { $_.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value -ne $sid.Value }).Count) { throw 'Owner-only ACL doğrulanamadı.' }
-$secure = Read-Host 'Yalnız sandbox için fine-grained PAT (giriş gizli)' -AsSecureString
-$pointer = [IntPtr]::Zero
 $plain = $null
 $json = $null
 $values = $null
 $random = $null
 try {
-  $pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-  $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)
-  if ($plain -notmatch '^github_pat_[A-Za-z0-9_]+$') { throw 'Fine-grained PAT biçimi gerekli; değer gösterilmedi.' }
+  # Keep clipboard contents in memory; never pass the PAT to a command or external process.
+  $plain = Get-Clipboard -Raw
+  if ($null -eq $plain -or $plain -cnotmatch '\Agithub_pat_[A-Za-z0-9]{22}_[A-Za-z0-9]{59}\z') { throw '93 karakterlik fine-grained PAT biçimi gerekli; değer gösterilmedi.' }
   $random = [Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
   $values = [Collections.Generic.Dictionary[string,string]]::new()
   $values.Add('GITHUB_TOKEN', $plain)
@@ -35,13 +35,12 @@ try {
   $json = [Text.Json.JsonSerializer]::Serialize($values, $values.GetType(), [Text.Json.JsonSerializerOptions]::new())
   $file = Join-Path $directory 'boss-staging-secrets.json'
   [IO.File]::WriteAllText($file, $json, [Text.UTF8Encoding]::new($false))
+  Set-Clipboard -Value ''
 } finally {
-  if ($pointer -ne [IntPtr]::Zero) { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer) }
   if ($null -ne $random) { [Array]::Clear($random, 0, $random.Length) }
   if ($null -ne $values) { $values.Clear() }
   $plain = $null
   $json = $null
-  $secure.Dispose()
 }
 Write-Output 'Yalnız yerel dosya hazırlandı; uzak yazım veya deployment yapılmadı.'
 Write-Output 'Secret adları: GITHUB_TOKEN, BOSS_CSRF_SECRET. Değerleri görüntülemeyin.'
