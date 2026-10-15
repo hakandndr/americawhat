@@ -5,6 +5,7 @@ const {
   canonicalPath = "/",
   ogType = "website",
   ogImage = "/og/default.png",
+  noindex = false,
 } = Astro.props;
 import "../styles/global.css";
 import { items } from "../lib/items.js";
@@ -33,6 +34,7 @@ const randHref = slugs.length
   <link rel="alternate icon" href="/favicon.svg" />
   <link rel="mask-icon" href="/favicon.svg" color="#ff5468" />
   <meta name="theme-color" content="#0b1120" />
+  {noindex && <meta name="robots" content="noindex, follow" />}
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="alternate" type="application/rss+xml" title="americawhat feed" href="/rss.xml" />
@@ -67,9 +69,9 @@ const randHref = slugs.length
       <a href="/" class="logo">america<b>what</b><span class="logo-q">?</span></a>
       <div class="head-right">
         <nav class="site-nav" aria-label="Primary">
-          <a href={randHref} class="nav-random" id="nav-random">random<span class="nav-q">?</span></a>
-          <a href="/about/">About</a>
-          <a href="/contact/">Contact</a>
+          <a href={randHref} class="nav-random" id="nav-random">Random<span class="nav-q">?</span></a>
+          <a href="/category/">Categories</a>
+          <a href="/archive/">Archive</a>
         </nav>
         <span class="tagline">wait, what.</span>
       </div>
@@ -80,19 +82,21 @@ const randHref = slugs.length
     <slot />
   </main>
   <footer class="site-foot">
-    <Subscribe />
-    <b>americawhat.com</b> — something's coming. probably confusing.<br />
-    A <a href="https://dndr.net" target="_blank" rel="noopener noreferrer">DNDR Labs</a> project.<br />
-    Got a "wait, what" of your own? <a href="mailto:hello@americawhat.com" style="color:var(--red-hot)">hello@americawhat.com</a>
-    <nav class="foot-nav" aria-label="More">
-      <a href="/about/">About</a>
-      <a href="/contact/">Contact</a>
-      <a href="/guidelines/">Submission Guidelines</a>
-      <a href="/privacy/">Privacy</a>
-      <a href="/terms/">Terms</a>
-      <a href="/disclaimer/">Disclaimer</a>
-      <a href="/rss.xml">RSS</a>
-    </nav>
+    <div class="foot-inner">
+      <a href="/" class="logo">america<b>what</b><span class="logo-q">?</span></a>
+      <a class="foot-contact" href="mailto:hello@americawhat.com">hello@americawhat.com</a>
+      <nav class="foot-nav" aria-label="More">
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+        <a href="/guidelines/">Submission Guidelines</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/disclaimer/">Disclaimer</a>
+        <a href="/rss.xml">RSS</a>
+      </nav>
+      <Subscribe />
+      <p class="foot-credit">A <a href="https://dndr.net" target="_blank" rel="noopener noreferrer">DNDR Labs</a> project.</p>
+    </div>
   </footer>
   <script is:inline define:vars={{ slugs }}>
     (function () {

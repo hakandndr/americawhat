@@ -1,5 +1,57 @@
 # americawhat — Operations
 
+## Güncel sınırlı UI çalışması — yerel önizleme (2026-10-14)
+
+Onaylı görsel temel Cloudflare staging’dir; V1/V2/V3 kamusal deneyleri geçersizdir.
+Uygulama yalnızca `design/staging-refinement` dalındadır. Bu görevde aşağıdaki
+eski push/deploy/merge reçeteleri **uygulanmaz**. Push, merge veya herhangi bir
+ortama dağıtım için ayrı izin gerekir. Boss deneysel worktree’si korunur.
+
+`http://127.0.0.1:8797/` yerel web Worker önizlemesidir. Gerçek yayımlanmış
+haberleri ve yalnızca bu worktree’deki D1 kopyalarını kullanır. Sayaçlar canlı
+veri değildir. İlk kurulum/yeniden başlatma (PowerShell, Node 22):
+
+```powershell
+Set-Location D:\IT\AmericaWhat\americawhat\tmp\staging-refinement
+npm ci
+# OG dosyaları bu çalışma alanında hazır. Yeni kurulumda: npm run build:og
+npm run build
+npm run verify:static
+npm run verify:refinement
+$env:WRANGLER_SEND_METRICS = 'false'
+$env:WRANGLER_LOG_PATH = Join-Path (Get-Location) '.wrangler/logs'
+$env:CI = 'true'
+npx wrangler d1 migrations apply americawhat-app-staging --local --persist-to .wrangler/refinement-state --config workers/web/wrangler.jsonc
+npx wrangler d1 migrations apply americawhat-analytics-staging --local --persist-to .wrangler/refinement-state --config workers/web/wrangler.jsonc
+# Sadece yerel test anahtarı; mevcut .dev.vars korunur ve Git dışındadır.
+if (!(Test-Path workers/web/.dev.vars)) {
+  node -e "require('node:fs').writeFileSync('workers/web/.dev.vars', 'REACTION_GUARD_SECRET=' + require('node:crypto').randomBytes(32).toString('hex') + '\n')"
+}
+npx wrangler dev --local --config workers/web/wrangler.jsonc --ip 127.0.0.1 --port 8797 --inspector-port 9297 --persist-to .wrangler/refinement-state --var PUBLIC_ORIGINS:http://127.0.0.1:8797 --var RELEASE_ID:local-refinement
+```
+
+Sadece statik görünüm için daha kısa alternatif:
+
+```powershell
+npm run preview -- --host 127.0.0.1 --port 4327
+# http://127.0.0.1:4327/ — bu alternatifte PHP/Worker API’leri çalışmaz.
+```
+
+`npm test`: 106/106. `npm run build`: 162 sayfa.
+`verify:static`: 0 hata. `verify:refinement`: 124 haber, 11 parça,
+3.652 iç bağlantı, kategori/arşiv, Random, metadata ve sitemap.
+Karşılaştırma kanıtları hazırken geniş kontrol:
+
+```powershell
+npm run verify:refinement -- --baseline reports/baseline-dist --staging reports/staging-home.html
+```
+
+Bu `reports/` örnekleri yerel/Git dışıdır; başka checkout’ta seçenekleri
+atlamak gerekir. Testler, SEO parity sonuçları, görsel sınırlar ve mevcut
+21 audit bulgusu DESIGN-REDESIGN.md’de kayıtlıdır. Mevcut abonelik endpoint’i
+korunmuştur; bu görevde form gönderilmedi. Manuel mobil/klavye kontrolü ve
+üretim taşımasının tüm ayrı önkoşulları hâlâ gereklidir.
+
 The content loop, the deploy chain, and every failure mode that has actually
 happened. Read §4 before touching git.
 

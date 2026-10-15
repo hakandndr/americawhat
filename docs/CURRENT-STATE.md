@@ -1,5 +1,38 @@
 # americawhat — Current State
 
+## Güncel yerel UI durumu — 2026-10-14
+
+**Geçerli kamusal görsel karar:** Cloudflare staging görünümü korunur. V1/V2/V3
+kamusal yeniden tasarımları reddedilmiş tarihsel deneylerdir. Sadece Load More,
+Random? → Categories → Archive menüsü ve sade footer onaylıdır.
+
+- Başlangıç: `dev/cloudflare-native` / `4438907`. Canlı staging sağlık GET’i:
+  `636936f`, 124 yayın, ziyaret toplama `test-only`. İki revizyonun uygulama
+  kaynakları aynıdır; fark yalnızca belgelerdir. Başlangıç derlemesi CSS’si
+  staging CSS’siyle birebir eşleşti.
+- Uygulama: **yalnızca yerel**, `design/staging-refinement`, worktree
+  `D:\IT\AmericaWhat\americawhat\tmp\staging-refinement`.
+  İlk 12 + 12’şer statik parça, JS’siz devam bağlantısı, tam kategori/arşiv
+  rotaları, özgün kartlarla uygulandı. 124 kart HTML’si staging ile aynı.
+- Deneysel dal `design/editorial-casefiles` / `40274dc` ve
+  `D:\IT\AmericaWhat\americawhat-redesign` korunur; worktree temiz bulundu.
+  Oradaki yerel Boss tasarımı ayrı bir gelecek entegrasyonudur; staging Boss’u
+  veya mevcut kamusal görsel onayı temsil etmez.
+- Testler: 106/106; build 162 sayfa; statik güvenlik 0 hata; 3.652 iç bağlantı;
+  eski SEO/URL’ler ve 124 kart korundu. Staging 40 sayfa karşılaştırmasında fark
+  yok. Yerel workerd’da 124 haber, tek beacon ve ilk/eklenen kart oyları geçti.
+- `npm audit`: 4 orta + 16 yüksek + 1 kritik mevcut araç zinciri bulgusu;
+  yükseltme yapılmadı. Grafik/mobil taşma testi ve gerçek abonelik teslim
+  kontrolü yapılmadı; manuel önizleme bekler.
+- Hostinger production, GitHub remote, Cloudflare staging/production, DNS,
+  Access ve uzak veriler bu çalışma tarafından değiştirilmedi. Ana checkout’taki
+  iki untracked digest notu ve başlangıç branch uçları korundu.
+
+Ayrıntı ve kapsam dışı öneriler: [DESIGN-REDESIGN.md](DESIGN-REDESIGN.md).
+Çalıştırma: [OPERATIONS.md](OPERATIONS.md). Aşağıdaki altyapı envanteri önceki
+2026-10-14 incelemesinin tarihsel kaydıdır; bu görevde sağlık/HTML/CSS/SEO GET’leri
+ve yerel Git durumu dışında yeniden doğrulanmadı.
+
 Snapshot. Update whenever something structural changes. Earlier snapshots are
 in Git history; dated statements are historical once superseded.
 

@@ -534,3 +534,45 @@ select.form-input{appearance:none;-webkit-appearance:none;cursor:pointer}
 .nf-lede{max-width:44ch;margin:0 auto 26px;color:var(--dim);font-size:16px;line-height:1.6}
 .nf-btn{display:inline-block;padding:11px 20px;border-radius:10px;background:var(--red);color:#fff;font-weight:600;font-size:14px}
 .nf-btn:hover{background:var(--red-hot)}
+
+/* Approved staging refinements: existing brand, hero and card rules stay above. */
+.cat-bar a.cat-chip{line-height:normal}
+.feed-more{padding:0 0 48px}
+.load-more{
+  display:flex;align-items:center;justify-content:center;width:100%;
+  min-height:48px;padding:12px 18px;border:1px solid var(--line);border-radius:8px;
+  background:transparent;color:var(--dim);font-size:14px;font-weight:600;
+  transition:border-color .15s ease,color .15s ease;
+}
+.load-more:hover{border-color:var(--line-strong);color:var(--ink)}
+.load-more:focus-visible{outline:2px solid var(--red-hot);outline-offset:3px}
+.load-more[aria-busy="true"]{cursor:progress}
+.feed-back{display:inline-block;margin-top:16px;font-size:13px;color:var(--dim)}
+.feed-end{font-size:14px;text-align:center;color:var(--dim)}
+.feed-end a,.feed-back:hover{color:var(--red-hot)}
+.visually-hidden{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0;
+}
+.pager,.pager-list{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 14px}
+.pager{padding:0 0 48px;font-size:13px;color:var(--dim)}
+.pager-list{list-style:none}
+.pager a,.pager-num{display:inline-block;padding:6px 8px}
+.pager a:hover,.pager .is-on{color:var(--red-hot)}
+.pager .is-off{color:var(--dim-2)}
+.page-prose .category-directory{list-style:none;padding-left:0}
+.category-directory li+li{margin-top:22px}
+.category-directory p{margin-top:6px}
+.foot-inner{max-width:992px;margin:0 auto}
+.site-foot .logo{display:inline-block;color:var(--ink)}
+.site-foot .logo b{color:var(--red-hot)}
+.foot-contact{display:block;margin-top:10px;color:var(--red-hot);overflow-wrap:anywhere}
+.site-foot .foot-nav{border-top:0;padding-top:0;margin-top:20px;gap:10px 18px}
+.site-foot .subscribe{background:transparent;border:0;border-radius:0;padding:0;margin:26px auto 0;text-align:center}
+.foot-credit{margin-top:22px;font-size:12px}
+.foot-credit a:hover{color:var(--red-hot)}
+@media(max-width:420px){
+  .site-head-inner{flex-wrap:wrap;gap:10px 16px}
+  .head-right{width:100%;justify-content:flex-end}
+  .site-nav{flex-wrap:wrap;justify-content:flex-end}
+}

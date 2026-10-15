@@ -10,7 +10,7 @@ export default defineConfig({
   integrations: [
     sitemap({
       // Keep the sitemap to indexable HTML pages only (drop the RSS endpoint).
-      filter: (page) => !page.includes('/rss.xml'),
+      filter: (page) => !page.includes('/rss.xml') && !new URL(page).pathname.startsWith('/feed/'),
     }),
   ],
 });

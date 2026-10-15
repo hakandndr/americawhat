@@ -102,6 +102,28 @@ parameter limit, and identical behaviour on both paths (tested byte for byte).
 `src/data`), never rebased; the branch reaches `main` only through a reviewed
 pull request after the pre-merge checks.
 
+## D-20 Staging görünümü korunur (proje sahibi kararı, 2026-10-14)
+
+Kamusal görsel temel dağıtılmış Cloudflare staging’dir (sağlık: `636936f`).
+V1/V2/V3 kamusal tasarımları reddedilmiş tarihsel deneylerdir; yeni tema,
+font, kart veya haber detay düzeni onaylanmamıştır. Onaylı kapsam yalnızca
+12’şer Load More, Random? → Categories → Archive ve sade footer’dır.
+Dar ekranda menünün sarılması ve yeni kontrollerin yerleşimi gerekli sınırlı
+farklardır; diğer marka/kart/hero kuralları korunur.
+
+## D-21 Seçici statik işlev uyarlaması, yerel uygulama
+
+`design/staging-refinement`, `dev/cloudflare-native` / `4438907` temellidir.
+V3’ten statik parça/olay/geçmiş mantığı ve Pagination alındı; deneysel genel
+UI/Boss kaynağı birleştirilmedi. Tüm kategoriye gerçek bağlantılar kullanılır;
+böylece henüz yüklenmeyen haberler filtre dışında kalmaz. Parçalar JS’siz tam
+sayfadır, noindex taşır ve sitemap’e eklenmez; kategori/arşiv sayfaları indekslenir.
+
+Tüm çalışma yereldir; push/merge/deploy onayı yoktur. Deneysel dal ve Boss
+iyileştirmeleri korunur. Ayrıntı/testler: DESIGN-REDESIGN.md. Yeni öneriler
+(bağımlılık güvenlik bakımı, gerçek cihaz kontrolü, ileride ayrı Boss entegrasyonu)
+onaylı UI kapsamından ayrıdır.
+
 ## Open questions (owner)
 
 1. Legacy data older than 90 days: option A, B or C of the ANALYTICS.md §6 memo (A recommended).

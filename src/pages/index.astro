@@ -1,11 +1,11 @@
 ---
 import Base from "../layouts/Base.astro";
-import Card from "../components/Card.astro";
-import { CATEGORIES } from "../data/categories.js";
-import { items as allItems } from "../lib/items.js";
+import Feed from "../components/Feed.astro";
+import CategoryChips from "../components/CategoryChips.astro";
+import { FEED_PAGE_SIZE, newest as items } from "../lib/feed.js";
 
-const items = [...allItems].sort((a, b) => (a.date < b.date ? 1 : -1));
-const cats = Object.entries(CATEGORIES);
+const lastPage = Math.max(1, Math.ceil(items.length / FEED_PAGE_SIZE));
+const trendingStories = items.map((item) => ({ id: item.id, title: item.title, href: `/item/${item.slug}/` }));
 ---
 <Base
   title="americawhat — weird, funny, deeply American news"
@@ -28,50 +28,17 @@ const cats = Object.entries(CATEGORIES);
     <ol class="trending-list" id="trending-list"></ol>
   </section>
 
-  <nav class="cat-bar" aria-label="Filter by category">
-    <button class="cat-chip active" data-filter="all" aria-pressed="true">All</button>
-    {cats.map(([key, c]) => (
-      <button class="cat-chip" data-filter={key} aria-pressed="false">{c.label}</button>
-    ))}
-  </nav>
+  <CategoryChips />
+  <Feed items={items.slice(0, FEED_PAGE_SIZE)} lastPage={lastPage} />
 
-  <section class="feed" id="feed">
-    {items.map((item) => <Card item={item} />)}
-  </section>
-
-  <p class="empty" id="empty" style="display:none">Nothing here in this category yet. Check back soon.</p>
-
-  <script>
-    // ── Category filter (feed page only) ──
-    const chips = document.querySelectorAll(".cat-chip");
-    const cards = Array.from(document.querySelectorAll(".card"));
-    const emptyEl = document.getElementById("empty");
-    chips.forEach((chip) => {
-      chip.addEventListener("click", () => {
-        chips.forEach((c) => {
-          c.classList.remove("active");
-          c.setAttribute("aria-pressed", "false");
-        });
-        chip.classList.add("active");
-        chip.setAttribute("aria-pressed", "true");
-        const f = chip.getAttribute("data-filter");
-        let visible = 0;
-        cards.forEach((card) => {
-          const show = f === "all" || card.getAttribute("data-category") === f;
-          card.style.display = show ? "" : "none";
-          if (show) visible++;
-        });
-        if (emptyEl) emptyEl.style.display = visible === 0 ? "block" : "none";
-      });
-    });
-  </script>
+  <script id="trending-stories" type="application/json" set:html={JSON.stringify(trendingStories).replace(/</g, "\u003c")} />
 
   <script>
     // ── Trending: top-5 by total reactions (client-side, live) ──
     (async function () {
-      const cards = Array.from(document.querySelectorAll(".card[data-id]"));
-      if (!cards.length) return;
-      const ids = cards.map((c) => c.dataset.id).filter(Boolean);
+      const stories = JSON.parse(document.getElementById("trending-stories")?.textContent || "[]");
+      if (!stories.length) return;
+      const ids = stories.map((story) => story.id);
       let data = {};
       try {
         const res = await fetch("/analytics/get_votes.php?ids=" + ids.join(","));
@@ -82,13 +49,11 @@ const cats = Object.entries(CATEGORIES);
       const esc = (s) =>
         String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
       const rows = [];
-      cards.forEach((c) => {
-        const id = c.dataset.id;
-        const link = c.querySelector(".title-link");
-        if (!link) return;
+      stories.forEach((story) => {
+        const id = story.id;
         const counts = (data && data[id]) || {};
         const total = Object.values(counts).reduce((a, b) => a + (parseInt(b, 10) || 0), 0);
-        rows.push({ title: link.textContent.trim(), href: link.getAttribute("href"), total });
+        rows.push({ title: story.title, href: story.href, total });
       });
       const top = rows.filter((r) => r.total > 0).sort((a, b) => b.total - a.total).slice(0, 5);
       if (top.length < 3) return; // stay hidden until there's real signal

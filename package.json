@@ -10,6 +10,7 @@
     "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
     "build:og": "python scripts/gen-og.py",
     "verify:static": "node scripts/build/verify-static.mjs",
+    "verify:refinement": "node scripts/build/verify-refinement.mjs",
     "preview:boss": "node scripts/dev/boss-preview.mjs --serve",
     "test:boss-preview": "node scripts/dev/boss-preview.mjs",
     "parity:live": "node scripts/parity/compare-live.mjs https://americawhat.com",
@@ -21,6 +22,7 @@
     "astro": "^4.16.0"
   },
   "devDependencies": {
+    "linkedom": "^0.18.12",
     "wrangler": "4.147.0"
   },
   "engines": {

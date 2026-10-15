@@ -1,0 +1,26 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Card from "../../../components/Card.astro";
+import CategoryChips from "../../../components/CategoryChips.astro";
+import Pagination from "../../../components/Pagination.astro";
+import { CATEGORIES } from "../../../data/categories.js";
+import { FEED_PAGE_SIZE, categoryHref, newest } from "../../../lib/feed.js";
+export function getStaticPaths({ paginate }) {
+  return Object.keys(CATEGORIES).flatMap((cat) => paginate(newest.filter((item) => item.category === cat), { pageSize: FEED_PAGE_SIZE, params: { cat } }));
+}
+const { page } = Astro.props;
+const { cat } = Astro.params;
+const c = CATEGORIES[cat];
+const href = (n) => categoryHref(cat, n);
+---
+<Base title={`${c.label}${page.currentPage > 1 ? `, page ${page.currentPage}` : ""} — americawhat`} canonicalPath={href(page.currentPage)} description={c.blurb}>
+  <header class="page-head">
+    <h1 class="page-title">{c.label}</h1>
+    <p class="page-updated">{c.blurb} {page.total} stories.</p>
+  </header>
+  <CategoryChips current={cat} />
+  <section class="feed" aria-label={`${c.label} stories`}>{page.data.map((item) => <Card item={item} />)}</section>
+  {!page.data.length && <p class="empty">Nothing here in this category yet. Check back soon.</p>}
+  <Pagination current={page.currentPage} last={page.lastPage} href={href} label={`${c.label} pages`} />
+  <script src="../../../scripts/tracking.js"></script>
+</Base>

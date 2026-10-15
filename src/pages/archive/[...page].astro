@@ -1,0 +1,21 @@
+---
+import Base from "../../layouts/Base.astro";
+import Card from "../../components/Card.astro";
+import CategoryChips from "../../components/CategoryChips.astro";
+import Pagination from "../../components/Pagination.astro";
+import { ARCHIVE_PAGE_SIZE, archiveHref, newest } from "../../lib/feed.js";
+export function getStaticPaths({ paginate }) {
+  return paginate(newest, { pageSize: ARCHIVE_PAGE_SIZE });
+}
+const { page } = Astro.props;
+---
+<Base title={`Archive${page.currentPage > 1 ? `, page ${page.currentPage}` : ""} — americawhat`} canonicalPath={archiveHref(page.currentPage)} description="Every published AmericaWhat story, newest first.">
+  <header class="page-head">
+    <h1 class="page-title">Archive</h1>
+    <p class="page-updated">Stories {page.total ? page.start + 1 : 0}–{page.total ? page.end + 1 : 0} of {page.total}, newest first.</p>
+  </header>
+  <CategoryChips current="" />
+  <section class="feed" aria-label="Archived stories">{page.data.map((item) => <Card item={item} />)}</section>
+  <Pagination current={page.currentPage} last={page.lastPage} href={archiveHref} label="Archive pages" />
+  <script src="../../scripts/tracking.js"></script>
+</Base>

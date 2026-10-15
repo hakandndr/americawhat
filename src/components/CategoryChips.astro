@@ -1,0 +1,11 @@
+---
+import { CATEGORIES } from "../data/categories.js";
+import { categoryHref } from "../lib/feed.js";
+const { current = "all" } = Astro.props;
+---
+<nav class="cat-bar" aria-label="Filter by category">
+  <a class:list={["cat-chip", { active: current === "all" }]} href="/" aria-current={current === "all" ? "page" : undefined}>All</a>
+  {Object.entries(CATEGORIES).map(([key, c]) => (
+    <a class:list={["cat-chip", { active: current === key }]} href={categoryHref(key)} aria-current={current === key ? "page" : undefined}>{c.label}</a>
+  ))}
+</nav>

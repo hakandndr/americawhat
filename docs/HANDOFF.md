@@ -1,5 +1,30 @@
 # americawhat — Handoff
 
+## Güncel devir notu — 2026-10-14
+
+Proje sahibi kamusal tasarım olarak **mevcut Cloudflare staging görünümünü**
+onayladı. V1/V2/V3 kamusal yeniden tasarımları reddedildi; deneysel daldaki
+önceki tasarım önerileri geçerli talimat sayılmaz.
+
+`dev/cloudflare-native` / `4438907` temelinden oluşturulan
+`design/staging-refinement` dalı ve
+`D:\IT\AmericaWhat\americawhat\tmp\staging-refinement` worktree’si
+sadece üç yerel iyileştirmeyi içerir: 12’şer Load More, ilk sırada kırmızı
+Random? ardından Categories/Archive, sade footer. Özgün kartlar/hero/marka
+stilleri ve haber URL’leri korunur. Deneysel `40274dc` ve yerel Boss
+iyileştirmeleri ayrı worktree’de korunur; toplu merge yapılmadı.
+
+Canlı staging `636936f` olarak doğrulandı; yerel başlangıçla uygulama kaynağı
+aynı. 106 test, 162 sayfalık build, statik/SEO/iç bağlantı doğrulaması ve yerel
+workerd reaksiyon/Load More testi geçti. Görsel tarayıcı testi yapılmadı.
+Mevcut bağımlılık audit’i 21 açık bildiriyor; ayrı bakım değerlendirmesi gerekir.
+
+**Durum yalnızca yerel:** push, merge, staging/production deploy, DNS ve veri
+aktarımı yapılmadı. Üretim taşıması ayrı onay ve mevcut migration önkoşulları
+ister. Başlangıç bilgileri için CURRENT-STATE; kapsam/kanıt/bağımsız görüş için
+DESIGN-REDESIGN; tam önizleme komutları için OPERATIONS okunmalı. Aşağıdaki
+onboarding içeriği eski işletim mimarisini anlatır.
+
 Master onboarding document. If you are picking this project up cold, read this
 file first, then `CURRENT-STATE.md` (what is live, what is only prepared), then
 `EDITORIAL-GUIDE.md` (the part that actually matters), then `OPERATIONS.md`.
