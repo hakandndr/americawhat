@@ -1,5 +1,14 @@
 # AmericaWhat — Boss renk uyumu ve staging preflight
 
+2026-10-15 takip notu: [Boss UX/Analytics sprinti](BOSS-UX-ANALYTICS-SPRINT.md)
+beyaz metinli buton, country contains, authenticated canlı filtreleme ve
+doğrudan snapshot sayfalaması ekledi; kaynak uç `71879c8`, 134 test/18 workerd.
+Bu değişiklikler henüz dağıtılmadı. Aynı schema/config korunur; Analytics’e
+özgü response CSP’si yeni script/connect self izni verir. Sonraki staging
+doğrulamasına canlı filtre, history, /assets/analytics.js Access ve yeni sorgu
+rows_read/CPU ölçümü eklenmelidir. Aşağıdaki tarihli uzak preflight/UUID’ler
+bu sprintte yeniden sorgulanmadı; rollout öncesi güncel durum tekrar okunur.
+
 2026-10-14 America/Los_Angeles; API okumaları 2026-10-15 UTC.
 **Yerel uygulama ve salt okunur preflight tamamlandı; dağıtım yapılmadı.**
 Başlangıç `codex/security-boss` / `3730297705ee50fc4692e63b89311462be6a28df`.

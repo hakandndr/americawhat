@@ -1,6 +1,26 @@
 # americawhat — Handoff
 
-## Son devir — Boss renkleri ve staging preflight (2026-10-14)
+## Son devir — Boss UX ve Analytics (2026-10-15)
+
+`codex/security-boss`, aynı `D:\IT\AmericaWhat\americawhat\tmp\security-boss`.
+`3bae019` sonrası yerel commit’ler: `5cc3d13` beyaz buton, `c199b46` country/live,
+`148838c` sayfa sınırları, `389c615` history, `399e823` overflow, `71879c8`
+bekleyen kriter koruması/test rapor dizini. Kaynak uç `71879c8`, ardından belge commit’i.
+
+134 test; 18 workerd; actual synthetic Germany190 ve export eşitliği. Public
+kaynak ve migration/identifiers/import/retention değişmedi; audit0. İstemci
+enhancement yalnızca Analytics’te authenticated script/self CSP kullanır;
+JS’siz GET formlarını koru. Pagination O(N) ID metadata + bounded PK hydrate;
+OFFSET yok. Snapshot append kaymasını önler, manuel silme sonrası yenile.
+Günlük grafik artık tüm filtreli günleri kapsar. Tam bulgular/commit/testler:
+[BOSS-UX-ANALYTICS-SPRINT.md](BOSS-UX-ANALYTICS-SPRINT.md).
+
+Sahibi local 18828’de beyaz buton/otomatik filtre/pager/mobile/klavye kontrolünü
+yapar. Önceki STAGING-PREFLIGHT.md kanıtları korunur; bu sprintte tekrarlanmadı.
+Yeni main snapshot’ı + Access/AUD/secret/Git izolasyonu + tam SHA staging testi
+ayrı onaylı sonraki iş; push/merge/deploy veya gerçek veri işlemi yapılmadı.
+
+## Önceki devir — Boss renkleri ve staging preflight (2026-10-14)
 
 `codex/security-boss` üzerinde `3730297` sonrası Boss-only renk commit’i
 `0f3fe02`; sonrasında preflight belgeleri. Çalışma alanı aynı `tmp/security-boss`.

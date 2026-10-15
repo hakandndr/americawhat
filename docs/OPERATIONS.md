@@ -1,5 +1,29 @@
 # americawhat — Operations
 
+## Güncel Boss UX/Analytics önizlemesi (2026-10-15)
+
+`codex/security-boss` / `D:\IT\AmericaWhat\americawhat\tmp\security-boss`.
+134 unit/DOM/SQL test, 18 sentetik workerd kontrolü; audit0, public aynı.
+Komutlar: `npm test`; çalışan kendi preview’si durduktan sonra
+`$env:BOSS_PREVIEW_PORT='18828'; npm run test:boss-preview`; test bittiğinde
+`npm run preview:boss`. Aynı state/portta serve ve test aynı anda çalıştırılmaz.
+Hazır preview `http://127.0.0.1:18828/analytics?country=ger` → 190 sentetik kayıt.
+
+Text alanları 350ms sonra, select’ler hemen; tarihlerin tam/geçerli olması
+gerekir. Kriter değişimi p/snapshot’ı temizler; yeni sayfa1 görünümü açılır.
+Reset filtreleri temizler. First/Previous/Page/Next/Last ile doğrudan gezinilir;
+Go ve Apply JS’siz çalışır. Snapshot sabit görünümü korur; yeni kayıtları
+görmek için yeniden filtre uygula/Reset kullan. Manuel retention sonrasında
+yeniden görünüm aç. Aynı istek sırasında veri değişmişse 409/retry olabilir.
+Network/Access hatasında sonuç korunur; Apply retry veya oturum için reload.
+
+Analytics HTML’si authenticated `/assets/analytics.js` yükler; same-origin
+script/connect CSP’si yalnızca o sayfaya açıktır. Staging’de bu endpoint ve
+Access oturum yenilemesi de test edilir. Gerçek Worker CPU/D1 maliyeti yerel
+SQLite ms sonuçlarıyla karıştırılmaz. [Sprint raporu](BOSS-UX-ANALYTICS-SPRINT.md)
+ve önceki [staging planı](STAGING-PREFLIGHT.md) geçerlidir. Bu sprintte uzak
+deploy/yazım/ziyaretçi okuması yok; aşağıdaki staging kanıtları önceki tarihlidir.
+
 ## Geçerli staging ön kontrolü (2026-10-14)
 
 Boss renk commit’i `0f3fe02`, dal/worktree `codex/security-boss` /

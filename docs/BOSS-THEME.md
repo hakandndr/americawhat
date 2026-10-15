@@ -1,5 +1,11 @@
 # Boss — public renk uyumu
 
+2026-10-15 düzeltmesi: sahibi dolu kırmızı butondaki siyah metni reddetti.
+`5cc3d13` ile yalnızca filled normal/hover/active tonları #d9364a/#cf3044/#c82d41,
+metin beyaz oldu; kontrast 4,59/5,05/5,37:1. Public/diğer Boss marka vurguları
+aynı. [Yeni sprint raporu](BOSS-UX-ANALYTICS-SPRINT.md) güncel karardır;
+aşağıdaki siyah metin istisnası önceki sprintin tarihsel kaydıdır.
+
 2026-10-14, `3730297` sonrası yalnızca yerel renk düzeltmesi. Kaynak referans
 onaylı `src/styles/global.css`; public dosyalar değiştirilmedi. Boss’un ayrı
 server-rendered Worker CSS’si korunur; Astro’ya import/bağımlılık eklenmez.

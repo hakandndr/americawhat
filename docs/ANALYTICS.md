@@ -1,5 +1,14 @@
 # americawhat — Analytics
 
+2026-10-15 yerel Boss güncellemesi: country name case-insensitive contains /
+stored code exact; ortak filtre ve sabit üst ID summary/table/daily/top/filtered
+CSV/NDJSON’da aynı. Günlük grafik varsayılanı tüm filtreli günlerdir. Canlı
+text350ms/select hemen, JS’siz GET fallback, p+snapshot ile First/Previous/
+page selector/Next/Last vardır. ALL #/TODAY #/IP VISITS, event/import/source ve
+manuel retention tanımları değişmedi. Global log/retention açıkça globaldir.
+134 yerel test, 18 sentetik workerd; henüz staging deploy yok. Kök neden,
+algoritma/maliyet/limitler: [BOSS-UX-ANALYTICS-SPRINT.md](BOSS-UX-ANALYTICS-SPRINT.md).
+
 Authoritative for the AmericaWhat analytics store, the Boss Analytics screen,
 the legacy import, DNDR reconciliation and retention. Status labels used here:
 **IMPLEMENTED**, **TESTED LOCALLY**, **STAGING**, **PRODUCTION**, **OWNER DECISION**.

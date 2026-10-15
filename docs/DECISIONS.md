@@ -184,6 +184,32 @@ branch scope’u yoktur; ayrı staging içerik reposu önerisi veya production
 ref’lerine etkili server-side engel sahibi onayı bekler. Uzak kaynak/kimlik/
 workflow/tarihçe bu sprintte değiştirilmez. STAGING-PREFLIGHT.md geçerli plandır.
 
+## D-29 Filled Boss aksiyonlarında beyaz metin
+
+Sahibi siyah metni reddetti; D-27’nin yalnızca bu istisnası yerine
+#d9364a normal, #cf3044 hover, #c82d41 active ve #fff metin kullanılır.
+Kontrast 4,59/5,05/5,37:1; public palet ve buton ölçüleri korunur.
+
+## D-30 Ortak Analytics country contains ve progressive enhancement
+
+Country name LIKE contains/case-insensitive, stored country_code exact;
+bind/literal escaping korunur. Ortak WHERE summary/table/day/top/export’u
+etkiler; günlük chart varsayılanı artık tüm filtreli günlerdir. IP/TODAY/ALL
+ve manuel retention/import tanımları değişmez. Text350ms, select hemen,
+generation/AbortController/history destekli küçük authenticated same-origin
+script yalnızca Analytics’te çalışır; JS’siz GET fallback kalır. Global
+retention/log sayıları açıkça global etiketlenir. Schema/dependency yok.
+
+## D-31 ID sınırlarıyla doğrudan Analytics sayfası
+
+First/Previous/select/Next/Last; p+snapshot URL’si. ID-only window/group
+metadata taraması ve bounded primary-key hydration kullanılır; OFFSET,
+kalıcı table/cache/migration yok. Kriter değişimi yeni snapshot/sayfa1 açar;
+ilk history kaydı dahil sabit üst ID append kaymasını önler. 10.000 kayıt/
+200 sayfa test edildi. Metadata taraması/substring maliyeti doğrusal olabilir;
+gerçek staging CPU/rows_read ayrıca ölçülür. Snapshot MVCC kopyası değildir,
+manuel silme sonrası yenileme gerekir. Ayrıntı BOSS-UX-ANALYTICS-SPRINT.md.
+
 ## Open questions (owner)
 
 1. Legacy geçmişin korunması karara bağlandı (D-24); final log/oy snapshot’ları, reconciliation ve manuel retention uygulama zamanı cutover hazırlığında tamamlanmalı.

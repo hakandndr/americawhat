@@ -1,6 +1,27 @@
 # americawhat — Current State
 
-## Son durum — Boss renk uyumu ve staging preflight (2026-10-14)
+## Son durum — Boss UX ve Analytics (2026-10-15)
+
+Başlangıç `3bae019`, aynı `codex/security-boss` / `tmp/security-boss` worktree’si.
+Beyaz metinli AA kırmızı butonlar `5cc3d13`; ülke/live filter `c199b46`;
+doğrudan sayfalama `148838c`; history snapshot `389c615`; taşma koruması `399e823`;
+bekleyen kriter koruması `71879c8`. 134 test, 18 sentetik local workerd kontrolü;
+Germany `ger` 190 sonuç, filtreli
+CSV/NDJSON aynı. 10.000 kayıt/200 sayfa tekrarsız/eksiksiz; schema migration yok.
+Public src aynı, 162 sayfa/parity/static başarılı; tam/dev hariç audit0.
+
+Live text 350ms, dropdown hemen, eski yanıt iptal/generation korumalı; Apply
+ve Go JS’siz fallback. First/Previous/select/Next/Last p+snapshot URL’siyle
+çalışır; filtre değişince sayfa1/yeni görünüm. Analytics script’i authenticated
+same-origin; diğer sayfalarda script yasağı sürer. Raw event/retention/import/
+oy tanımları değişmedi. Tam rapor [BOSS-UX-ANALYTICS-SPRINT.md](BOSS-UX-ANALYTICS-SPRINT.md).
+
+Yalnızca yerel: push/merge/deploy/uzak ayar veya gerçek ziyaretçi okuması yok.
+Önceki staging preflight yeniden yapılmadı; son bilinen `636936f` ve Access/
+credential/content reconciliation kapıları tarihli önceki kayıttır. Yeni tam
+SHA ve gerçek staging testi ayrı onay ister. Önceki bölümler tarihsel kayıttır.
+
+## Önceki durum — Boss renk uyumu ve staging preflight (2026-10-14)
 
 `codex/security-boss`, `D:\IT\AmericaWhat\americawhat\tmp\security-boss`;
 başlangıç `3730297`, ayrı renk commit’i `0f3fe02`. Boss public paletteki
