@@ -98,8 +98,8 @@ per address per 10 minutes.
 
 | Metric | Definition |
 |---|---|
-| ALL # | `visitor_events.id`, durable across filters, pages and deletions |
-| TODAY # | position among **all** rows of the same LA day, in id order; filters never change it |
+| Global # (ALL #) | `visitor_events.id` (AUTOINCREMENT): never reused or renumbered; deletions leave gaps |
+| Day # (TODAY #) | position among **all** retained rows of the same PT day in time order (occurred_at, then id), shown with the day's total; filters never change it. Only an import of older events into an existing day can move later rows of that day |
 | IP VISITS | retained page views with exactly that address, all time, all origins |
 | Distinct IP addresses | distinct address strings in the view — **not people** (shared networks, changing addresses, privacy relays) |
 | Human / Automated | from the crawler label (legacy) or the user-agent classification (native); a user agent can lie |

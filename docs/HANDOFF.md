@@ -1,5 +1,11 @@
 # americawhat — Handoff
 
+## Son devir — c08cdfc staging'de (2026-10-15)
+
+Footer doğal yükseklikte altta, Day # zaman sıralı, Trending Worker'da
+render. Açık: owner oturumlu canlı Boss kontrolü.
+[STAGING-FINAL-ROLLOUT.md](STAGING-FINAL-ROLLOUT.md)
+
 ## Son devir — tasarım düzeltmeleri yayımlandı (2026-10-15)
 
 38096fa staging'de (Web 09efe0f7…, Boss 3c28937a…). Kök nedenler, çözümler,

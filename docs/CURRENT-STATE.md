@@ -1,5 +1,12 @@
 # americawhat — Current State
 
+## Son durum — footer, Global/Day # ve edge Trending staging'de (2026-10-15)
+
+RELEASE_ID c08cdfc62eb4483ea1356c35ce7a2a5989c99407; Web
+1346af78-327b-434d-8cd1-294d0bf39dc3, Boss 58dfdaf4-87b3-41f6-a7f0-0f68215bcd44,
+ikisi %100. Rollback: 38096fa UUID'leri. Ayrıntı
+[STAGING-FINAL-ROLLOUT.md](STAGING-FINAL-ROLLOUT.md).
+
 ## Son durum — tipografi, footer ve Analytics tasarımı staging'de (2026-10-15)
 
 RELEASE_ID 38096fa03f52c87b5049eaf00911f9590a09fa82 aktif. Web

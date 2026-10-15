@@ -1,5 +1,9 @@
 # AmericaWhat staging — gerçekleşen rollout
 
+## Son rollout — 15 Ekim 2026 (c08cdfc)
+
+[STAGING-FINAL-ROLLOUT.md](STAGING-FINAL-ROLLOUT.md); aşağıdakiler tarihseldir.
+
 ## Tasarım rollout'u — 15 Ekim 2026
 
 En güncel release 38096fa03f52c87b5049eaf00911f9590a09fa82:
