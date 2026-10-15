@@ -1,5 +1,12 @@
 # americawhat — Current State
 
+## Son durum — Boss tablo düzeni ve hazırlık incelemesi (2026-10-15)
+
+Boss ca3666282996330ee455a38facb776a1c04b9d75 (version
+1de0fbdf-f374-44aa-a46b-71782a728fe6, %100); Web c08cdfc (1346af78…) değişmedi.
+Boss rollback 58dfdaf4…. Faz B bulguları ve production açıkları
+[STAGING-READINESS.md](STAGING-READINESS.md).
+
 ## Son durum — footer, Global/Day # ve edge Trending staging'de (2026-10-15)
 
 RELEASE_ID c08cdfc62eb4483ea1356c35ce7a2a5989c99407; Web

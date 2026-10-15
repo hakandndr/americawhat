@@ -1,5 +1,9 @@
 # AmericaWhat staging — gerçekleşen rollout
 
+## Son Boss rollout — 15 Ekim 2026 (ca36662)
+
+[STAGING-READINESS.md](STAGING-READINESS.md); Web için STAGING-FINAL-ROLLOUT.md geçerli.
+
 ## Son rollout — 15 Ekim 2026 (c08cdfc)
 
 [STAGING-FINAL-ROLLOUT.md](STAGING-FINAL-ROLLOUT.md); aşağıdakiler tarihseldir.

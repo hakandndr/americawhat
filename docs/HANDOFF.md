@@ -1,5 +1,10 @@
 # americawhat — Handoff
 
+## Son devir — Boss tablo ve staging hazırlığı (2026-10-15)
+
+Boss ca36662 staging'de. Sıradaki iş: codex/staging-rc dalının yedeği/merge
+stratejisi ve Hostinger envanteri; ayrıntı [STAGING-READINESS.md](STAGING-READINESS.md).
+
 ## Son devir — c08cdfc staging'de (2026-10-15)
 
 Footer doğal yükseklikte altta, Day # zaman sıralı, Trending Worker'da

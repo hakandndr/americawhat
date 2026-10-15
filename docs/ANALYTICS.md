@@ -1,6 +1,14 @@
 # americawhat — Analytics
 
-## Analytics layout (2026-10-15, release 38096fa)
+## Analytics layout (2026-10-15, Boss release ca36662)
+
+The stream is a one-line-per-event table in distinct columns (ALL #, DAY #,
+date/time, IP, IP visits, source, event, actor, agent, country/city, page,
+referrer, device, browser/OS, Details) defined once in
+`workers/boss/src/pages/analytics-event.mjs` and shared with IP activity; the
+shell is 1480px. Earlier notes below describe the 38096fa layout.
+
+### Earlier layout (38096fa)
 
 Boss pages share one 1320px shell. Analytics reads top to bottom: a summary
 panel (page views, human/automated split, secondary counts) beside a stacked
