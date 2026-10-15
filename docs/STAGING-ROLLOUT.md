@@ -1,5 +1,13 @@
 # AmericaWhat staging — gerçekleşen rollout
 
+## Sonraki UX rollout — 15 Ekim 2026
+
+En güncel staging release720be24b20df976d34115ad4c5ca59f1d70ae0a6'dır.
+Footer ve IP Analytics değişiklikleri, yeni exact UUID'ler, canlı doğrulamalar
+ve eksik owner-session kontrolleri [STAGING-UX-ROLLOUT.md](STAGING-UX-ROLLOUT.md)
+içindedir. Aşağıdaki34d40c0 rollout'u önceki tamamlanmış tarihsel kayıttır;
+paketi ve UUID'leri rollback için korunur.
+
 2026-10-15. Kullanıcının bu oturumdaki açık ve sürekli staging yetkisiyle
 upload, activation, mevcut dosyadan secret kurulumu, Boss URL açılışı, canlı
 testler ve rollback/re-promote tamamlandı. Önceki hazırlık belgelerindeki

@@ -1,5 +1,17 @@
 # americawhat — Current State
 
+## Son durum — footer ve IP Analytics staging'de (2026-10-15)
+
+RELEASE_ID720be24b20df976d34115ad4c5ca59f1d70ae0a6 aktif. Web UUID
+9c3cb1c3-124b-4e52-a63d-bca74bf379e1; Boss UUID
+5b3267a9-3cf6-4cea-bc51-bcc3bd2cdbbb; ikisi%100. Ortak kısa-sayfa footer
+düzeltildi; Analytics geniş/responsive ve IP/IP Visits korumalı detay bağlantısı
+var.147 test/19 local workerd, rendered responsive ve canlı public kontrolleri
+PASS. Yeni authenticated staging Boss UI testi owner oturumu olmadığı için
+yapılmadı; yarınki manuel liste [STAGING-UX-ROLLOUT.md](STAGING-UX-ROLLOUT.md).
+Staging verisi yazılmadı/silinmedi; mevcut owner-only Access ve diğer proje/
+production sınırı korundu. Önceki34d40c0 paket ve UUID'ler rollback için saklı.
+
 ## Son durum — staging yayında, rollback tamamlandı (2026-10-15)
 
 Kullanıcının tüm staging rollout için sürekli yetkisiyle frozen RC

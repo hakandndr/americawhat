@@ -1,5 +1,19 @@
 # americawhat — Handoff
 
+## Son devir — footer ve IP Analytics yayımlandı (2026-10-15)
+
+[STAGING-UX-ROLLOUT.md](STAGING-UX-ROLLOUT.md) en güncel durum/kanıt kaydıdır.
+Source720be24, Web9c3cb1c3-124b-4e52-a63d-bca74bf379e1 ve
+Boss5b3267a9-3cf6-4cea-bc51-bcc3bd2cdbbb %100 aktiftir. Ortak footer flex
+düzeltmesi;7 sütunlu desktop Analytics, dar ekranda kartlar ve owner-protected
+/analytics/ip vardır. Yeni IP history zaman/id sıralı, snapshot'lı ve3 sorgudur.
+147 unit/integration,19 workerd, browser/public/D1 read-only kontrolleri geçti.
+Yeni canlı owner-session UI testi/CPU örneklemi eksik; kullanıcıdan gece giriş
+istenmedi, auth zayıflatılmadı. Yarın manuel kontrol listesi aynı belgede.
+Bir sonraki operatör eski hazırlık/audit kapılarını tekrar etmesin; sürekli
+staging yetkisi geçerlidir. Eski34d40c0 frozen paket/UUID'leri değiştirme;
+production/diğer projelere dokunma. Gerçek analytics verisine seed/delete yok.
+
 ## Son devir — staging rollout tamamlandı (2026-10-15)
 
 Geçerli durum [STAGING-ROLLOUT.md](STAGING-ROLLOUT.md). Web ve Boss frozen

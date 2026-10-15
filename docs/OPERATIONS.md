@@ -1,5 +1,17 @@
 # americawhat — Operations
 
+## Geçerli release — responsive Analytics/IP activity (2026-10-15)
+
+720be24 staging rollout, exact UUID ve rollback hedefleri
+[STAGING-UX-ROLLOUT.md](STAGING-UX-ROLLOUT.md) içindedir. IP activity yalnız
+/analytics/ip owner-protected route'unda; aynı auth/CSRF ve manual-only90 gün
+retention korunur. Public assets'te raw data yok; D1 migration gerekmez.
+IP Visits all-retained event sayısıdır, kişi/session değildir. History/export
+snapshot'ı ile current-retained özetin ayrımını koru. Back parametresini yalnız
+yerel Analytics yoluna sınırla. Owner-session canlı UI kontrolü yarın yapılacak;
+147 test/19 workerd ve yerel rendered/browser kontrolleri bunun yerine sayılmaz.
+Sürekli staging yetkisi geçerli; başka proje/production/DNS/Hostinger yasak.
+
 ## Geçerli çalışma durumu — staging yayında (2026-10-15)
 
 [STAGING-ROLLOUT.md](STAGING-ROLLOUT.md) gerçekleşen rollout, exact UUID'ler,
