@@ -10,6 +10,11 @@ const {
 import "../styles/global.css";
 import { items } from "../lib/items.js";
 import Subscribe from "../components/Subscribe.astro";
+// The latin files of the faces every page paints above the fold (see global.css).
+import antonLatin from "../assets/fonts/anton-normal-latin.woff2?url";
+import archivoLatin from "../assets/fonts/archivo-normal-latin.woff2?url";
+import archivoItalicLatin from "../assets/fonts/archivo-italic-latin.woff2?url";
+const criticalFonts = [antonLatin, archivoLatin, archivoItalicLatin];
 const canonical = new URL(canonicalPath, Astro.site);
 const ogImageUrl = new URL(ogImage, Astro.site);
 const slugs = items.map((i) => i.slug);
@@ -22,6 +27,7 @@ const randHref = slugs.length
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {criticalFonts.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0WJWDYB022"></script>
   <script is:inline>
@@ -50,17 +56,6 @@ const randHref = slugs.length
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:image" content={ogImageUrl} />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    rel="preload"
-    as="style"
-    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,500&display=swap"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,500&display=swap"
-    rel="stylesheet"
-  />
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>

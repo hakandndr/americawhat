@@ -62,7 +62,7 @@ test('analytics layout: metrics, filters, event table, then breakdowns, then dat
     at('id="h-filters"'),
     at('/analytics/export?format=csv'),
     at('id="h-events"'),
-    at('<th class="num" scope="col">ALL #</th>'),
+    at('scope="col">ALL #</th>'),
     at('id="h-breakdowns"'),
     at('<h3>Top pages</h3>'),
     at('<h3>Countries</h3>'),
@@ -94,8 +94,10 @@ test('analytics layout: values are escaped and the deletion form only previews (
 });
 
 test('full daily history is not truncated and has keyboard-accessible overflow containment', async () => {
-  const { html } = await render();
-  assert.match(html, /height:92px;[^}]*overflow-x:auto/);
-  assert.match(html, /class="chart" tabindex="0"/);
+  const { html, days } = await render();
+  assert.match(html, /\.chart\{[^}]*overflow-x:auto/);
+  const span = (Date.parse(days[days.length - 1].day) - Date.parse(days[0].day)) / 86400000 + 1;
+  assert.equal(html.match(/<span class="col" title=/g).length, span, 'every PT day from first to last record has a bar, quiet days included');
+  assert.match(html, /class="chart( dense)?" tabindex="0"/);
   assert.match(html, /#analytics-page\{max-width:100%\}/);
 });
