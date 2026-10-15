@@ -14,7 +14,7 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
   initial.hash = location.hash;
   if (location.href !== initial.href) window.history.replaceState(null, '', initial.pathname + initial.search + initial.hash);
   const regions = ['analytics-retention', 'analytics-metrics', 'analytics-events', 'analytics-breakdowns'];
-  let timer, controller, generation = 0, composing = false;
+  let timer, controller, generation = 0, composing = false, criteriaDirty = false;
   function message(text, error = false) {
     status.textContent = text;
     status.setAttribute('role', error ? 'alert' : 'status');
@@ -72,6 +72,7 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
       if (range) range.replaceWith(incoming.querySelector('[aria-label="Date range"]'));
       const links = incoming.querySelectorAll('[data-analytics-export]');
       document.querySelectorAll('[data-analytics-export]').forEach((link, i) => link.setAttribute('href', links[i].getAttribute('href')));
+      criteriaDirty = false;
       if (location.pathname + location.search !== committed.pathname + committed.search) window.history[history ? 'pushState' : 'replaceState'](null, '', committed.pathname + committed.search);
       if (pager) { const heading = document.getElementById('h-events'); heading.setAttribute('tabindex', '-1'); heading.focus(); }
       message('Updated.');
@@ -80,6 +81,7 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
     } finally { if (version === generation) busy(false); }
   }
   function apply(immediate = false) {
+    criteriaDirty = true;
     invalidate();
     if (composing) { message('Waiting…'); return; }
     if (!validDates()) { message('Complete valid dates (YYYY-MM-DD), with From before To.'); return; }
@@ -95,9 +97,18 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
     const link = event.target.closest('a[data-analytics-nav],a[data-analytics-reset]');
     if (!link || event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    void navigate(new URL(link.getAttribute('href'), location.origin), { sync: true, pager: !!link.closest('#analytics-events') });
+    const pager = !!link.closest('#analytics-events');
+    if (pager && criteriaDirty) { apply(true); return; }
+    let target = new URL(link.getAttribute('href'), location.origin);
+    if (link.closest('[aria-label="Date range"]')) {
+      const range = target.searchParams.get('range') || 'all';
+      target = filterUrl(); target.searchParams.set('range', range);
+      target.searchParams.delete('from'); target.searchParams.delete('to');
+    }
+    void navigate(target, { sync: true, pager });
   });
   function goToPage(form) {
+    if (criteriaDirty) { apply(true); return; }
     const url = new URL(form.getAttribute('data-page-url'), location.origin);
     url.searchParams.set('p', form.querySelector('[name="p"]').value);
     void navigate(url, { pager: true });

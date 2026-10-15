@@ -15,6 +15,8 @@ import { FakeGitHub } from './helpers/fake-github.mjs';
 import { AUD, TEAM, makeSigner } from './helpers/access-jwt.mjs';
 
 const ORIGIN = 'https://boss.americawhat.com';
+const REPORTS = new URL('../reports/', import.meta.url);
+fs.mkdirSync(REPORTS, { recursive: true });
 const PUBLISHED = JSON.parse(fs.readFileSync(new URL('../src/data/published.json', import.meta.url), 'utf8'));
 const LOG = fs.readFileSync(new URL('./fixtures/legacy/panel-log-s1.ndjson', import.meta.url), 'utf8');
 const signer = makeSigner();
@@ -92,7 +94,7 @@ test('Germany live-view GET has bounded query count and keeps summary, numeric p
   let queries = 0; const prepare = db.prepare.bind(db); db.prepare = sql => { queries++; return prepare(sql); };
   const response = await get(ctx, '/analytics?country=ger&p=2&limit=25');
   assert.equal(response.status, 200); assert.ok(queries <= 22, `One view issued ${queries} queries`);
-  fs.writeFileSync('reports/analytics-view-query-count.json', JSON.stringify({ queries, maxTested: 22, scope: 'synthetic Germany filtered GET' }, null, 2));
+  fs.writeFileSync(new URL('analytics-view-query-count.json', REPORTS), JSON.stringify({ queries, maxTested: 22, scope: 'synthetic Germany filtered GET' }, null, 2));
   const { document } = parseHTML(await response.text());
   const expected = db.sqlite.prepare("SELECT COUNT(*) n FROM visitor_events WHERE country='Germany'").get().n;
   assert.equal(Number(document.querySelector('#analytics-metrics .stat b').textContent), expected);

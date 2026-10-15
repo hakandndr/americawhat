@@ -10,6 +10,8 @@ import { renderAnalytics } from '../workers/boss/src/pages/analytics.mjs';
 import { laMidnight, laDay } from '../workers/shared/time.mjs';
 
 const NOW = laMidnight('2026-10-15') + 36000;
+const REPORTS = new URL('../reports/', import.meta.url);
+fs.mkdirSync(REPORTS, { recursive: true });
 const filters = (query = '') => parseFilters(new URLSearchParams(query), NOW);
 function seed(n, gaps = false) {
   const db = D1Sqlite.analytics();
@@ -46,7 +48,7 @@ test('numbered pages cover 0/1/49/50/51/940/10000 rows exactly once, including d
     assert.deepEqual(all, Array.from({ length: n }, (_, i) => n - i)); assert.equal(new Set(all).size, n);
     timings.push({ rows: n, pages: plan.pages.length, directLastMs: Math.round(directLastMs * 100) / 100, traversalMs: Math.round(performance.now() - start) });
   }
-  fs.writeFileSync('reports/pagination-synthetic-performance.json', JSON.stringify(timings, null, 2));
+  fs.writeFileSync(new URL('pagination-synthetic-performance.json', REPORTS), JSON.stringify(timings, null, 2));
 });
 
 test('filtered ID gaps, view counts, days, both exports and durable ALL/TODAY/IP VISITS agree', async () => {
@@ -111,5 +113,5 @@ test('direct Last uses one ID-only scan and bounded PK hydration, no OFFSET, no 
   const idPlan = await prepare('EXPLAIN QUERY PLAN ' + queries[0]).bind(null, 50).all();
   const rowPlan = await prepare('EXPLAIN QUERY PLAN ' + queries[1]).bind(10000, 1, 50, 50).all();
   assert.match(rowPlan.results.map(row => row.detail).join('\n'), /INTEGER PRIMARY KEY/);
-  fs.writeFileSync('reports/pagination-query-plans.json', JSON.stringify({ metadata: idPlan.results, rows: rowPlan.results, queries: queries.length }, null, 2));
+  fs.writeFileSync(new URL('pagination-query-plans.json', REPORTS), JSON.stringify({ metadata: idPlan.results, rows: rowPlan.results, queries: queries.length }, null, 2));
 });

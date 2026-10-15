@@ -108,3 +108,16 @@ test('initial and successful history entries pin the server page/snapshot, so Ba
   assert.equal(c.location.searchParams.get('snapshot'), '941'); assert.equal(c.location.searchParams.get('p'), '1');
   assert.equal(c.pushes.length, 1);
 });
+
+test('a page jump during queued typing applies the new criteria on page 1; date chips keep the typed filters', async () => {
+  const c = setup(); c.input('country', 'united');
+  const select = c.document.getElementById('analytics-page'); select.value = '19';
+  select.dispatchEvent(new c.window.Event('change', { bubbles: true }));
+  assert.equal(c.requests.length, 1); assert.equal(c.requests[0].url.searchParams.get('country'), 'united');
+  assert.equal(c.requests[0].url.searchParams.has('p'), false); assert.equal(c.timers.size, 0);
+  await c.answer(0, 'united');
+  c.input('country', 'Germany');
+  c.document.querySelector('[aria-label="Date range"] a').dispatchEvent(new c.window.Event('click', { bubbles: true, cancelable: true }));
+  assert.equal(c.requests[1].url.searchParams.get('country'), 'Germany');
+  assert.equal(c.requests[1].url.searchParams.get('range'), 'today');
+});
