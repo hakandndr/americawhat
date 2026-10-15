@@ -6,7 +6,7 @@ import { ANALYTICS_SCRIPT } from '../workers/boss/src/analytics-client.mjs';
 
 const markup = (label = 'initial') => `<html><body><div class="page-head"><p class="lede">Global log</p><nav aria-label="Date range"><a data-analytics-nav href="/analytics?range=today">Today</a></nav></div>
 <form id="analytics-filters"><input name="range" value="all"><input name="from"><input name="to"><input name="country"><input name="ip"><input name="place"><input name="page"><input name="referrer"><input name="browser"><select name="device"><option value="">all</option><option value="mobile">mobile</option></select><select name="limit"><option value="50">50</option><option value="100">100</option></select><button>Apply</button><a data-analytics-reset href="/analytics">Reset</a><span id="analytics-status"></span><a data-analytics-export href="/analytics/export?format=csv">CSV</a><a data-analytics-export href="/analytics/export?format=ndjson">ND</a></form>
-<div id="analytics-retention">global</div><div id="analytics-metrics">${label}</div><section id="analytics-events"><h2 id="h-events">Events</h2><a data-analytics-nav href="/analytics?country=ger&p=8&snapshot=940">Next</a></section><div id="analytics-breakdowns">${label}</div></body></html>`;
+<div id="analytics-retention">global</div><div id="analytics-metrics">${label}</div><section id="analytics-events"><h2 id="h-events">Events</h2><a data-analytics-nav href="/analytics?country=ger&p=19&snapshot=940">Last</a><form id="analytics-pager" data-page-url="/analytics?country=ger&snapshot=940"><select id="analytics-page" name="p"><option value="1">1</option><option value="19">19</option></select><button>Go</button></form></section><div id="analytics-breakdowns">${label}</div></body></html>`;
 const flush = () => new Promise(resolve => setImmediate(resolve));
 function setup() {
   const { window, document } = parseHTML(markup());
@@ -78,4 +78,19 @@ test('reset clears criteria immediately and back/forward restore URL filters wit
   c.location.href = 'https://boss.example/analytics?country=united&p=2';
   c.window.dispatchEvent(new c.window.Event('popstate')); assert.equal(c.form.querySelector('[name="country"]').value, 'united');
   await c.answer(1, 'united'); assert.equal(c.requests[1].url.searchParams.get('p'), '2'); assert.equal(c.pushes.length, 1);
+});
+
+test('page selector and keyboard Go navigate directly; subsequent text input clears the old page and snapshot', async () => {
+  const c = setup(); const select = c.document.getElementById('analytics-page'); select.value = '19';
+  select.dispatchEvent(new c.window.Event('change', { bubbles: true }));
+  assert.equal(c.requests[0].url.searchParams.get('p'), '19'); assert.equal(c.requests[0].url.searchParams.get('snapshot'), '940');
+  await c.answer(0, 'last');
+  c.document.getElementById('analytics-pager').dispatchEvent(new c.window.Event('submit', { bubbles: true, cancelable: true }));
+  assert.equal(c.requests.length, 2);
+  c.input('country', 'united'); await c.tick();
+  assert.equal(c.requests[1].options.signal.aborted, true);
+  assert.equal(c.requests[2].url.searchParams.get('country'), 'united');
+  assert.equal(c.requests[2].url.searchParams.has('p'), false); assert.equal(c.requests[2].url.searchParams.has('snapshot'), false);
+  await c.answer(2, 'first filtered'); await c.answer(1, 'stale page');
+  assert.equal(c.document.getElementById('analytics-metrics').textContent, 'first filtered');
 });

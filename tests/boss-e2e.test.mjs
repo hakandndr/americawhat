@@ -3,6 +3,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { parseHTML } from 'linkedom';
+import { syntheticAnalyticsSql } from '../scripts/dev/synthetic-data.mjs';
 import { createBoss } from '../workers/boss/src/index.mjs';
 import { resetKeyCache } from '../workers/boss/src/auth.mjs';
 import { csrfToken } from '../workers/boss/src/csrf.mjs';
@@ -81,6 +83,29 @@ test('Analytics enhancement is authenticated, same-origin only and does not enab
   assert.match(await script.text(), /350/);
   const published = await get(ctx, '/published');
   assert.doesNotMatch(published.headers.get('Content-Security-Policy'), /script-src/);
+});
+
+test('Germany live-view GET has bounded query count and keeps summary, numeric pages and exports in the same snapshot', async () => {
+  const ctx = setup();
+  const db = ctx.env.ANALYTICS_DB;
+  await db.exec((await syntheticAnalyticsSql({ pages: ['/', '/about/'], now: Math.floor(Date.now() / 1000) })).sql);
+  let queries = 0; const prepare = db.prepare.bind(db); db.prepare = sql => { queries++; return prepare(sql); };
+  const response = await get(ctx, '/analytics?country=ger&p=2&limit=25');
+  assert.equal(response.status, 200); assert.ok(queries <= 22, `One view issued ${queries} queries`);
+  fs.writeFileSync('reports/analytics-view-query-count.json', JSON.stringify({ queries, maxTested: 22, scope: 'synthetic Germany filtered GET' }, null, 2));
+  const { document } = parseHTML(await response.text());
+  const expected = db.sqlite.prepare("SELECT COUNT(*) n FROM visitor_events WHERE country='Germany'").get().n;
+  assert.equal(Number(document.querySelector('#analytics-metrics .stat b').textContent), expected);
+  assert.equal(document.querySelector('#analytics-page option[selected]').value, '2');
+  assert.ok([...document.querySelectorAll('#analytics-events tbody tr')].every(row => row.textContent.includes('Germany')));
+  for (const link of document.querySelectorAll('[data-analytics-export]')) {
+    const target = new URL(link.getAttribute('href'), ORIGIN);
+    assert.equal(target.searchParams.get('country'), 'ger'); assert.ok(Number(target.searchParams.get('snapshot')) > 0);
+    assert.equal(target.searchParams.has('p'), false);
+    const exported = await get(ctx, target.pathname + target.search); assert.equal(exported.status, 200);
+    const text = await exported.text();
+    assert.equal(target.searchParams.get('format') === 'csv' ? text.trim().split('\r\n').length - 1 : text.trim().split('\n').length, expected);
+  }
 });
 
 test('review page clusters copies and shows flags; HTML is escaped and locked down', async () => {

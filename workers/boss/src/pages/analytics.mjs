@@ -7,7 +7,7 @@ import { bars, h, hidden, page, select } from '../html.mjs';
 
 function qs(f, over = {}) {
   const p = new URLSearchParams();
-  const v = { range: f.range, from: f.from, to: f.to, origin: f.origin, class: f.cls, device: f.device, ip: f.ip, country: f.country, place: f.place, page: f.page, referrer: f.referrer, browser: f.browser, limit: f.limit, ...over };
+  const v = { range: f.range, from: f.from, to: f.to, origin: f.origin, class: f.cls, device: f.device, ip: f.ip, country: f.country, place: f.place, page: f.page, referrer: f.referrer, browser: f.browser, limit: f.limit, snapshot: f.snapshot, ...over };
   for (const [k, val] of Object.entries(v)) if (val !== '' && val != null && !(k === 'range' && val === 'all') && !(k === 'limit' && Number(val) === 50)) p.set(k, String(val));
   const s = p.toString();
   return s ? `?${s}` : '';
@@ -26,6 +26,23 @@ function dailyChart(days) {
 }
 
 const dash = '<span class="faint">—</span>';
+
+function paginationControls(f, stream) {
+  const { pages, current, total } = stream;
+  const last = pages.length;
+  const link = (number, label, disabled) => disabled
+    ? `<span class="btn secondary" aria-disabled="true">${label}</span>`
+    : `<a data-analytics-nav class="btn secondary" href="/analytics${qs(f, { p: number })}">${label}</a>`;
+  const base = `/analytics${qs(f)}`;
+  const fields = [...new URL(base, 'https://boss.local').searchParams].map(([key, value]) => hidden(key, value)).join('');
+  const options = pages.map(p => `<option value="${p.number}"${p.number === current ? ' selected' : ''}>Page ${p.number} · ALL # ${p.firstId}–${p.lastId}</option>`).join('');
+  return `<div class="table-foot"><span class="faint small">${total ? `Rows ${(current - 1) * f.limit + 1}–${Math.min(current * f.limit, total)} of ${total} matching · page ${current} of ${last}` : '0 matching records · no pages'}</span>
+<nav class="actions" aria-label="Visitor event pages">
+${link(1, 'First', current <= 1)}${link(current - 1, 'Previous', current <= 1)}
+<form method="get" action="/analytics" data-page-url="${h(base)}" class="actions" id="analytics-pager">${fields}<label for="analytics-page">Page</label><select id="analytics-page" name="p"${last ? '' : ' disabled'}>${options || '<option value="1">No pages</option>'}</select><button class="secondary"${last ? '' : ' disabled'}>Go</button></form>
+${link(current + 1, 'Next', current >= last)}${link(last, 'Last', current >= last)}
+</nav></div>`;
+}
 
 function eventRow(r) {
   const place = [r.city, r.region].filter(Boolean).join(' / ');
@@ -46,7 +63,7 @@ function eventRow(r) {
 
 export function renderAnalytics({ identity, flash, f, sum, days = [], tops, streamPage, retention, coverage, corpora, outbox }) {
   const chips = [['today', 'Today'], ['7d', '7 days'], ['30d', '30 days'], ['all', 'All time']]
-    .map(([r, l]) => `<a data-analytics-nav${f.range === r ? ' class="on" aria-current="true"' : ''} href="/analytics${qs(f, { range: r, from: '', to: '', before: null })}">${l}</a>`).join('');
+    .map(([r, l]) => `<a data-analytics-nav${f.range === r ? ' class="on" aria-current="true"' : ''} href="/analytics${qs(f, { range: r, from: '', to: '', before: null, snapshot: null })}">${l}</a>`).join('');
   const o = sum.overall;
   const v = sum.view;
   const retentionLine = retention.overdue
@@ -55,7 +72,7 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
   const rows = streamPage.rows.map(eventRow).join('');
   const rangeLabel = f.range === 'custom' ? `${f.from || '…'} → ${f.to || '…'}` : ({ today: 'today', '7d': 'last 7 days', '30d': 'last 30 days', all: 'all time' })[f.range];
   const headActions = `<nav class="seg" aria-label="Date range">${chips}</nav>`;
-  const lede = `Retained ${o.retained} records · today (PT) ${o.today} · oldest ${h(formatLa(o.oldest))} · last ALL # ${h(o.lastAllNo ?? '—')} · all-time page views ${o.allTimePageViews}${o.archivedPageViews ? ` (${o.archivedPageViews} kept only as aggregates since ${h(o.archivedFirstDay)})` : ''}`;
+  const lede = `Global log · retained ${o.retained} records · today (PT) ${o.today} · oldest ${h(formatLa(o.oldest))} · last ALL # ${h(o.lastAllNo ?? '—')} · all-time page views ${o.allTimePageViews}${o.archivedPageViews ? ` (${o.archivedPageViews} kept only as aggregates since ${h(o.archivedFirstDay)})` : ''}`;
   const body = `
 <div id="analytics-retention">${retention.overdue ? `<div class="notice warn" role="note"><span class="lbl warn">Global retention</span><span>${retention.overdueRecords} raw records are past the ${retention.targetDays}-day target. See <a href="#data-ops">Data operations</a>; nothing is deleted automatically.</span></div>` : ''}</div>
 <section id="analytics-metrics" aria-labelledby="h-metrics"><h2 id="h-metrics" class="eyebrow">In view · ${h(rangeLabel)}</h2>
@@ -101,8 +118,7 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
 <div class="section-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · ALL # is durable and never renumbered · <span class="warn">*</span> approximate time</p></div>
 <div class="table-card"><div class="scroll"><table><thead><tr><th class="num" scope="col">ALL #</th><th class="num" scope="col">TODAY #</th><th scope="col">DATE AND TIME (PT)</th><th scope="col">IP ADDRESS</th><th class="num" scope="col">IP VISITS</th><th scope="col">SOURCE</th><th scope="col">CLASS · AGENT</th><th scope="col">COUNTRY · CITY / REGION</th><th scope="col">PAGE</th><th scope="col">REFERRER</th><th scope="col">DEVICE · BROWSER · OS</th><th scope="col">DETAIL</th></tr></thead>
 <tbody>${rows || '<tr><td colspan="12" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table></div>
-<div class="table-foot"><span class="faint small">${f.before ? `Showing records before ALL # ${f.before}. <a href="/analytics${qs(f, { before: null })}">Back to newest</a>` : 'Showing the newest records.'}</span>
-<span>${streamPage.nextBefore ? `<a data-analytics-nav class="btn secondary" href="/analytics${qs(f, { before: streamPage.nextBefore })}">Older →</a>` : '<span class="muted small">End of the log for this view.</span>'}</span></div></div>
+${paginationControls(f, streamPage)}</div>
 </section>
 
 <section id="analytics-breakdowns" class="section minor" aria-labelledby="h-breakdowns">

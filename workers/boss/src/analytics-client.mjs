@@ -71,7 +71,8 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
   }
   function apply(immediate = false) {
     invalidate();
-    if (composing || !validDates()) { message('Complete valid dates (YYYY-MM-DD), with From before To.'); return; }
+    if (composing) { message('Waiting…'); return; }
+    if (!validDates()) { message('Complete valid dates (YYYY-MM-DD), with From before To.'); return; }
     if (immediate) void navigate(filterUrl());
     else { message('Waiting…'); timer = setTimeout(() => { void navigate(filterUrl()); }, 350); }
   }
@@ -86,11 +87,17 @@ export const ANALYTICS_SCRIPT = String.raw`(() => {
     event.preventDefault();
     void navigate(new URL(link.getAttribute('href'), location.origin), { sync: true, pager: !!link.closest('#analytics-events') });
   });
-  document.addEventListener('change', event => {
-    if (event.target.id !== 'analytics-page') return;
-    const url = new URL(event.target.form.getAttribute('data-page-url'), location.origin);
-    url.searchParams.set('p', event.target.value);
+  function goToPage(form) {
+    const url = new URL(form.getAttribute('data-page-url'), location.origin);
+    url.searchParams.set('p', form.querySelector('[name="p"]').value);
     void navigate(url, { pager: true });
+  }
+  document.addEventListener('change', event => {
+    if (event.target.id === 'analytics-page') goToPage(event.target.closest('form'));
+  });
+  document.addEventListener('submit', event => {
+    if (event.target.id !== 'analytics-pager') return;
+    event.preventDefault(); goToPage(event.target);
   });
   window.addEventListener('popstate', () => { void navigate(new URL(location.href), { history: false, sync: true }); });
 })();`;

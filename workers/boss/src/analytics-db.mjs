@@ -20,7 +20,7 @@ function escapeLike(text) {
 /** Validated filters from a URL's query string. Unknown values are dropped. */
 export function parseFilters(params, now) {
   const today = laDay(now);
-  const f = { range: 'all', from: '', to: '', origin: '', cls: '', device: '', ip: '', country: '', place: '', page: '', referrer: '', browser: '', limit: 50, before: null };
+  const f = { range: 'all', from: '', to: '', origin: '', cls: '', device: '', ip: '', country: '', place: '', page: '', referrer: '', browser: '', limit: 50, before: null, p: 1, snapshot: null };
   const get = (k) => String(params.get(k) ?? '').trim();
   if (['today', '7d', '30d', 'all', 'custom'].includes(get('range'))) f.range = get('range');
   if (isDay(get('from'))) f.from = get('from');
@@ -34,6 +34,10 @@ export function parseFilters(params, now) {
   if (LIMITS.includes(limit)) f.limit = limit;
   const before = Number(get('before'));
   if (Number.isInteger(before) && before > 0) f.before = before;
+  const p = Number(get('p'));
+  if (Number.isSafeInteger(p) && p > 0) f.p = p;
+  const snapshot = Number(get('snapshot'));
+  if (params.has('snapshot') && Number.isSafeInteger(snapshot) && snapshot >= 0) f.snapshot = snapshot;
   f.today = today;
   return f;
 }
@@ -51,6 +55,7 @@ export function rangeBounds(f) {
 export function whereFor(f) {
   const clauses = [];
   const args = [];
+  if (f.snapshot != null) { clauses.push('id <= ?'); args.push(f.snapshot); }
   const { start, end } = rangeBounds(f);
   if (start != null) { clauses.push('occurred_at >= ?'); args.push(start); }
   if (end != null) { clauses.push('occurred_at < ?'); args.push(end); }
@@ -127,6 +132,10 @@ export async function stream(db, f) {
       ORDER BY id DESC LIMIT ?`,
   ).bind(...args, f.limit + 1).all();
   const rows = results.slice(0, f.limit);
+  return { rows: await decorateRows(db, rows), nextBefore: results.length > f.limit ? rows[rows.length - 1].id : null };
+}
+
+async function decorateRows(db, rows) {
   const ips = [...new Set(rows.map((r) => r.ip).filter(Boolean))];
   const visits = new Map();
   for (let i = 0; i < ips.length; i += 90) {
@@ -136,10 +145,47 @@ export async function stream(db, f) {
     ).bind(...chunk).all();
     for (const c of counts) visits.set(c.ip, Number(c.n));
   }
-  return {
-    rows: rows.map((r) => ({ ...r, today_no: Number(r.today_no), ip_visits: visits.get(r.ip) || 0 })),
-    nextBefore: results.length > f.limit ? rows[rows.length - 1].id : null,
-  };
+  return rows.map((r) => ({ ...r, today_no: Number(r.today_no), ip_visits: visits.get(r.ip) || 0 }));
+}
+
+/** One filtered ID scan returns page boundaries, not event bodies. No OFFSET or persistent state.
+ * A frozen upper ID travels with navigation/export links so new appends cannot shift pages.
+ * Exact ranges scan matching IDs; substring predicates can scan the retained log.
+ * Row hydration is bounded to one page.
+ */
+export async function pagination(db, f) {
+  const w = whereFor({ ...f, snapshot: null });
+  const { results } = await db.prepare(`
+    WITH snapshot AS (SELECT COALESCE(?, MAX(id), 0) AS upper_id FROM visitor_events),
+    ranked AS (
+      SELECT id, ROW_NUMBER() OVER (ORDER BY id DESC) AS position
+      FROM visitor_events ${w.sql ? `${w.sql} AND` : 'WHERE'} id <= (SELECT upper_id FROM snapshot)
+    ), pages AS (
+      SELECT CAST((position - 1) / ? AS INTEGER) + 1 AS page_no,
+             MAX(id) AS first_id, MIN(id) AS last_id, COUNT(*) AS n
+      FROM ranked GROUP BY page_no
+    )
+    SELECT snapshot.upper_id, pages.* FROM snapshot LEFT JOIN pages ON 1 ORDER BY page_no
+  `).bind(f.snapshot, ...w.args, f.limit).all();
+  const pages = results.filter(row => row.page_no != null).map(row => ({ number: Number(row.page_no), firstId: Number(row.first_id), lastId: Number(row.last_id), rows: Number(row.n) }));
+  let current = Math.min(Math.max(1, f.p || 1), Math.max(1, pages.length));
+  // Old bookmarked keyset URLs remain useful; new navigation uses p + snapshot.
+  if (f.before != null && f.p === 1) current = pages.find(row => row.lastId < f.before)?.number || Math.max(1, pages.length);
+  return { pages, current, total: pages.reduce((n, row) => n + row.rows, 0), snapshot: Number(results[0].upper_id) };
+}
+
+/** Hydrate a bounded primary-key interval; TODAY # and IP VISITS retain global definitions. */
+export async function numberedStream(db, f, plan) {
+  const selected = plan.pages[plan.current - 1];
+  if (!selected) return { ...plan, rows: [], changed: false };
+  const w = whereFor({ ...f, snapshot: plan.snapshot });
+  const { results } = await db.prepare(`
+    SELECT visitor_events.*,
+      (SELECT COUNT(*) FROM visitor_events t WHERE t.la_day = visitor_events.la_day AND t.id <= visitor_events.id) AS today_no
+    FROM visitor_events ${w.sql ? `${w.sql} AND` : 'WHERE'} id BETWEEN ? AND ?
+    ORDER BY id DESC LIMIT ?
+  `).bind(...w.args, selected.lastId, selected.firstId, f.limit).all();
+  return { ...plan, rows: await decorateRows(db, results), changed: results.length !== selected.rows };
 }
 
 /** Async iterator over every matching row in ALL # order, in keyset chunks. */

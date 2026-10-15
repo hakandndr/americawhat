@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { D1Sqlite } from './helpers/d1-sqlite.mjs';
-import { daily, parseFilters, retentionStatus, stream, summary, top } from '../workers/boss/src/analytics-db.mjs';
+import { daily, parseFilters, retentionStatus, pagination, numberedStream, summary, top } from '../workers/boss/src/analytics-db.mjs';
 import { renderAnalytics } from '../workers/boss/src/pages/analytics.mjs';
 import { buildNativeEvent, storeNativeEvent } from '../workers/web/src/collector.mjs';
 import { applyPlan, planCorpus } from '../workers/shared/legacy-import.mjs';
@@ -33,8 +33,10 @@ const filters = (q = '') => parseFilters(new URLSearchParams(q), NOW);
 async function render(q = '') {
   const db = await seeded();
   const f = filters(q);
+  const plan = await pagination(db, f);
+  f.snapshot = plan.snapshot;
   const [sum, days, page, country, referrer, agent, streamPage, retention] = await Promise.all([
-    summary(db, f), daily(db, f), top(db, f, 'page'), top(db, f, 'country'), top(db, f, 'referrer'), top(db, f, 'agent'), stream(db, f), retentionStatus(db, NOW),
+    summary(db, f), daily(db, f), top(db, f, 'page'), top(db, f, 'country'), top(db, f, 'referrer'), top(db, f, 'agent'), numberedStream(db, f, plan), retentionStatus(db, NOW),
   ]);
   return { sum, days, html: renderAnalytics({ identity: { email: 'owner@example.com' }, f, sum, days, tops: { page, country, referrer, agent }, streamPage, retention, coverage: [], corpora: [], outbox: [] }) };
 }

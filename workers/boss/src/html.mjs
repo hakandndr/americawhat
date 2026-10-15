@@ -87,6 +87,7 @@ button.secondary:hover,.btn.secondary:hover{background:var(--panel-2);border-col
 button.danger{background:transparent;color:var(--bad);border-color:var(--bad-line)}
 button.danger:hover{background:var(--accent-strong);color:var(--on-accent);border-color:var(--accent-strong)}
 button:disabled{opacity:.5;cursor:not-allowed}
+.btn[aria-disabled=true]{opacity:.5;cursor:default}
 .seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--control-line);border-radius:var(--r-sm);overflow:hidden;background:var(--sunk)}
 .seg a{padding:6px 13px;color:var(--muted);text-decoration:none;font-weight:500;border-right:1px solid var(--line)}.seg a:last-child{border-right:0}
 .seg a:hover{color:var(--text);background:var(--panel-2)}.seg a.on{background:var(--panel-2);color:var(--text);box-shadow:inset 0 -2px 0 var(--accent);font-weight:650}

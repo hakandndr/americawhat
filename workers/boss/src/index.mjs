@@ -10,7 +10,7 @@ import { checkCsrf, csrfToken } from './csrf.mjs';
 import { addManual, deletePublished, editPublished, EditorialError, publishedItems, serialize } from './editorial.mjs';
 import { CONTENT_PATHS, createGitHub, githubConfig } from './github.mjs';
 import { errorPage, flashFrom, htmlResponse, redirect, envBar } from './html.mjs';
-import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, stream, summary, top, daily } from './analytics-db.mjs';
+import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, summary, top, daily, pagination, numberedStream } from './analytics-db.mjs';
 import { exportResponse } from './export.mjs';
 import { ANALYTICS_SCRIPT } from './analytics-client.mjs';
 import { describeResults, parseReviewForm, renderReview, reviewCompute, reviewSummary } from './pages/review.mjs';
@@ -171,12 +171,16 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
     const adb = env.ANALYTICS_DB;
     if (path === '/analytics' && method === 'GET') {
       const f = parseFilters(url.searchParams, now);
+      const plan = await pagination(adb, f);
+      f.snapshot = plan.snapshot;
+      f.p = plan.current;
       const [sum, days, page, country, referrer, agent, streamPage, retention, coverage, corpora, outbox] = await Promise.all([
-        summary(adb, f), daily(adb, f), top(adb, f, 'page'), top(adb, f, 'country'), top(adb, f, 'referrer'), top(adb, f, 'agent'), stream(adb, f), retentionStatus(adb, now),
+        summary(adb, f), daily(adb, f), top(adb, f, 'page'), top(adb, f, 'country'), top(adb, f, 'referrer'), top(adb, f, 'agent'), numberedStream(adb, f, plan), retentionStatus(adb, now),
         adb.prepare('SELECT * FROM analytics_coverage ORDER BY id').all().then((r) => r.results),
         adb.prepare('SELECT corpus_id, content_sha256, line_count, summary_json FROM analytics_import_corpora ORDER BY imported_at').all().then((r) => r.results),
         adb.prepare('SELECT state, COUNT(*) AS n FROM dndr_outbox GROUP BY state').all().then((r) => r.results),
       ]);
+      if (streamPage.changed || sum.view.events !== plan.total) return errorPage(409, 'The retained log changed while loading. Reload to refresh this view.');
       return htmlResponse(renderAnalytics({ identity, flash, f, sum, days, tops: { page, country, referrer, agent }, streamPage, retention, coverage, corpora, outbox }), 200, { analyticsScript: true });
     }
     if (path === '/analytics/export' && method === 'GET') {
