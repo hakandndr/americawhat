@@ -1,5 +1,18 @@
 # americawhat — Handoff
 
+## Son devir — staging rollout tamamlandı (2026-10-15)
+
+Geçerli durum [STAGING-ROLLOUT.md](STAGING-ROLLOUT.md). Web ve Boss frozen
+34d40c0 RC ile aktif; owner Access girişi doğrulandı. Boss URL açık/previews
+kapalı, secret'lar kurulu; aynı UUID'lerle rollback/re-promote yapıldı.
+23 Web smoke, gerçek D1 sorguları ve sandbox onay/red/replay/edit entegrasyonu
+geçti. Authenticated HTTP form submit otomatik test edilmedi; source auth/CSRF
+zayıflatılmadı. Test fixture'ları temizlendi, sandbox JSON'ları geri korundu.
+Kullanıcı staging upload/deploy/ayar/test/fix/rollback için sürekli yetki verdi;
+rutin adımlarda tekrar onay isteme. Diğer projelere, production/DNS/Hostinger'a
+dokunma. Access403 isteğini tekrarlama; mevcut policy'yi koru. Aşağıdaki onay
+bekleyen/yayın yapılmadı notları önceki aşamaların tarihsel kaydıdır.
+
 ## Son devir — kontrollü deployment için hazır yerel RC (2026-10-15)
 
 Access dashboard owner doğrulaması kabul edildi;403'ü tekrar deneme/uygulama

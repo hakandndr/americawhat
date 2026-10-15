@@ -1,5 +1,11 @@
 # AmericaWhat — kontrollü staging hazırlığı
 
+**2026-10-15 rollout tamamlandı:** Kullanıcı tüm staging upload/activation/
+ayar/test/rollback için sürekli yetki verdi. Güncel çalışan durum, exact
+UUID'ler ve test sınırları [STAGING-ROLLOUT.md](STAGING-ROLLOUT.md) içindedir.
+Aşağıdaki "bu sprint deployment yok / ayrı onay" ifadeleri hazırlık aşamasının
+tarihsel kaydıdır; aynı staging kapsamı için yeniden onay şartı oluşturmaz.
+
 2026-10-15. Bu belge önceki API403'ü rollout önkoşulu sayan notların yerine
 geçer. **Access uygulaması ve policy sahibi tarafından dashboard'da doğrulandı;
 bu doğrulama kabul edilir. Access API izni proje engeli değildir.** Aynı yetkisiz

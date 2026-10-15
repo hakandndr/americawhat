@@ -1,5 +1,19 @@
 # americawhat — Current State
 
+## Son durum — staging yayında, rollback tamamlandı (2026-10-15)
+
+Kullanıcının tüm staging rollout için sürekli yetkisiyle frozen RC
+34d40c0f3c84c789fe22f462c9ef6affd06e268b iki Worker'da %100 aktif.
+Web7e315208-ef9b-4b8b-ac10-48d7419ef9e2;
+Boss7fa88813-9247-4f02-b784-67e1b92a65f2. Boss URL mevcut owner-only Access
+arkasında açık, previews kapalı. Owner gerçek girişini doğruladı.
+23 Web smoke, gerçek analytics D1 ve sandbox GitHub backend yayın testleri,
+eski UUID→aynı yeni UUID rollback/re-promote PASS. HTTP form submit otomasyonu
+yapılmadı; CPU ölçümü düşük örneklemdir. Secret değerleri raporlanmadı.
+Production/DNS/Hostinger/başka proje dokunulmadı. Yeni geçerli durum ve
+kanıtlar [STAGING-ROLLOUT.md](STAGING-ROLLOUT.md); aşağıdaki hazırlık notları
+tarihseldir. Frozen manifest/paket yeniden yazılmadı, deployed SHA sabit.
+
 ## Son durum — deployment hazırlığı tamamlandı, Access owner doğrulaması esas (2026-10-15)
 
 Access app932d247c-4d98-479e-a8c8-50da8a0550d1 / team/AUD / owner-only All

@@ -1,5 +1,16 @@
 # americawhat — Operations
 
+## Geçerli çalışma durumu — staging yayında (2026-10-15)
+
+[STAGING-ROLLOUT.md](STAGING-ROLLOUT.md) gerçekleşen rollout, exact UUID'ler,
+adresler, secret adları, testler ve rollback kaydıdır. Frozen34d40c0 RC aktif;
+Boss mevcut owner-only Access arkasında açık/previews kapalı. Aynı yeni UUID'lere
+geri dönüş provası yapıldı. Kullanıcı staging için sürekli upload/deploy/test/
+fix/rollback yetkisi verdi; aşağıdaki ayrı onay bekleyen aşamalar tarihseldir.
+Production/DNS/Hostinger ve başka kaynaklar bu yetkinin dışındadır. Mevcut
+staging verilerini silme; eski Boss'a dönerken önce URL'yi kapat. Secret dosyasını
+repo/artifact'a taşıma veya içeriğini gösterme. Donmuş manifest yeniden yazılmaz.
+
 ## Geçerli deployment prosedürü — 2026-10-15
 
 [STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT.md) yeni canonical uygulama sırasıdır.
