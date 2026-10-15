@@ -17,11 +17,12 @@
   ],
   "vars": {
     "ENVIRONMENT": "staging",
-    "BOSS_ORIGIN": "https://boss-staging.americawhat.com",
+    "BOSS_ORIGIN": "https://americawhat-boss-staging.hakan-c89.workers.dev",
     "BOSS_ALLOWED_EMAILS": "hakan@dndr.net",
     "BOSS_ACCESS_TEAM_DOMAIN": "dndrnet.cloudflareaccess.com",
     "BOSS_ACCESS_AUD": "",
-    "BOSS_GITHUB_REPOSITORY": "hakandndr/americawhat",
+    // Proposed isolated repository; creation and credential setup still require approval.
+    "BOSS_GITHUB_REPOSITORY": "hakandndr/americawhat-staging-content",
     "BOSS_GITHUB_BRANCH": "content-staging",
     "BOSS_COMMIT_AUTHOR_NAME": "Hakan Dundar",
     "BOSS_COMMIT_AUTHOR_EMAIL": "hakan@dndr.net"

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:rc": "node scripts/release/build-rc.mjs",
     "preview": "astro preview",
     "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
     "build:og": "python scripts/gen-og.py",
