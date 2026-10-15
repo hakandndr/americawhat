@@ -128,7 +128,7 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .bar{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--line);margin:0}.bar:last-child{border-bottom:0}
 .bar .v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bar .n{font-variant-numeric:tabular-nums;color:var(--muted);min-width:4ch;text-align:right}
 .bar .track{flex:0 0 64px;height:5px;border-radius:3px;background:var(--sunk);overflow:hidden}.bar .fill{display:block;height:100%;background:var(--info-fill)}
-.chart{display:flex;align-items:flex-end;gap:2px;height:92px;border-bottom:1px solid var(--line-2)}
+.chart{display:flex;align-items:flex-end;gap:2px;height:92px;border-bottom:1px solid var(--line-2);overflow-x:auto}
 .chart span{flex:1 1 0;min-width:2px;background:var(--info-fill);border-radius:2px 2px 0 0}.chart span:hover{background:var(--info)}
 .chart-axis{display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-top:4px}
 .danger-zone{border-color:var(--bad-line);background:linear-gradient(var(--bad-soft),var(--bad-soft)),var(--panel)}
@@ -157,6 +157,7 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted);margin:0 0 14px;align-items:center}
 .status{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:12.5px;white-space:nowrap}.status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
 .pager{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pager a,.pager span{min-width:36px;text-align:center;padding:5px 10px;border:1px solid var(--line-2);border-radius:var(--r-sm);text-decoration:none;color:var(--muted);font-size:13px}
+#analytics-pager{min-width:0;max-width:100%}#analytics-page{max-width:100%}
 .pager a:hover{color:var(--text);background:var(--panel-2)}.pager .on{color:var(--text);background:var(--panel-2);box-shadow:inset 0 -2px 0 var(--accent);font-weight:650}.pager .gap{border-color:transparent}
 @media (max-width:760px){main{padding:18px 14px 60px}.topbar-in{padding:0 14px;gap:0 16px}.who{display:none}.envbar{padding:6px 14px}h1{font-size:20px}.card{padding:14px}.stat b{font-size:19px}.toolbar input{max-width:none}.nav{flex-basis:100%;margin:0 -6px;order:3}.nav a{padding:10px 10px 9px}.sticky-submit{position:static;box-shadow:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}

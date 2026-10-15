@@ -22,7 +22,7 @@ function dailyChart(days) {
   const max = Math.max(...days.map((d) => d.n), 1);
   const cols = days.map((d) => `<span style="height:${Math.max(2, Math.round((d.n / max) * 100))}%" title="${h(d.day)}: ${d.n} records, ${d.human} human"></span>`).join('');
   return `<div class="card"><h3>Records per day (PT)</h3><p class="faint small">Same filters as the table · ${days.length} days with records · peak ${max}. Hover a bar for its day.</p>
-<div class="chart" role="img" aria-label="Records per day from ${h(days[0].day)} to ${h(days[days.length - 1].day)}, peak ${max}">${cols}</div><div class="chart-axis"><span>${h(days[0].day)}</span><span>${h(days[days.length - 1].day)}</span></div></div>`;
+<div class="chart" tabindex="0" role="img" aria-label="Records per day from ${h(days[0].day)} to ${h(days[days.length - 1].day)}, peak ${max}. Scroll horizontally for long histories.">${cols}</div><div class="chart-axis"><span>${h(days[0].day)}</span><span>${h(days[days.length - 1].day)}</span></div></div>`;
 }
 
 const dash = '<span class="faint">—</span>';

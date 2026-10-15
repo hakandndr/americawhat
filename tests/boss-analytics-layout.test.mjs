@@ -92,3 +92,10 @@ test('analytics layout: values are escaped and the deletion form only previews (
   assert.match(html, /<form method="get" action="\/analytics\/retention"/);
   assert.doesNotMatch(html, /<form method="post"/);
 });
+
+test('full daily history is not truncated and has keyboard-accessible overflow containment', async () => {
+  const { html } = await render();
+  assert.match(html, /height:92px;[^}]*overflow-x:auto/);
+  assert.match(html, /class="chart" tabindex="0"/);
+  assert.match(html, /#analytics-page\{max-width:100%\}/);
+});
