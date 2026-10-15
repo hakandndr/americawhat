@@ -113,7 +113,7 @@ td .sub{display:block;color:var(--faint);font-size:11.5px}
 .table-foot{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line);background:var(--bg-2)}
 details summary{cursor:pointer;color:var(--muted)}details summary:hover{color:var(--text)}
 details[open]>summary{margin-bottom:8px}
-.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;font-size:12px;white-space:normal;min-width:280px;max-width:520px}.kv dt{color:var(--faint)}.kv dd{margin:0;overflow-wrap:anywhere}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;font-size:12px;white-space:normal;min-width:0;max-width:520px}.kv dt{color:var(--faint)}.kv dd{margin:0;overflow-wrap:anywhere}
 .actions{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:center}
 .actions label{display:inline-flex;gap:6px;align-items:center;color:var(--text);font-size:13px;margin:0}
 .actions input:not([type=radio]):not([type=checkbox]),.actions select{width:auto}
@@ -158,18 +158,42 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .status{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:12.5px;white-space:nowrap}.status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
 .pager{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pager a,.pager span{min-width:36px;text-align:center;padding:5px 10px;border:1px solid var(--line-2);border-radius:var(--r-sm);text-decoration:none;color:var(--muted);font-size:13px}
 #analytics-pager{min-width:0;max-width:100%}#analytics-page{max-width:100%}
+main.analytics-workspace{max-width:1920px;width:100%;padding-inline:clamp(16px,2vw,36px)}
+.analytics-workspace .page-head h1{overflow-wrap:anywhere;min-width:0}
+.analytics-workspace :is(a,summary,h2){scroll-margin-top:130px}
+.ip-link{color:var(--info);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;font-weight:600}.ip-link:hover{color:var(--text)}
+.events-table{table-layout:fixed;width:100%;font-size:13px}
+.events-table th{white-space:normal;letter-spacing:.045em;overflow-wrap:anywhere}
+.events-table td{white-space:normal;min-width:0;overflow-wrap:anywhere;padding:10px}
+.events-table .clip{max-width:100%;min-width:0}.events-table .sub{margin-top:3px}
+.events-table .num .sub{font-size:10.5px}.events-table time{font-variant-numeric:tabular-nums}
+.event-details{margin-top:6px}.event-details summary{font-size:12px;color:var(--info);text-decoration:underline;text-underline-offset:3px}
+.event-fields{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.event-fields dt{color:var(--faint);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}.event-fields dd{margin:0 0 6px;overflow-wrap:anywhere;white-space:normal;color:var(--text)}
+.activity-overview{margin-top:16px}.activity-exports{margin:0 0 12px}.activity-overview .kv{max-width:900px}
+@media (max-width:1000px){
+  .events-table,.events-table tbody{display:block;width:100%}.events-table colgroup{display:none}
+  .events-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .events-table tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px;padding:12px;border-bottom:1px solid var(--line)}
+  .events-table tr:last-child{border-bottom:0}.events-table td{display:block;padding:7px 0;border:0;text-align:left}
+  .events-table td::before{content:attr(data-label);display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--faint);margin-bottom:4px;letter-spacing:.04em}
+  .events-table td.empty{grid-column:1/-1}.events-table td.empty::before{display:none}
+  .events-table .clip{white-space:normal;overflow-wrap:anywhere}
+  .table-foot .actions{min-width:0;max-width:100%}.table-foot form select{max-width:100%}
+}
+@media (max-width:520px){.events-table tr{grid-template-columns:minmax(0,1fr)}.activity-overview .kv{grid-template-columns:minmax(0,1fr);gap:3px}.activity-overview .kv dd{margin-bottom:8px}}
 .pager a:hover{color:var(--text);background:var(--panel-2)}.pager .on{color:var(--text);background:var(--panel-2);box-shadow:inset 0 -2px 0 var(--accent);font-weight:650}.pager .gap{border-color:transparent}
 @media (max-width:760px){main{padding:18px 14px 60px}.topbar-in{padding:0 14px;gap:0 16px}.who{display:none}.envbar{padding:6px 14px}h1{font-size:20px}.card{padding:14px}.stat b{font-size:19px}.toolbar input{max-width:none}.nav{flex-basis:100%;margin:0 -6px;order:3}.nav a{padding:10px 10px 9px}.sticky-submit{position:static;box-shadow:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 `;
 
-export function page({ title, active, identity, body, flash, lede = '', headActions = '' }) {
+export function page({ title, active, identity, body, flash, lede = '', headActions = '', wide = false }) {
   const nav = NAV.map(([href, label]) => `<a href="${href}"${active === href ? ' class="on" aria-current="page"' : ''}>${h(label)}</a>`).join('');
   const flashHtml = flash ? `<div class="flash ${flash.type === 'err' ? 'err' : 'ok'}" role="${flash.type === 'err' ? 'alert' : 'status'}">${h(flash.message)}</div>` : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b1120"><title>${h(title)} · AmericaWhat Boss</title><style>${CSS}</style></head>
 <body><header class="topbar"><div class="topbar-in"><a class="brand" href="/review"><span>america<i>what</i></span><small>Boss</small></a><nav class="nav" aria-label="Boss sections">${nav}</nav><span class="who">${h(identity?.email || '')}</span></div></header>
-<main>${flashHtml}<div class="page-head"><h1>${h(title)}</h1>${headActions}${lede ? `<p class="lede">${lede}</p>` : ''}</div>${body}</main></body></html>`;
+<main${wide ? ' class="analytics-workspace"' : ''}>${flashHtml}<div class="page-head"><h1>${h(title)}</h1>${headActions}${lede ? `<p class="lede">${lede}</p>` : ''}</div>${body}</main></body></html>`;
 }
 
 /** The environment notice inserted after <body> outside production (see index.mjs). */

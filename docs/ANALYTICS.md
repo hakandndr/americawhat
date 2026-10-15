@@ -1,5 +1,37 @@
 # americawhat — Analytics
 
+## Responsive log and exact-address activity (2026-10-15)
+
+Analytics uses a wider workspace, seven fixed-layout columns and stacked
+event cards below 1000px. Full raw values remain in native Details controls
+and exports. IP addresses and IP Visits are keyboard-accessible blue links
+to `/analytics/ip?address=...`, protected by the same owner Access/JWT guard.
+No public endpoint or asset contains visitor records.
+
+IP Visits still means all currently retained page-view events for that exact
+address, across filters; it is not a person/session count. The detail summary
+uses the same current-retained definition and shows first/last recorded time,
+active PT days, distinct pages and classifications. Its history and exports
+are frozen at an upper ALL ID. History is ordered by recorded timestamp
+descending, then durable ID, so a later import of old records cannot mislabel
+chronology. Back preserves the Analytics filters, page and upper ID. Current
+summary totals may grow while a frozen history remains unchanged.
+
+The detail uses three read-only D1 queries: IP-indexed page boundaries,
+an exact-address aggregate, and a bounded page fetch (25/50/100 records).
+It performs no per-row network queries and needs no migration/index change.
+Manual-only 90-day retention remains unchanged. Invalid IPv4/IPv6 or malformed
+pagination returns400 after authentication; unsafe Back targets fall back to
+Analytics. Empty addresses with no retained data return a useful empty view.
+
+Focused tests: `tests/boss-ip-activity.test.mjs`. Rendered browser regression:
+`node --disable-warning=ExperimentalWarning scripts/dev/check-responsive.mjs`
+after a static build. It needs Playwright (or PLAYWRIGHT_MODULE pointing to
+its entry file) and Chromium (optional CHROME_PATH). It uses isolated in-memory
+synthetic data, blocks remote browser requests and never uses owner cookies.
+`--baseline` compares the prior frozen DOM with the current CSS, including
+unchanged homepage spacing. Screenshots/geometry receipts stay in reports/.
+
 2026-10-15 yerel Boss güncellemesi: country name case-insensitive contains /
 stored code exact; ortak filtre ve sabit üst ID summary/table/daily/top/filtered
 CSV/NDJSON’da aynı. Günlük grafik varsayılanı tüm filtreli günlerdir. Canlı

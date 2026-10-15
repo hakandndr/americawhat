@@ -4,14 +4,8 @@
 
 import { formatLa, formatLaSeconds, isoUtc } from '../../../shared/time.mjs';
 import { bars, h, hidden, page, select } from '../html.mjs';
-
-function qs(f, over = {}) {
-  const p = new URLSearchParams();
-  const v = { range: f.range, from: f.from, to: f.to, origin: f.origin, class: f.cls, device: f.device, ip: f.ip, country: f.country, place: f.place, page: f.page, referrer: f.referrer, browser: f.browser, limit: f.limit, snapshot: f.snapshot, ...over };
-  for (const [k, val] of Object.entries(v)) if (val !== '' && val != null && !(k === 'range' && val === 'all') && !(k === 'limit' && Number(val) === 50)) p.set(k, String(val));
-  const s = p.toString();
-  return s ? `?${s}` : '';
-}
+import { analyticsQuery as qs, ipActivityHref, validIpAddress } from '../analytics-links.mjs';
+import {eventDetails} from './analytics-event.mjs';
 
 function topCard(title, rows) {
   return `<div class="card"><h3>${h(title)}</h3>${bars(rows)}</div>`;
@@ -44,21 +38,20 @@ ${link(current + 1, 'Next', current >= last)}${link(last, 'Last', current >= las
 </nav></div>`;
 }
 
-function eventRow(r) {
+function eventRow(r, f, current) {
   const place = [r.city, r.region].filter(Boolean).join(' / ');
   const agent = r.agent || r.source_label;
   const client = [r.browser, r.os].filter(Boolean).join(' · ');
+  const href=h(ipActivityHref(r.ip,f,current));
+  const linkable=validIpAddress(r.ip);
   return `<tr>
-<td class="num">${r.id}</td><td class="num">${r.today_no}</td>
-<td>${h(formatLaSeconds(r.occurred_at))}${r.time_quality !== 'exact' ? ` <span class="warn" title="time quality: ${h(r.time_quality)}">*</span>` : ''}</td>
-<td class="mono">${h(r.ip)}</td><td class="num">${r.ip_visits}</td>
-<td><span class="tag${r.origin === 'native' ? ' info' : ''}">${h(r.origin)}</span></td>
-<td>${r.automation === 'human' ? 'human' : `<span class="warn">${h(r.automation)}</span>`}${agent ? `<span class="sub clip" title="${h(agent)}">${h(agent)}</span>` : ''}</td>
-<td>${r.country ? h(r.country) : dash}${place ? `<span class="sub clip" title="${h(place)}">${h(place)}</span>` : ''}</td>
-<td><span class="clip" title="${h(r.page)}">${h(r.page)}</span></td>
-<td>${r.referrer ? `<span class="clip" title="${h(r.referrer)}">${h(r.referrer)}</span>` : dash}</td>
-<td>${h(r.device_class)}${client ? `<span class="sub">${h(client)}</span>` : ''}</td>
-<td><details><summary>more</summary><dl class="kv"><dt>path</dt><dd>${h(r.path)}</dd><dt>referrer</dt><dd>${h(r.referrer_raw)}</dd><dt>agent</dt><dd>${h(r.user_agent)}</dd><dt>UTC</dt><dd>${h(isoUtc(r.occurred_at))}</dd><dt>id</dt><dd>${h(r.event_uid)}</dd>${r.import_corpus_id ? `<dt>corpus</dt><dd>${h(r.import_corpus_id)}</dd>` : ''}</dl></details></td></tr>`;
+<td class="num" data-label="ALL #">${h(r.id)}<span class="sub">TODAY # ${h(r.today_no)}</span></td>
+<td data-label="Date and time (PT)"><time datetime="${h(isoUtc(r.occurred_at))}">${h(formatLaSeconds(r.occurred_at))}</time>${r.time_quality !== 'exact' ? ` <span class="warn" title="time quality: ${h(r.time_quality)}">*</span>` : ''}</td>
+<td data-label="IP address">${linkable ? `<a class="ip-link mono clip" href="${href}" title="${h(r.ip)}">${h(r.ip)}</a>` : `<span class="mono clip">${h(r.ip || '—')}</span>`}</td>
+<td class="num" data-label="IP Visits">${linkable ? `<a class="ip-link" href="${href}" aria-label="${h(r.ip_visits)} retained page views for ${h(r.ip)}">${h(r.ip_visits)}</a>` : h(r.ip_visits)}</td>
+<td data-label="Country · source · class">${r.country ? h(r.country) : dash}${place ? `<span class="sub clip" title="${h(place)}">${h(place)}</span>` : ''}<span class="sub">${h(r.origin)} · ${h(r.automation)}</span>${agent ? `<span class="sub clip" title="${h(agent)}">${h(agent)}</span>` : ''}</td>
+<td data-label="Page · referrer"><span class="clip" title="${h(r.page)}">${h(r.page)}</span><span class="sub clip" title="${h(r.referrer_raw || r.referrer)}">${h(r.referrer || '—')}</span>${eventDetails(r)}</td>
+<td data-label="Device · browser · OS">${h(r.device_class)}${client ? `<span class="sub">${h(client)}</span>` : ''}</td></tr>`;
 }
 
 export function renderAnalytics({ identity, flash, f, sum, days = [], tops, streamPage, retention, coverage, corpora, outbox }) {
@@ -69,7 +62,7 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
   const retentionLine = retention.overdue
     ? `${retention.overdueRecords} raw records are older than the ${retention.targetDays}-day target (oldest ${h(formatLa(retention.oldestAt))}, ${retention.oldestAgeDays} days). Nothing is deleted automatically.`
     : `No raw record is older than ${retention.targetDays} days${retention.oldestAt ? ` (oldest ${h(formatLa(retention.oldestAt))})` : ''}.`;
-  const rows = streamPage.rows.map(eventRow).join('');
+  const rows = streamPage.rows.map(r=>eventRow(r,f,streamPage.current)).join('');
   const rangeLabel = f.range === 'custom' ? `${f.from || '…'} → ${f.to || '…'}` : ({ today: 'today', '7d': 'last 7 days', '30d': 'last 30 days', all: 'all time' })[f.range];
   const headActions = `<nav class="seg" aria-label="Date range">${chips}</nav>`;
   const lede = `Global log · retained ${o.retained} records · today (PT) ${o.today} · oldest ${h(formatLa(o.oldest))} · last ALL # ${h(o.lastAllNo ?? '—')} · all-time page views ${o.allTimePageViews}${o.archivedPageViews ? ` (${o.archivedPageViews} kept only as aggregates since ${h(o.archivedFirstDay)})` : ''}`;
@@ -116,8 +109,9 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
 
 <section id="analytics-events" class="section" aria-labelledby="h-events">
 <div class="section-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · ALL # is durable and never renumbered · <span class="warn">*</span> approximate time</p></div>
-<div class="table-card"><div class="scroll"><table><thead><tr><th class="num" scope="col">ALL #</th><th class="num" scope="col">TODAY #</th><th scope="col">DATE AND TIME (PT)</th><th scope="col">IP ADDRESS</th><th class="num" scope="col">IP VISITS</th><th scope="col">SOURCE</th><th scope="col">CLASS · AGENT</th><th scope="col">COUNTRY · CITY / REGION</th><th scope="col">PAGE</th><th scope="col">REFERRER</th><th scope="col">DEVICE · BROWSER · OS</th><th scope="col">DETAIL</th></tr></thead>
-<tbody>${rows || '<tr><td colspan="12" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table></div>
+<p class="faint small">IP Visits counts all currently retained page views for the exact address, across all filters. These are events, not people or sessions. Open an IP or count for activity; Details preserves every raw field.</p>
+<div class="table-card"><table class="events-table"><colgroup><col style="width:7%"><col style="width:14%"><col style="width:18%"><col style="width:8%"><col style="width:17%"><col style="width:24%"><col style="width:12%"></colgroup><thead><tr><th class="num" scope="col">ALL #</th><th scope="col">DATE AND TIME (PT)</th><th scope="col">IP ADDRESS</th><th class="num" scope="col">IP VISITS</th><th scope="col">COUNTRY · SOURCE · CLASS</th><th scope="col">PAGE · REFERRER · DETAILS</th><th scope="col">DEVICE · BROWSER · OS</th></tr></thead>
+<tbody>${rows || '<tr><td colspan="7" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table>
 ${paginationControls(f, streamPage)}</div>
 </section>
 
@@ -144,7 +138,7 @@ ${corpora.length ? `<ul class="small">${corpora.map((c) => `<li><code>${h(c.corp
 <form method="get" action="/analytics/retention" class="actions"><label for="rt-before" class="muted">Cutoff day (PT)</label><input id="rt-before" name="before" value="${h(retention.suggestedCutoffDay)}" style="max-width:160px"><button class="danger">Preview deletion</button></form></div>
 <p class="faint small">Imports, exports and deletions are recorded in <a href="/audit">Audit</a>.</p>
 </section><script src="/assets/analytics.js" defer></script>`;
-  return page({ title: 'Analytics', active: '/analytics', identity, flash, body, lede, headActions });
+  return page({ title: 'Analytics', active: '/analytics', identity, flash, body, lede, headActions, wide:true });
 }
 
 export function renderRetentionPreview({ identity, flash, preview, csrf, opId }) {

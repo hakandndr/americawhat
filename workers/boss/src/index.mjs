@@ -10,7 +10,9 @@ import { checkCsrf, csrfToken } from './csrf.mjs';
 import { addManual, deletePublished, editPublished, EditorialError, publishedItems, serialize } from './editorial.mjs';
 import { CONTENT_PATHS, createGitHub, githubConfig } from './github.mjs';
 import { errorPage, flashFrom, htmlResponse, redirect, envBar } from './html.mjs';
-import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, summary, top, daily, pagination, numberedStream } from './analytics-db.mjs';
+import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, summary, top, daily, pagination, numberedStream, ipActivity } from './analytics-db.mjs';
+import {ipActivityParams} from './analytics-links.mjs';
+import {renderIpActivity} from './pages/ip-activity.mjs';
 import { exportResponse } from './export.mjs';
 import { ANALYTICS_SCRIPT } from './analytics-client.mjs';
 import { describeResults, parseReviewForm, renderReview, reviewCompute, reviewSummary } from './pages/review.mjs';
@@ -169,6 +171,13 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
 
     // ---- Analytics -------------------------------------------------------
     const adb = env.ANALYTICS_DB;
+    if (path === '/analytics/ip' && method === 'GET') {
+      const params=ipActivityParams(url.searchParams);
+      if (!params) return errorPage(400,'Choose a valid IPv4 or IPv6 address and valid pagination parameters.');
+      const activity=await ipActivity(adb,params);
+      if (activity.changed) return errorPage(409,'The retained log changed while loading. Reload to refresh this view.');
+      return htmlResponse(renderIpActivity({identity,flash,activity,back:params.back,limit:params.limit}));
+    }
     if (path === '/analytics' && method === 'GET') {
       const f = parseFilters(url.searchParams, now);
       const plan = await pagination(adb, f);

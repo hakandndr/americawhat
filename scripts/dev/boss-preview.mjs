@@ -146,6 +146,16 @@ if (process.argv.includes('--serve')) {
   let reviewHtml = '';
   await check('review renders from GitHub content', async () => { const r = await fetch(`${ORIGIN}/review`); reviewHtml = await r.text(); return r.status === 200 && reviewHtml.includes('distinct stories'); });
   for (const p of ['/published', '/analytics', '/reactions', '/audit', '/health']) await check(`${p} renders`, async () => (await fetch(`${ORIGIN}${p}`)).status === 200);
+  await check('IP activity in workerd: protected, validated and linked to retained history', async () => {
+    if ((await fetch(`http://127.0.0.1:${WORKER_PORT}/analytics/ip?address=203.0.113.15`)).status !== 401) return false;
+    if ((await fetch(`${ORIGIN}/analytics/ip?address=invalid`)).status !== 400) return false;
+    const analytics = await (await fetch(`${ORIGIN}/analytics?country=ger&limit=25`)).text();
+    const href = /href="(\/analytics\/ip\?[^\"]+)"/.exec(analytics)?.[1]?.replaceAll('&amp;', '&');
+    if (!href) return false;
+    const response = await fetch(`${ORIGIN}${href}`);
+    const html = await response.text();
+    return response.status === 200 && html.includes('Back to Analytics') && html.includes('Activity history') && html.includes('snapshot ALL #');
+  });
   await check('POST with a foreign Origin refused', async () => (await fetch(`${ORIGIN}/review/apply`, { method: 'POST', headers: { Origin: 'https://evil.example', 'Content-Type': 'application/x-www-form-urlencoded' }, body: `csrf=${csrfFrom(reviewHtml)}&count=0` })).status === 403);
   await check('reject one candidate = one commit on the content branch', async () => {
     const before = gh.commitCount();

@@ -188,6 +188,42 @@ export async function numberedStream(db, f, plan) {
   return { ...plan, rows: await decorateRows(db, results), changed: results.length !== selected.rows };
 }
 
+/** Exact-address activity: indexed summaries and one bounded history page. No writes. */
+export async function ipActivity(db, { address, p = 1, limit = 50, snapshot = null }) {
+  // Imports may append older activity. Order history by recorded time, then ID;
+  // return page boundaries only rather than loading every event into memory.
+  const {results:boundaries}=await db.prepare(`
+    WITH frozen AS (SELECT COALESCE(?, MAX(id), 0) AS upper_id FROM visitor_events),
+    ranked AS (
+      SELECT id, occurred_at, ROW_NUMBER() OVER (ORDER BY occurred_at DESC, id DESC) AS position,
+             COUNT(*) OVER () AS total
+      FROM visitor_events WHERE ip = ? AND id <= (SELECT upper_id FROM frozen)
+    )
+    SELECT frozen.upper_id, CAST((position - 1) / ? AS INTEGER) + 1 AS page_no,
+      MAX(CASE WHEN (position - 1) % ? = 0 THEN id END) AS first_id,
+      MAX(CASE WHEN (position - 1) % ? = 0 THEN occurred_at END) AS first_time,
+      MAX(CASE WHEN position % ? = 0 OR position = total THEN id END) AS last_id,
+      MAX(CASE WHEN position % ? = 0 OR position = total THEN occurred_at END) AS last_time,
+      COUNT(ranked.id) AS n
+    FROM frozen LEFT JOIN ranked ON 1 GROUP BY page_no ORDER BY page_no
+  `).bind(snapshot,address,limit,limit,limit,limit,limit).all();
+  const pages=boundaries.filter(row=>row.page_no!=null).map(row=>({number:Number(row.page_no),firstId:Number(row.first_id),lastId:Number(row.last_id),firstTime:Number(row.first_time),lastTime:Number(row.last_time),rows:Number(row.n)}));
+  const plan={pages,current:Math.min(Math.max(1,p),Math.max(1,pages.length)),total:pages.reduce((n,page)=>n+page.rows,0),snapshot:Number(boundaries[0].upper_id)};
+  const totals = await db.prepare(`SELECT COUNT(*) AS events,
+    MIN(occurred_at) AS first_at, MAX(occurred_at) AS last_at,
+    COUNT(DISTINCT la_day) AS active_days, COUNT(DISTINCT page) AS pages,
+    SUM(automation = 'human') AS human, SUM(automation = 'automated') AS automated,
+    SUM(origin = 'native') AS native, SUM(origin = 'legacy') AS legacy
+    FROM visitor_events WHERE ip = ?`).bind(address).first();
+  const selected = plan.pages[plan.current - 1];
+  const rows = selected ? (await db.prepare(`SELECT * FROM visitor_events
+    WHERE ip = ? AND id <= ? AND occurred_at BETWEEN ? AND ?
+      AND (occurred_at != ? OR id <= ?) AND (occurred_at != ? OR id >= ?)
+    ORDER BY occurred_at DESC, id DESC LIMIT ?`)
+    .bind(address,plan.snapshot,selected.lastTime,selected.firstTime,selected.firstTime,selected.firstId,selected.lastTime,selected.lastId,limit).all()).results : [];
+  return { address, totals, history:{ ...plan,rows }, changed:selected ? rows.length!==selected.rows : false };
+}
+
 /** Async iterator over every matching row in ALL # order, in keyset chunks. */
 export async function* iterateRows(db, f, { cutoffAt = null, chunk = 500 } = {}) {
   const w = cutoffAt != null ? { sql: 'WHERE occurred_at < ?', args: [cutoffAt] } : whereFor(f);

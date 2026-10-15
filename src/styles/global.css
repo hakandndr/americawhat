@@ -18,11 +18,16 @@ body{
   background:var(--night);
   color:var(--ink);
   min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+main.wrap{flex:1 0 auto;width:100%}
+.site-head,.hero,.site-foot{flex-shrink:0}
 
 /* ── Accessibility: visible keyboard focus + skip link ── */
 :focus-visible{
