@@ -61,11 +61,26 @@ async function post(ctx, path, fields, { origin = ORIGIN, csrf, file } = {}) {
 
 test('every page requires a verified Access identity', async () => {
   const ctx = setup();
-  for (const p of ['/review', '/published', '/analytics', '/reactions', '/audit', '/health', '/analytics/export?format=csv', '/reactions/export.json']) {
+  for (const p of ['/review', '/published', '/analytics', '/reactions', '/audit', '/health', '/assets/analytics.js', '/analytics/export?format=csv', '/reactions/export.json']) {
     assert.equal((await get(ctx, p, '')).status, 401, p);
     assert.equal((await get(ctx, p, signer.sign({ email: 'other@example.com' }))).status, 403, p);
   }
   assert.equal(ctx.gh.requests.length, 0, 'nothing reaches GitHub unauthenticated');
+});
+
+test('Analytics enhancement is authenticated, same-origin only and does not enable scripts on other pages', async () => {
+  const ctx = setup();
+  const analytics = await get(ctx, '/analytics?country=ger');
+  assert.equal(analytics.status, 200);
+  assert.match(analytics.headers.get('Content-Security-Policy'), /script-src 'self'; connect-src 'self'/);
+  assert.match(await analytics.text(), /<script src="\/assets\/analytics.js" defer><\/script>/);
+  const script = await get(ctx, '/assets/analytics.js');
+  assert.equal(script.status, 200);
+  assert.match(script.headers.get('Content-Type'), /javascript/);
+  assert.equal(script.headers.get('Cache-Control'), 'no-store');
+  assert.match(await script.text(), /350/);
+  const published = await get(ctx, '/published');
+  assert.doesNotMatch(published.headers.get('Content-Security-Policy'), /script-src/);
 });
 
 test('review page clusters copies and shows flags; HTML is escaped and locked down', async () => {

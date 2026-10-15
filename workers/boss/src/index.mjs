@@ -12,6 +12,7 @@ import { CONTENT_PATHS, createGitHub, githubConfig } from './github.mjs';
 import { errorPage, flashFrom, htmlResponse, redirect, envBar } from './html.mjs';
 import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, stream, summary, top, daily } from './analytics-db.mjs';
 import { exportResponse } from './export.mjs';
+import { ANALYTICS_SCRIPT } from './analytics-client.mjs';
 import { describeResults, parseReviewForm, renderReview, reviewCompute, reviewSummary } from './pages/review.mjs';
 import { fieldsFromForm, overridesFromForm, renderEdit, renderNew, renderPublishedList } from './pages/published.mjs';
 import { renderAnalytics, renderImport, renderRetentionPreview } from './pages/analytics.mjs';
@@ -79,6 +80,10 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
     } else if (method !== 'GET' && method !== 'HEAD') {
       return errorPage(405, 'Method not allowed.');
     }
+
+    if (path === '/assets/analytics.js' && method === 'GET') return new Response(ANALYTICS_SCRIPT, { headers: {
+      'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff',
+    } });
 
     // ---- Weekly review ---------------------------------------------------
     if (path === '/' && method === 'GET') return redirect('/review');
@@ -172,7 +177,7 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
         adb.prepare('SELECT corpus_id, content_sha256, line_count, summary_json FROM analytics_import_corpora ORDER BY imported_at').all().then((r) => r.results),
         adb.prepare('SELECT state, COUNT(*) AS n FROM dndr_outbox GROUP BY state').all().then((r) => r.results),
       ]);
-      return htmlResponse(renderAnalytics({ identity, flash, f, sum, days, tops: { page, country, referrer, agent }, streamPage, retention, coverage, corpora, outbox }));
+      return htmlResponse(renderAnalytics({ identity, flash, f, sum, days, tops: { page, country, referrer, agent }, streamPage, retention, coverage, corpora, outbox }), 200, { analyticsScript: true });
     }
     if (path === '/analytics/export' && method === 'GET') {
       const format = url.searchParams.get('format') === 'ndjson' ? 'ndjson' : 'csv';

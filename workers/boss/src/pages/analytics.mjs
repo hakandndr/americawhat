@@ -18,10 +18,10 @@ function topCard(title, rows) {
 }
 
 function dailyChart(days) {
-  if (days.length < 2) return '';
+  if (!days.length) return '';
   const max = Math.max(...days.map((d) => d.n), 1);
   const cols = days.map((d) => `<span style="height:${Math.max(2, Math.round((d.n / max) * 100))}%" title="${h(d.day)}: ${d.n} records, ${d.human} human"></span>`).join('');
-  return `<div class="card"><h3>Records per day (PT)</h3><p class="faint small">Same filters as the table · ${days.length} most recent days with records · peak ${max}. Hover a bar for its day.</p>
+  return `<div class="card"><h3>Records per day (PT)</h3><p class="faint small">Same filters as the table · ${days.length} days with records · peak ${max}. Hover a bar for its day.</p>
 <div class="chart" role="img" aria-label="Records per day from ${h(days[0].day)} to ${h(days[days.length - 1].day)}, peak ${max}">${cols}</div><div class="chart-axis"><span>${h(days[0].day)}</span><span>${h(days[days.length - 1].day)}</span></div></div>`;
 }
 
@@ -46,7 +46,7 @@ function eventRow(r) {
 
 export function renderAnalytics({ identity, flash, f, sum, days = [], tops, streamPage, retention, coverage, corpora, outbox }) {
   const chips = [['today', 'Today'], ['7d', '7 days'], ['30d', '30 days'], ['all', 'All time']]
-    .map(([r, l]) => `<a${f.range === r ? ' class="on" aria-current="true"' : ''} href="/analytics${qs(f, { range: r, from: '', to: '', before: null })}">${l}</a>`).join('');
+    .map(([r, l]) => `<a data-analytics-nav${f.range === r ? ' class="on" aria-current="true"' : ''} href="/analytics${qs(f, { range: r, from: '', to: '', before: null })}">${l}</a>`).join('');
   const o = sum.overall;
   const v = sum.view;
   const retentionLine = retention.overdue
@@ -57,8 +57,8 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
   const headActions = `<nav class="seg" aria-label="Date range">${chips}</nav>`;
   const lede = `Retained ${o.retained} records · today (PT) ${o.today} · oldest ${h(formatLa(o.oldest))} · last ALL # ${h(o.lastAllNo ?? '—')} · all-time page views ${o.allTimePageViews}${o.archivedPageViews ? ` (${o.archivedPageViews} kept only as aggregates since ${h(o.archivedFirstDay)})` : ''}`;
   const body = `
-${retention.overdue ? `<div class="notice warn" role="note"><span class="lbl warn">Retention</span><span>${retention.overdueRecords} raw records are past the ${retention.targetDays}-day target. See <a href="#data-ops">Data operations</a>; nothing is deleted automatically.</span></div>` : ''}
-<section aria-labelledby="h-metrics"><h2 id="h-metrics" class="eyebrow">In view · ${h(rangeLabel)}</h2>
+<div id="analytics-retention">${retention.overdue ? `<div class="notice warn" role="note"><span class="lbl warn">Global retention</span><span>${retention.overdueRecords} raw records are past the ${retention.targetDays}-day target. See <a href="#data-ops">Data operations</a>; nothing is deleted automatically.</span></div>` : ''}</div>
+<section id="analytics-metrics" aria-labelledby="h-metrics"><h2 id="h-metrics" class="eyebrow">In view · ${h(rangeLabel)}</h2>
 <div class="stats">
   <div class="stat"><b>${v.events}</b>page views in view</div>
   <div class="stat"><b>${v.human}</b>human</div>
@@ -68,7 +68,7 @@ ${retention.overdue ? `<div class="notice warn" role="note"><span class="lbl war
   <div class="stat"><b>${v.addresses}</b>distinct IP addresses <span class="muted">(not people)</span></div>
 </div></section>
 
-<section class="section" aria-labelledby="h-filters"><form method="get" action="/analytics" class="card">
+<section class="section" aria-labelledby="h-filters"><form method="get" action="/analytics" class="card" id="analytics-filters">${hidden('range', f.range)}
   <div class="section-head"><h2 id="h-filters">Filters</h2><p class="faint small">Days are Pacific Time. Empty fields match everything.</p></div>
   <div class="filters">
     <fieldset><legend>When &amp; source</legend><div class="grid">
@@ -79,7 +79,7 @@ ${retention.overdue ? `<div class="notice warn" role="note"><span class="lbl war
     </div></fieldset>
     <fieldset><legend>Visitor</legend><div class="grid">
       <div><label for="f-ip">IP (exact)</label><input id="f-ip" name="ip" value="${h(f.ip)}"></div>
-      <div><label for="f-country">Country</label><input id="f-country" name="country" value="${h(f.country)}"></div>
+      <div><label for="f-country">Country contains / code</label><input id="f-country" name="country" value="${h(f.country)}"></div>
       <div><label for="f-place">City / region contains</label><input id="f-place" name="place" value="${h(f.place)}"></div>
       <div><label for="f-device">Device</label>${select('device', [['', 'all'], ['mobile', 'mobile'], ['desktop', 'desktop'], ['unknown', 'unknown']], f.device, ' id="f-device"')}</div>
     </div></fieldset>
@@ -91,21 +91,21 @@ ${retention.overdue ? `<div class="notice warn" role="note"><span class="lbl war
     </div></fieldset>
   </div>
   <div class="form-foot">
-    <div class="actions"><button>Apply filters</button><a class="btn ghost" href="/analytics">Reset</a></div>
-    <div class="actions small"><span class="faint">Export this view</span><a class="btn secondary" href="/analytics/export${qs(f, { format: 'csv' })}">CSV</a><a class="btn secondary" href="/analytics/export${qs(f, { format: 'ndjson' })}">NDJSON</a>
+    <div class="actions"><button>Apply filters</button><a data-analytics-reset class="btn ghost" href="/analytics">Reset</a><span id="analytics-status" class="faint small" role="status" aria-live="polite"></span></div>
+    <div class="actions small"><span class="faint">Export this view</span><a data-analytics-export class="btn secondary" href="/analytics/export${qs(f, { format: 'csv' })}">CSV</a><a data-analytics-export class="btn secondary" href="/analytics/export${qs(f, { format: 'ndjson' })}">NDJSON</a>
     <span class="faint">All retained</span><a class="btn ghost" href="/analytics/export?format=csv&amp;range=all">CSV</a><a class="btn ghost" href="/analytics/export?format=ndjson&amp;range=all">NDJSON</a></div>
   </div>
 </form></section>
 
-<section class="section" aria-labelledby="h-events">
+<section id="analytics-events" class="section" aria-labelledby="h-events">
 <div class="section-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · ALL # is durable and never renumbered · <span class="warn">*</span> approximate time</p></div>
 <div class="table-card"><div class="scroll"><table><thead><tr><th class="num" scope="col">ALL #</th><th class="num" scope="col">TODAY #</th><th scope="col">DATE AND TIME (PT)</th><th scope="col">IP ADDRESS</th><th class="num" scope="col">IP VISITS</th><th scope="col">SOURCE</th><th scope="col">CLASS · AGENT</th><th scope="col">COUNTRY · CITY / REGION</th><th scope="col">PAGE</th><th scope="col">REFERRER</th><th scope="col">DEVICE · BROWSER · OS</th><th scope="col">DETAIL</th></tr></thead>
 <tbody>${rows || '<tr><td colspan="12" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table></div>
 <div class="table-foot"><span class="faint small">${f.before ? `Showing records before ALL # ${f.before}. <a href="/analytics${qs(f, { before: null })}">Back to newest</a>` : 'Showing the newest records.'}</span>
-<span>${streamPage.nextBefore ? `<a class="btn secondary" href="/analytics${qs(f, { before: streamPage.nextBefore })}">Older →</a>` : '<span class="muted small">End of the log for this view.</span>'}</span></div></div>
+<span>${streamPage.nextBefore ? `<a data-analytics-nav class="btn secondary" href="/analytics${qs(f, { before: streamPage.nextBefore })}">Older →</a>` : '<span class="muted small">End of the log for this view.</span>'}</span></div></div>
 </section>
 
-<section class="section minor" aria-labelledby="h-breakdowns">
+<section id="analytics-breakdowns" class="section minor" aria-labelledby="h-breakdowns">
 <div class="section-head"><h2 id="h-breakdowns">Breakdowns</h2><p class="faint small">Top values in the same view, by record count.</p></div>
 ${dailyChart(days)}
 <div class="cols-4">${topCard('Top pages', tops.page)}${topCard('Countries', tops.country)}${topCard('Referrers', tops.referrer)}${topCard('Agents', tops.agent)}</div>
@@ -119,7 +119,7 @@ ${dailyChart(days)}
 ${corpora.length ? `<ul class="small">${corpora.map((c) => `<li><code>${h(c.corpus_id)}</code> · ${c.line_count} lines · sha ${h(c.content_sha256.slice(0, 16))}… · <span class="faint">${h(c.summary_json)}</span></li>`).join('')}</ul>` : ''}
 <p class="small">DNDR copies: ${outbox.map((r) => `${h(r.state)} ${r.n}`).join(', ') || '<span class="faint">forwarding not configured</span>'}</p>
 <a class="btn secondary" href="/analytics/import">Legacy log import</a></div>
-<div class="card"><h3>Retention status</h3>
+<div class="card"><h3>Global retention status</h3>
 <p class="${retention.overdue ? 'warn' : 'muted'}">Retention: ${retentionLine}</p>
 <p class="faint small">Target ${retention.targetDays} days. Deletion is manual and always previewed; daily and monthly aggregates are kept.</p></div>
 </div>
@@ -127,7 +127,7 @@ ${corpora.length ? `<ul class="small">${corpora.map((c) => `<li><code>${h(c.corp
 <p class="muted">Manual only. Removes raw records (address, user agent, path) strictly before 00:00 PT on the chosen day; daily and monthly totals are kept as aggregates. The next screen shows an exact preview and export links — nothing is deleted from this form.</p>
 <form method="get" action="/analytics/retention" class="actions"><label for="rt-before" class="muted">Cutoff day (PT)</label><input id="rt-before" name="before" value="${h(retention.suggestedCutoffDay)}" style="max-width:160px"><button class="danger">Preview deletion</button></form></div>
 <p class="faint small">Imports, exports and deletions are recorded in <a href="/audit">Audit</a>.</p>
-</section>`;
+</section><script src="/assets/analytics.js" defer></script>`;
   return page({ title: 'Analytics', active: '/analytics', identity, flash, body, lede, headActions });
 }
 

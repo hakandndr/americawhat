@@ -1,5 +1,5 @@
-// Minimal server-rendered HTML for Boss. No client JavaScript: every action is
-// a plain form, every value is escaped.
+// Server-rendered Boss HTML. Writes remain plain forms; Analytics enhances
+// reads with an authenticated script. Every rendered value is escaped.
 
 export function h(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -193,8 +193,10 @@ export const BOSS_HEADERS = Object.freeze({
   'X-Robots-Tag': 'noindex, nofollow',
 });
 
-export function htmlResponse(html, status = 200) {
-  return new Response(html, { status, headers: BOSS_HEADERS });
+export function htmlResponse(html, status = 200, { analyticsScript = false } = {}) {
+  const headers = { ...BOSS_HEADERS };
+  if (analyticsScript) headers['Content-Security-Policy'] += "; script-src 'self'; connect-src 'self'";
+  return new Response(html, { status, headers });
 }
 
 export function errorPage(status, message) {

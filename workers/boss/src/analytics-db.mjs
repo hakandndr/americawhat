@@ -58,7 +58,7 @@ export function whereFor(f) {
   if (f.cls) { clauses.push('automation = ?'); args.push(f.cls); }
   if (f.device) { clauses.push('device_class = ?'); args.push(f.device); }
   if (f.ip) { clauses.push('ip = ?'); args.push(f.ip); }
-  if (f.country) { clauses.push('(lower(country) = lower(?) OR upper(country_code) = upper(?))'); args.push(f.country, f.country); }
+  if (f.country) { clauses.push("(lower(country) LIKE lower(?) ESCAPE '\\' OR upper(country_code) = upper(?))"); args.push(`%${escapeLike(f.country)}%`, f.country); }
   if (f.place) { clauses.push("(city LIKE ? ESCAPE '\\' OR region LIKE ? ESCAPE '\\')"); args.push(`%${escapeLike(f.place)}%`, `%${escapeLike(f.place)}%`); }
   if (f.page) {
     if (f.page.endsWith('*')) { clauses.push("page LIKE ? ESCAPE '\\'"); args.push(`${escapeLike(f.page.slice(0, -1))}%`); }
@@ -106,12 +106,12 @@ export async function top(db, f, column, limit = 10) {
   return results.map((r) => ({ value: r.value, n: Number(r.n) }));
 }
 
-/** Records per LA day in the view (read-only), oldest first, at most `days` most recent days. */
-export async function daily(db, f, days = 60) {
+/** All filtered LA days by default; an explicit `days` restricts the most recent days. */
+export async function daily(db, f, days = null) {
   const w = whereFor(f);
   const { results } = await db.prepare(
-    `SELECT la_day AS day, COUNT(*) AS n, SUM(automation = 'human') AS human FROM visitor_events ${w.sql} GROUP BY la_day ORDER BY la_day DESC LIMIT ?`,
-  ).bind(...w.args, days).all();
+    `SELECT la_day AS day, COUNT(*) AS n, SUM(automation = 'human') AS human FROM visitor_events ${w.sql} GROUP BY la_day ORDER BY la_day DESC${days == null ? '' : ' LIMIT ?'}`,
+  ).bind(...w.args, ...(days == null ? [] : [days])).all();
   return results.map((r) => ({ day: r.day, n: Number(r.n), human: Number(r.human || 0) })).reverse();
 }
 
