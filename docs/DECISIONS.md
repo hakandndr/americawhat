@@ -210,7 +210,28 @@ ilk history kaydı dahil sabit üst ID append kaymasını önler. 10.000 kayıt/
 gerçek staging CPU/rows_read ayrıca ölçülür. Snapshot MVCC kopyası değildir,
 manuel silme sonrası yenileme gerekir. Ayrıntı BOSS-UX-ANALYTICS-SPRINT.md.
 
-## Open questions (owner)
+## D-32 Yerel RC merge'i ve kapalı staging hazırlığı (2026-10-15)
+
+Yeni sprint izniyle kabul dalı73bc5cc'den codex/staging-rc oluşturuldu;
+eaef194 main'i sıradan merge4a28f69 ile, kayıp/çakışma olmadan alındı.
+Bu izin uzak main/push/deploy izni değildir. Staging origin workers.dev,
+Git hedefi önerilen bağımsız private sandbox; repo/token henüz oluşturulmaz.
+AUD boş/URL kapalı kalır; gerçek Access/team/secret ve repo kapsamı sağlandıktan
+sonra ayrı onayla yeni tam SHA pinlenir. Production config ve tarihçe aynı.
+
+## D-33 RC artifact'larının sabit girdileri
+
+Public kaynak değişmez. build:rc yalnız üretilmiş statik Random fallback'ini
+content/path hash'iyle, RSS build tarihini Git commit zamanı ile sabitler;
+JS Random davranışı aynı. Onaylı125 OG PNG ayrı değişmez build girdisidir;
+approved-og.json dosya seti/hash ve published blob koruması zorunludur.
+Mevcut renderer farklı metin pikselleri ürettiği için yeni PNG'ler reddedildi;
+orijinaller geri yüklendi ve rc-approved-og.zip olarak hash'lenip korundu.
+Reproduction kaynak+lock+onaylı OG arşivini gerektirir. Yeni published/OG,
+yeni renderer ve herhangi artifact farkı ayrı review ister. Tarihsel gen-og
+reçetesi bu RC'ye doğrudan uygulanmaz. Ayrıntılar STAGING-PREFLIGHT/OPERATIONS.
+
+## Open questions (owner, previous decisions unchanged)
 
 1. Legacy geçmişin korunması karara bağlandı (D-24); final log/oy snapshot’ları, reconciliation ve manuel retention uygulama zamanı cutover hazırlığında tamamlanmalı.
 2. Monthly page/country aggregates: keep all cells, or drop cells below a threshold.

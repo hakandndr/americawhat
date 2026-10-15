@@ -1,5 +1,28 @@
 # americawhat — Handoff
 
+## Son devir — yerel staging RC (2026-10-15)
+
+Çalışma alanı `D:\IT\AmericaWhat\americawhat\tmp\security-boss`, dal
+**`codex/staging-rc`**. Kabul edilen `codex/security-boss` ucu73bc5cc değişmedi.
+Merge4a28f69 iki parent'ı73bc5cc ve eaef194 olan sıradan yerel merge'dir;
+config/RC build0497c8d. Dört veri dosyası eaef194 ile aynı; published124,
+pending134, seen11404, kayıp0. Public tasarım/data hariç src ve production
+config korunur. Rebase/reset/push yok. Son belge commit'i dahil tam SHA ve
+artifact hash'leri `reports/rc-release-manifest.json` içinde kaydedilir.
+
+136 test +18 local workerd; country190/page8/CSV190/NDJSON190, Trending,
+gerçek derlenmiş client/Load More124, 162 sayfa parity ve audit0 başarılı.
+RC build iki bağımsız çalıştırmada aynı dosya hash envanterini verir. Reçete
+OPERATIONS'ın yeni üst bölümündedir; normal `npm run build` RC yerine geçmez.
+Grafik browser testi yapılmadı. OG'ler onaylı125 PNG + hash envanteri/arşivden
+alınır; mevcut renderer farklı piksel üretir, RC'de yeniden üretilmez.
+
+[STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) en üstündeki RC bölümü günceldir;
+eski main/uzlaştırma yapılmadı satırları tarihsel kayıttır. Mevcut web636936f,
+Boss kapalı; Access/AUD/team/secrets/sandbox/PAT/plan kapıları tamamlanmadan
+Boss açılmaz. Şu an sadece hazırlık onayı vardır, uzak rollout onayı yoktur.
+90 gün manuel retention, tam geçmiş/oy koruma ve Hostinger EMAIL kararı aynı.
+
 ## Son devir — Boss UX ve Analytics (2026-10-15)
 
 `codex/security-boss`, aynı `D:\IT\AmericaWhat\americawhat\tmp\security-boss`.

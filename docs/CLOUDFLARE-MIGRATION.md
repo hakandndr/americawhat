@@ -1,5 +1,14 @@
 # americawhat — Cloudflare migration and release runbook
 
+2026-10-15 RC hazırlığı: geçerli dal codex/staging-rc; main eaef194 normal
+yerel merge4a28f69 ile uzlaştırıldı (published124/pending134/seen11404).
+136 test/18 local workerd, public162 sayfa/parity ve audit0 başarılı.
+En güncel kapılar/config/OG arşiv bağımlılığı ve staging-only sıra
+[STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) en üstündedir. Web uzakta hâlâ
+636936f; Boss Access/AUD/secret/sandbox kapıları eksik, URL kapalıdır.
+Bu hazırlıkta uzak yazım/deploy yoktur; aşağıdaki eski uzlaştırılmadı/sürüm
+notları tarihsel kayıttır. Gerçek rollout ve rollback provası ayrıca onay ister.
+
 Goal: move the **web hosting** (static site, PHP endpoints, Studio panel, FTP
 deploy) from Hostinger to Cloudflare. **Email stays on Hostinger** (owner
 decision): MX, SPF, DKIM, DMARC, mailboxes and forwarding are not changed, and

@@ -1,5 +1,224 @@
 # AmericaWhat — Boss renk uyumu ve staging preflight
 
+## Geçerli kayıt — staging release candidate hazırlığı (2026-10-15)
+
+Bu bölüm aşağıdaki eski "merge yapılmadı", b1312bf, config origin/repo ve
+117/134 test kayıtlarının yerine geçer; tarihsel bölümler silinmedi. Kapsam
+**yalnızca yerel RC ve salt okunur uzak doğrulama**. Uzak yazım/deploy/rollback,
+repo/token/Access/DNS/Hostinger/mail ve gerçek veri işlemleri yapılmadı.
+
+### Git ve içerik uzlaştırması
+
+Başlangıç temiz73bc5cc08dd131235ba22e7f45ec215a68c18f5a; aynı worktree'de
+yeni **codex/staging-rc**. Fetch edilen ve uzlaştırılan main
+**eaef1940d66843a2062e59d59e0eb7753d9dac1c**. Incoming yalnızca pending/
+seen_ids/fetch-status değiştiriyordu. Normal `merge --no-ff --no-commit`,
+çakışma0, kayıp kontrolü ve test/build/parity sonrası owner kimliğiyle merge
+**4a28f69aeef598fcfb926e4cc52e4897458b26e8**. Parent'lar başlangıç ve incoming;
+rebase/reset/force yok. Güvenlik/Boss kabul dalı73bc5cc ve onaylı16b10a4
+değişmedi. Production/Actions kaynaklarına dokunulmadı.
+
+| Dosya | Önce → sonra | Incoming SHA256 (Git LF blobu) |
+|---|---|---|
+| published.json | 124 →124, birebir aynı | `2f70e7e67bdbb871e689c36f92455cb39003a21c21a6128fa455423c1db9b3da` |
+| pending.json | 130 →134, kayıp0 | `e3d27c6c55e5fde9486a939a6da9aa04173b7845b6cbdd401e336cea1725ac33` |
+| seen_ids.json | 11348 →11404, kayıp0 | `acf38c978db5025b57f4ce75fff6e1e3e3aeb4649dbfe1b55f5e14f6ec04b8b6` |
+| fetch-status.json | güncel,5 üst anahtar | `7d9325118fc109ca0ecc580693fc49b06dd6cd83b6fe9f342504e5f4e16df297` |
+
+Dört index/checkout clean-filter blobu incoming ile aynı; Windows CRLF
+checkout ham byte hash'i Git LF hash'iyle karıştırılmaz. Yayınlar byte aynı
+olduğu için yeni sayfa farkı yok:162 HTML/124 story/11 feed parçası. Onaylı
+baseline'e göre tüm URL/metadata/kart/DOM/CSS aynı; public src data hariç
+16b10a4 ile aynı. Production salt okunur40 URL örnekleminde metadata farkı0,
+live'dan eksilen sitemap URL0;151 local vs131 production farkı daha önce
+onaylanmış20 kategori/arşiv URL'sidir, yeni yayın farkı değildir.
+`reports/rc-content-reconciliation.json` sayım/blob/hash kanıtını içerir.
+
+### Yerel config ve gerçek staging'in ayrımı
+
+Staging config/RC build commit'i **0497c8d7910c03e412f37f833d86ebab2a790578**.
+Son belge/onaylı OG hash koruması commit'i dahil final tam SHA ve artifact envanteri
+**reports/rc-release-manifest.json** içinde; deployed kaynak olduğu iddia edilmez.
+
+| Ayar | Yerel aday / doğrulanan uzak durum |
+|---|---|
+| Public URL | `https://americawhat-web-staging.hakan-c89.workers.dev` |
+| Boss origin | yerelde `https://americawhat-boss-staging.hakan-c89.workers.dev`; uzak eski custom origin değişmedi |
+| Boss Git target | yerelde önerilen `hakandndr/americawhat-staging-content` / `content-staging`; uzak hâlâ production repo, **uzak token ekleme kapısı kapalı** |
+| İzinli kimlik | sadece `hakan@dndr.net` |
+| AUD | boş, Access app yok; gerçek değer sahibi kurulumundan sonra |
+| Team domain | config `dndrnet.cloudflareaccess.com`; organization GET403, doğrulanmış sayılmaz |
+| Boss route | yerelde/uzakta workers_dev=false, preview_urls=false; public route yok |
+| Boss secrets | uzakta GITHUB_TOKEN ve BOSS_CSRF_SECRET yok; değer üretilmedi/okunmadı |
+| Web secrets | REACTION_GUARD_SECRET/STAGING_TEST_KEY isimleri mevcut, değerler okunmadı |
+| APP_DB | americawhat-app-staging / `a3c9ff1f-05c2-4ed6-bb9e-4ca41f4cc9e2` |
+| ANALYTICS_DB | americawhat-analytics-staging / `306b9ee6-2529-4f95-b43c-c7cd9dbf0a3c` |
+
+2026-10-15 08:03 UTC salt okunur GET: Access total_count0, Boss workers.dev/
+preview kapalı; web açık/preview kapalı, health636936f/124/test-only/DB OK.
+İki Worker version binding'i yukarıdaki aynı iki staging DB'yi gösteriyor;
+D1 metadata isim/ID'leri doğrulandı. Migration kaynakları636936f ile aynı;
+önceki9+20 DDL eşleşmesi korunur, yeni migration gerekmiyor. Bu sprintte gerçek
+visitor/vote gövdeleri okunmadı; schema/gerçek veri seed/import/export/delete yok.
+Production Boss env bloğu Git LF içeriğinde aynı, hedef boss.americawhat.com.
+
+Aktif web deployment **462bbac6-da4a-48ba-87ee-a631a71a312e**, version
+**02c0da48-f3a2-47ad-99e0-8358b9244ac7**, %100. Boss deployment
+**2004d44f-c78a-4d6c-b1ab-29800d4ab491**, version
+**85119d25-bc70-4871-a5f2-f9dcb3dbf896**, %100. İkisi de RELEASE_ID636936f;
+rollout öncesi yeniden okunur. OAuth yalnızca GET için kullanıldı; geçersiz
+ortam token'ı yalnızca alt süreçten kaldırıldı, profil değişmedi.
+
+### Doğrulama ve yeniden üretme
+
+| Kontrol | RC sonucu |
+|---|---|
+| npm ci / tam audit / dev hariç audit | lock ile kuruldu;0/0 açık |
+| npm test | **136/136**; önceki134 +2 artifact determinism/fail-closed testi |
+| Boss local workerd | **18/18**; auth/CSRF/atomik Git/import/retention yalnızca sentetik local state |
+| Public build/statik | 162 HTML,309 dosya,300 upload/9 excluded,0 hata |
+| Onaylı public parity | 162 body/CSS,124 story/card/metadata,11 parça,3652 iç link aynı |
+| Derlenmiş client | homepage/detail tek beacon; ilk12+10 yükleme ile124 benzersiz story; ilk/eklenmiş kart oyları |
+| Trending | gerçek derlenmiş module, sentetik totals: doğru top5; <3 sinyalde hidden |
+| Boss gerçek local render/script | 6 bölüm200; authenticated script kaynakla aynı/CSP self |
+| Analytics | ger190, limit25 Last8, CSV190/NDJSON190; diğer country/date/device/summary/day/top/history/debounce kontrolleri unit/DOM/SQL'de |
+| Büyük local corpus | 10000/200 sayfa eksiksiz, Last4,59ms; tüm sayfalar888ms; Cloudflare CPU değildir |
+| Worker dry-run + metafile | Web8/Boss21 input; npm runtime girdisi0, upload yok |
+| Git hygiene | Yeni commit'ler owner author+committer; AI/coauthor trailer yok; eski tarihçe korunur |
+
+`npm run build:rc` sadece iki build-time değişkenini çıktı aşamasında sabitler:
+Random'ın geçerli statik fallback href'i content blob/path ile, RSS build tarihi
+HEAD commit zamanı ile. Browser random script/public kaynak aynı; beklenen
+sözleşme değişirse build durur. Aynı pinlenmiş HEAD/toolchain/OG girdileriyle iki
+Astro build'in309 dosyasının tamamı byte/hash eşitliğiyle karşılaştırılır.
+OG girdisi onaylı125 PNG'dir; scripts/release/approved-og.json zorunlu hash
+korumasıdır. Arşiv reports/rc-approved-og.zip, SHA256
+`25b1d8cb08c0f923b544944ae1f1d0e13805cdb5a1962d06d4d60aa514c1d52a`;
+yeniden üretimde bu arşiv gerekir. Mevcut Python3.12.14/Pillow12.3.0 ile tam
+üretimde125 PNG'de metin piksel farkı görüldü; aday görseller reddedildi,
+orijinal125 dosya önceki hash'leriyle geri yüklendi. Eski renderer attestation'ı
+yoktur; mevcut gen-og.py bu RC recipe'sinde çalıştırılmaz. Public overwrite
+denemesi aynı dosyada bekledi; durdurulup tam üretim yalnız reports içinde
+tamamlandı. Hiçbir farklı PNG release'e alınmadı. Yeni yayın/OG için ayrı
+render review gerekir; mevcut RC'de içerik aynı olduğundan arşiv sabit girdidir.
+Tam recipe OPERATIONS'ta; hash farklıysa build durur, test gevşetilmez.
+
+Beklenen Worker index.js SHA256'ları:
+
+- Web: `f43d08794c133aa3557cf960a157fb92261f542ac6435c3dfbe66bc800a6ddfe`
+- Boss: `459158ebc448ccdd53306a64ed9ec6131caa4dd6f64c96c16edac93768ba4bab`
+
+Config/env/secret/asset manifest'i Worker JS hash'inden ayrıdır; JS hash'i tek
+başına dağıtım kanıtı değildir. Final head, config/lock/content ve her statik
+dosya hash'i reports/rc-release-manifest.json + rc-static-manifest.json'da.
+Ham raporlar reports/rc-*; Git dışındadır, secret/visitor içeriği içermez.
+Grafik/gerçek cihaz/ekran okuyucu veya gerçek Cloudflare CPU testi yapılmadı.
+
+### Sahibi için bekleyen işlemler ve sandbox önerisi
+
+Ayrı **private, fork olmayan** hakandndr/americawhat-staging-content hâlâ en
+basit etkili izin sınırıdır. GET404 (mevcut oturumca görünmüyor); oluşturulmadı.
+Uzak production content-staging ref'i de yok. Bu sprint repo/token oluşturma
+izni vermez. Onay sonrası yalnızca dört src/data JSON (opsiyonel README),
+eaef194'ün yukarıdaki hash'leriyle başlangıç snapshot'ı; default branch ve
+ayrı content-staging aynı başlangıç. .github/workflows/FTP/fetch/Actions yok,
+prod deploy bağı yok. Sentetik editorial değişiklikler yalnızca sandbox dalına.
+
+Fine-grained PAT: resource owner hakandndr, kısa expiry, **Only select
+repositories = yalnızca sandbox**, Contents RW, Metadata read; diğer izinler
+yok. Branch ismi PAT scope'u değildir. Token oluşturma ekranı/ayrıntısı ve
+seçilmiş repo/permission envanteri sahibiyle incelenir; production repo
+seçili olmadığı kaydedilir. Public production GET200 yazma yetkisi kanıtı
+değildir; GET repo.permissions.push tek başına PAT kapsam kanıtı sayılmaz.
+Prod ref'ine negatif yazma denemesi bile yapılmaz. İzolasyon kanıtlanamıyorsa
+publishing kapalı kalır; production yazma token'ı staging'e kurulmaz.
+Gelecek sandbox commit'leri de owner name/email kullanır; eski RSS workflow
+aw-bot kimliği bu sprintte değiştirilmedi, fetch.yml hiçbir daldan tetiklenmez
+(main'e push eder). Tarihçe yeniden yazılmaz.
+[GitHub PAT izin modeli](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+
+### Bir sonraki açık onaydan sonra kesin uygulama sırası
+
+1. Sahibi sandbox oluşturma/seed/PAT, yalnızca AmericaWhat staging Access/
+   secrets/config/URL/deploy, sentetik test ve rollback provası kapsamını
+   onaylar. Free/Paid planını dashboard'dan doğrular; usage_model=standard
+   kanıt değildir. Mevcut D1 kayıtları/oylar korunur; reset/migration/restore yok.
+2. Workers & Pages → americawhat-boss-staging → Access → Protect this Worker
+   behind Access → All traffic. Ayrı Allow/Include Emails=hakan@dndr.net;
+   Everyone/domain/bypass/service-auth yok; mevcut SSO/OTP, önerilen1h session.
+   Account-wide Protect all uygulanmaz. URL henüz açılmaz. Zero Trust → Access
+   controls → Applications'tan gerçek staging AUD ve team domain doğrulanır.
+   Config'e gerçek değerler ayrı review commit'iyle alınır, issuer/JWKS eşleşir.
+3. Sandbox repo/branch/izin kanıtını tamamla. Production repo'yu gösteren eski
+   uzak Boss'a önce token ekleme. URL kapalıyken onaylı staging vars ayarlarını
+   sandbox repo/branch/origin/gerçek team/AUD ile hizala; etkin version GET'inde
+   doğru Git hedefini doğrula. Ayrı ≥32-byte BOSS_CSRF_SECRET ve sandbox GITHUB_TOKEN güvenli secret
+   girişinden kurulur; değerlere rapor/CLI argümanı yok. BOSS_DEV_JWKS/API_BASE
+   uzak ortama kurulmaz; iki mevcut D1 binding'i korunur.
+4. Access policy/AUD/team/secrets/sandbox doğrulandıktan sonra kaynak staging
+   config'inde workers_dev=true, preview_urls=false için ayrı review commit'i
+   yap (uzak URL hâlâ kapalıdır). Bu yeni **tek** config HEAD'ini pinle ve local doğrulama/
+   build:rc/dry-run/hash üretimini yenile. Şimdiki boş AUD kapalı hazırlık adayı
+   gerçek dağıtım adayı yerine kullanılamaz. Hash review'su ve owner onayı aynı
+   tam SHA/config içindir. Önce aktif UUID'leri/secret isimlerini tekrar oku.
+5. **Web önce**: staging kök config ve tam RELEASE_ID ile deploy; --env production
+   yok. Health release, version metadata %100, noindex, sitemap/RSS/301/404,
+   kategori/arşiv/Load More/metadata ve static güvenlik kontrolü. Başarısızsa dur.
+6. Boss'u adım4'te pinlenmiş **aynı tam SHA** ile, Access policy/AUD/team/
+   sandbox/secret/D1 son GET kontrolünden sonra deploy et. Bu onaylı config
+   workers.dev'yi Access arkasında açar; previews kapalıdır. Dashboard/config
+   drift bırakma; arada başka config commit'i yaparsan web/Boss aynı yeni SHA
+   için yeniden review edilir. Önce Access, sonra URL. Anonim login/deny, başka email deny, owner
+   altı bölüm; asset endpoint dahil forged/wrong-aud/expired JWT ve CSRF negatifleri.
+   [Workers Access sırası](https://developers.cloudflare.com/workers/configuration/cloudflare-access/).
+7. Yalnızca onaylı sentetik yazı: test-key beacon/idempotency/origin/oy/rate,
+   sandbox approval/reject/duplicate tek atomik commit ve yalnız content-staging
+   ref'i; prod main önce/sonra aynı. Yeni native örnekler yalnız onaylı test
+   kimlikleriyle; mevcut staging visitor/reaction satırlarına import/delete yok.
+   Export/retention testleri mevcut gerçek corpus'a uygulanmaz. smoke.mjs normal
+   modu da POST gönderir; bu hazırlıkta uzakta çalıştırılmadı.
+8. Ölçümler: Worker Metrics/Observability'de endpoint ve sürüm/zaman penceresiyle
+   CPU p50/p95/p99, cold/warm ayrımı yapılabildiğinde ayrı, errors/1102; istemcide
+   elapsed/TTFB/response bytes. D1 yalnız staging DB filtresiyle rowsRead/query
+   latency/response bytes, query count ve rowsWritten beklenen sentetik hacmi.
+   Düşük trafik penceresinde önce/sonra farkını kaydet; DB toplamı endpoint
+   ölçümüyle aynı değildir. Mevcut response helper meta.rows_read döndürmez;
+   tam query attribution gerekirse ayrı review edilen staging-only ölçüm, ham
+   SQL parametresi/IP/UA loglamadan uygulanır. CPU plan bütçesi ve ürün latency
+   kabul sınırları rollout öncesi sahip ile belirlenir; Node ms kanıt sayılmaz.
+   [Worker metrics](https://developers.cloudflare.com/workers/observability/metrics-and-analytics/),
+   [D1 rowsRead/latency](https://developers.cloudflare.com/d1/observability/metrics-analytics/).
+9. Büyük corpus için **mevcut D1'ye seed yok**. Ayrı ayrıca onaylı izole geçici
+   staging test DB/Worker bindings ile10k→100k→beklenen retained hacim; aynı
+   source/config/gates, all/ger/date/device, First/Last/sparse/page-size100 ve
+   CSV/NDJSON eşitliği. Toplam/filtre/daily/top tutarlılığı, rows_read eğimi,
+   CPU/latency/HTML page-option boyutu kaydedilir. Doğrusal metadata/contains
+   taraması yüksek maliyetliyse production kararı durur. İzole kaynak onayı yoksa
+   hacim testi local kalır, gerçek platform hacim doğrulaması eksik işaretlenir.
+10. Tam SHA/version/secret isimleri/bindings ve hash'leri kaydet; sonra ayrı
+    onaylı **yeni→eski→aynı yeni** staging rollback provası. Web eski version
+    02c0da48-f3a2-47ad-99e0-8358b9244ac7; Boss eski
+    85119d25-bc70-4871-a5f2-f9dcb3dbf896 (güncel GET ile tekrar pinlenir).
+    Boss için önce workers.dev/preview kapat, Access'i açık tut; eski kodun
+    production repo hedefini yeniden yazılabilir hale getirme, sandbox token'ı
+    scope'lu kalır. Rollback config vars/secret uyumunu gözden geçir; eski Boss
+    eski kapalı erişim durumuna dönmeli. Web health636936f/HTTP/assets/D1 ID ve
+    test sayımları; sonra review edilmiş yeni config/version ile aynı kontroller.
+    D1/oy/log/Git/Access/DNS/settings rollback ile geri alınmış sayılmaz;
+    test kaydı/geçmiş silinmez. Gerçek prova henüz yapılmadı.
+    [Rollback sınırları](https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/).
+
+Öneri: yerel RC'yi kabul edip önce izole Git credential ve Access kurulumunu
+onaylamak; gerçek değerler girilince yeni tam SHA'yı yeniden pinlemek. Web için
+schema/API migration riski düşük; Boss'un güvenlik ve gerçek platform maliyet
+kapıları tamamlanmadan production hazır kararı verilmez. Yeni fark: olağan
+Astro build byte-reproducible değildi; RC-only normalize adımı ve onaylı OG
+arşiv/hash koruması bu riski kontrol eder. Renderer sapması yeni risk olarak
+kaydedilir; arşivin korunması/teslimi gerekir. Son main snapshot'ı freeze edilir; daha yeni
+fetch varsa sessizce değiştirmek yerine yeniden reconciliation/review gerekir.
+Tam legacy log/oy final dosyaları şimdi istenmez; cutover'a yakın. Manuel-only
+retention90gün, Hostinger EMAIL/MX/SPF/DKIM/DMARC ve DNDR çift saymama aynı.
+
 2026-10-15 takip notu: [Boss UX/Analytics sprinti](BOSS-UX-ANALYTICS-SPRINT.md)
 beyaz metinli buton, country contains, authenticated canlı filtreleme ve
 doğrudan snapshot sayfalaması ekledi; kaynak uç `71879c8`, 134 test/18 workerd.

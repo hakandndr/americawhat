@@ -1,5 +1,30 @@
 # americawhat — Current State
 
+## Son durum — staging RC hazırlığı (2026-10-15)
+
+`tmp/security-boss` artık **`codex/staging-rc`** dalında; başlangıç kabul edilmiş
+`73bc5cc08dd131235ba22e7f45ec215a68c18f5a` korunur. Güncel main
+`eaef1940d66843a2062e59d59e0eb7753d9dac1c`, normal iki-parent yerel merge
+`4a28f69aeef598fcfb926e4cc52e4897458b26e8` ile alındı. Published124 aynı;
+pending134, seen11404, fetch-status güncel; dört Git blobu incoming ile aynı,
+kayıp yok. Public kaynak data hariç onaylı `16b10a4` ile aynı.
+
+Staging config/tekrarlanabilir build `0497c8d`: Boss origin workers.dev hedefine,
+Git hedefi önerilen bağımsız sandbox depoya düzeltildi. AUD boş, URL/preview
+kapalı; production bloğu aynı. `npm run build:rc`, yalnızca çıktıdaki Random
+fallback ve RSS build tarihini sabitler; tarayıcı Random davranışı değişmez.
+136 test, 18 local workerd, 162 sayfa, statik/SEO/DOM/CSS ve iki build hash
+eşitliği başarılı; tam/dev hariç audit0. Son belge commit'i dahil tam HEAD ve
+dosya hash envanteri Git dışı `reports/rc-release-manifest.json` içindedir.
+
+Uzak GET doğrulaması: web hâlâ636936f, Boss URL kapalı, Access0/AUD boş/
+Boss secrets yok. Team domain GET403; CPU planı sahibi kontrolü bekler.
+**Yerel RC incelemeye hazır; Boss dağıtım kapıları henüz kapalı.** Depo/PAT/
+Access/AUD/secrets/URL açma, deploy, sentetik uzak yazılar ve rollback provası
+ayrı onay bekler. Push/uzak merge/deploy/gerçek veri değişikliği yapılmadı.
+[Güncel RC kaydı ve kesin plan](STAGING-PREFLIGHT.md) geçerlidir; aşağıdaki
+"merge yapılmadı" / eski sayım ve test kayıtları önceki sprintlere aittir.
+
 ## Son durum — Boss UX ve Analytics (2026-10-15)
 
 Başlangıç `3bae019`, aynı `codex/security-boss` / `tmp/security-boss` worktree’si.

@@ -11,6 +11,15 @@ assert.equal(git('status', '--porcelain'), '', 'Commit/review local changes befo
 const head = git('rev-parse', 'HEAD');
 const epoch = Number(git('show', '-s', '--format=%ct', head));
 const contentBlob = git('rev-parse', 'HEAD:src/data/published.json');
+// Approved PNGs are a frozen release input, not regenerated with an unverified renderer.
+const approvedOgBytes = fs.readFileSync('scripts/release/approved-og.json');
+const approvedOg = JSON.parse(approvedOgBytes);
+assert.equal(contentBlob, approvedOg.publishedBlob, 'New published content needs an approved OG inventory');
+assert.deepEqual(fs.readdirSync('public/og').sort(), approvedOg.files.map((f) => f.name).sort(), 'Restore the complete approved OG archive');
+for (const file of approvedOg.files) {
+  const actual = createHash('sha256').update(fs.readFileSync(path.join('public/og', file.name))).digest('hex');
+  assert.ok(actual === file.sha256, `Unapproved OG artifact: ${file.name}`);
+}
 const { items } = JSON.parse(fs.readFileSync('src/data/published.json', 'utf8'));
 assert.ok(items.every((item) => item.date && Number.isFinite(Date.parse(item.date))), 'Undated RSS items need review');
 const slugs = assignSlugs(items);
@@ -31,7 +40,7 @@ const inventory = files.map((file) => {
   const bytes = fs.readFileSync(file);
   return { path: path.relative('dist', file).replaceAll('\\', '/'), bytes: bytes.length, sha256: sha256(bytes) };
 });
-const manifest = { head, epoch, contentBlob, node: process.version, lockSha256: sha256(fs.readFileSync('package-lock.json')), files: inventory, inventorySha256: sha256(JSON.stringify(inventory)) };
+const manifest = { head, epoch, contentBlob, node: process.version, lockSha256: sha256(fs.readFileSync('package-lock.json')), approvedOgManifestSha256: sha256(approvedOgBytes), files: inventory, inventorySha256: sha256(JSON.stringify(inventory)) };
 fs.mkdirSync('reports', { recursive: true });
 fs.writeFileSync('reports/rc-static-manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 console.log(JSON.stringify({ head, files: inventory.length, inventorySha256: manifest.inventorySha256 }));

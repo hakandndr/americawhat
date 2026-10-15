@@ -1,5 +1,74 @@
 # americawhat — Operations
 
+## Staging RC'yi yeniden üretme (2026-10-15)
+
+Geçerli dal `codex/staging-rc`, worktree `tmp/security-boss`.
+Güncel izin yalnızca yerel hazırlık/salt okunur uzak kontroldür. Aşağıdaki
+tarihsel push/deploy reçeteleri bu izin kapsamında çalıştırılmaz.
+Tam SHA, temiz ağaç ve artifact hash'leri `reports/rc-release-manifest.json`;
+[kapılar ve rollout](STAGING-PREFLIGHT.md) bu belgenin tamamlayıcısıdır.
+
+Node22.23.2/npm10.9.8, kilit dosyasıyla `npm ci`. **OG yeniden üretme.**
+Onaylı125 PNG, `scripts/release/approved-og.json` içindeki SHA256'larla
+zorunlu doğrulanır. Git dışı `reports/rc-approved-og.zip` değişmez build girdisi;
+SHA256 `25b1d8cb08c0f923b544944ae1f1d0e13805cdb5a1962d06d4d60aa514c1d52a`.
+Yeni checkout'ta bu arşivi doğrulayıp içindeki og/ dizinini public/og olarak
+kur. Arşiv ayrıca korunmalı/teslim edilmeli; manifest tek başına PNG içermez.
+Mevcut bundled Python3.12.14/Pillow12.3.0, eski onaylı PNG'lerden farklı metin
+pikselleri üretti; farklar reddedildi ve tüm eski125 hash geri yüklendi.
+Eski renderer attestation'ı yoktur (eski runbook Pillow11.3.0 öneriyordu).
+Yeni yayın/OG üretimi ayrı render review ve yeni onaylı envanter ister;
+bu RC'nin girdisini sessizce yeniden üretme.
+
+```powershell
+Set-Location D:\IT\AmericaWhat\americawhat\tmp\security-boss
+# Önce manifest'teki tam SHA'yı checkout et; kaynak/lock/OG girdilerini değiştirme.
+if (git status --porcelain) { throw 'Temiz kaynak gerekli' }
+npm ci
+if ($LASTEXITCODE -ne 0) { throw 'npm ci failed' }
+# public/og, doğrulanmış rc-approved-og.zip içeriği olmalı; gen-og.py çalıştırma.
+npm test
+if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+npm run build:rc
+if ($LASTEXITCODE -ne 0) { throw 'RC build failed' }
+# reports/rc-static-manifest.json hash envanterini öncekiyle karşılaştır.
+npm run verify:static
+if ($LASTEXITCODE -ne 0) { throw 'Static failed' }
+```
+
+`build:rc` temiz ağacı zorunlu kılar, Astro build çalıştırır; çıktıda yalnızca
+nav-random fallback href'ini content blob/path hash'iyle geçerli bir habere,
+RSS lastBuildDate'i Git HEAD commit zamanına sabitler. JS Random/canonical/
+CSS/kart/public kaynak aynı. Beklenen anchor/RSS/date sözleşmesi değişirse
+durur. `reports/rc-static-manifest.json` 309 dosya için boyut/SHA256 ve toplam
+envanter hash'i içerir; onaylı OG dosya seti/hash'i farklıysa Astro'dan önce durur.
+Normal build rastgele fallback/duvar saati kullanmaya
+devam eder; final RC için tekrar normal build çalıştırılmaz. HEAD değişirse
+RSS tarihi de değişebilir: artifact'ları yeni SHA ile yeniden üret ve review et.
+
+Onaylı Astro4 baseline mevcutsa `npm run verify:refinement -- --baseline
+reports/approved-dist --staging reports/staging-home.html` ve `npm run
+verify:public-parity -- --baseline reports/approved-dist`. Bu Git dışı kanıtlar
+yeni checkout'ta onaylı16b10a4'ün ayrı local build'inden kurulmalıdır; mevcut
+çıktıyı baseline diye kopyalama. Main reconciliation nedeniyle tüm `src` için
+`--ref` kullanılmaz; bunun yerine `git diff 16b10a4 -- src
+':(exclude)src/data'` boş olmalı ve dört content blob incoming ile aynı olmalı.
+Test/baseline gevşetilmez. 162 sayfa,124 yayın,11 parça,3652 iç bağlantı aynı.
+
+Boss: kendi preview'si durdurulduktan sonra `BOSS_PREVIEW_PORT=18828` ile
+`npm run test:boss-preview`; ardından `npm run preview:boss`. Local sentetik
+state dışında işlem yok. Web loopback8817 / `.wrangler/web-test`; `npm run
+test:web-client -- http://127.0.0.1:8817`. Gerçek staging'e bu yerel test
+komutları yönlendirilmez. Dry-run outdir **mutlak yol** olmalı (Wrangler
+relative bundle yollarını Worker config dizinine göre çözer); `--dry-run
+--metafile`, RELEASE_ID tam SHA, config staging kökü. Upload yapılmaz.
+
+Full ve dev hariç audit0; script/lock değişiminden sonra gerekli kontroller
+yenilenir. Secret değerleri manifest/log/komut argümanına yazılmaz. Yalnızca
+secret isimleri ve varlık durumu kaydedilir. Uzak deployment/version UUID,
+Access ve D1 binding'leri rollout öncesi tekrar okunur; kaynak/config/main
+değişmişse bu RC'nin onayı başka uca taşınmaz.
+
 ## Güncel Boss UX/Analytics önizlemesi (2026-10-15)
 
 `codex/security-boss` / `D:\IT\AmericaWhat\americawhat\tmp\security-boss`.
