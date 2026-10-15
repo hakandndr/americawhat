@@ -16,7 +16,7 @@ const NAV = [
 
 // Match src/styles/global.css without importing Astro CSS into this Worker.
 // Small muted labels use public --dim: --dim-2 is below 4.5:1 on cards.
-// Black on brand-red buttons keeps both default and hover text above 4.5:1.
+// Filled actions use slightly darker brand reds for AA contrast with white text.
 // Semantic colours: ok = green, warn = amber (advisory only), bad = red text,
 // info = blue (environment, neutral highlights). The accent is the brand red.
 const CSS = `
@@ -24,7 +24,7 @@ const CSS = `
 --bg:#0b1120;--bg-2:#0f1830;--panel:#111c34;--panel-2:#0f1830;--sunk:#0b1120;--header:rgba(11,17,32,.82);
 --line:rgba(142,160,201,.16);--line-2:rgba(142,160,201,.28);--line-3:rgba(142,160,201,.42);--control-line:var(--muted);
 --text:#eef2ff;--muted:#8ea0c9;--faint:#8ea0c9;
---accent:#e23b4e;--accent-strong:#e23b4e;--accent-hover:#ff5468;--accent-text:#ff5468;--on-accent:#000;
+--accent:#e23b4e;--accent-strong:#d9364a;--accent-hover:#cf3044;--accent-active:#c82d41;--accent-text:#ff5468;--on-accent:#fff;
 --focus:var(--accent-text);--focus-soft:rgba(255,84,104,.12);
 --ok:#6fd3a6;--ok-soft:rgba(111,211,166,.12);--ok-line:rgba(111,211,166,.4);
 --warn:#e8b26a;--warn-soft:rgba(232,178,106,.11);--warn-line:rgba(232,178,106,.45);
@@ -80,6 +80,7 @@ input[type=file]{padding:6px;min-height:0}
 textarea{min-height:72px;line-height:1.5;resize:vertical}
 button,.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;background:var(--accent-strong);color:var(--on-accent);border:1px solid var(--accent-strong);border-radius:var(--r-sm);padding:7px 14px;font:600 13.5px var(--font);cursor:pointer;text-decoration:none;white-space:nowrap}
 button:hover,.btn:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+button:not(.secondary):not(.danger):not(:disabled):active,.btn:not(.secondary):not(.ghost):active{background:var(--accent-active);border-color:var(--accent-active)}
 button.secondary,.btn.secondary{background:transparent;color:var(--text);border-color:var(--control-line)}
 button.secondary:hover,.btn.secondary:hover{background:var(--panel-2);border-color:var(--accent-text)}
 .btn.ghost{background:transparent;border-color:transparent;color:var(--muted);font-weight:500}.btn.ghost:hover{color:var(--text);background:var(--panel-2);border-color:transparent}

@@ -14,7 +14,7 @@ test('Boss neutral/brand/header tokens match the frozen public source without sh
   for (const [target, source] of Object.entries({
     '--bg': '--night', '--bg-2': '--night-2', '--panel': '--card', '--panel-2': '--night-2', '--sunk': '--night',
     '--text': '--ink', '--muted': '--dim', '--faint': '--dim', '--line': '--line', '--line-2': '--line-strong',
-    '--accent': '--red', '--accent-strong': '--red', '--accent-hover': '--red-hot', '--accent-text': '--red-hot',
+    '--accent': '--red', '--accent-text': '--red-hot',
   })) assert.equal(value(target), pub[source], `${target} must follow public ${source}`);
   assert.equal(value('--header'), publicCss.match(/\.site-head\{[^}]*background:([^;]+)/)[1]);
   assert.ok(css.includes('.topbar{position:sticky;top:0;z-index:20;background:var(--header)'));
@@ -49,7 +49,9 @@ test('Boss small text, action states, semantic badges and focus/control boundari
     for (const key of ['--text', '--muted', '--faint', '--accent-text']) assert.ok(contrast(rgb(value(key)), bg) >= 4.5, `${key} must meet 4.5:1`);
     for (const key of ['--focus', '--control-line']) assert.ok(contrast(rgb(value(key)), bg) >= 3, `${key} must meet 3:1`);
   }
-  for (const key of ['--accent-strong', '--accent-hover']) assert.ok(contrast(rgb(value('--on-accent')), rgb(value(key))) >= 4.5, `${key} action text must meet 4.5:1`);
+  assert.equal(value('--on-accent'), '#fff', 'Filled actions must retain white text');
+  for (const key of ['--accent-strong', '--accent-hover', '--accent-active']) assert.ok(contrast(rgb(value('--on-accent')), rgb(value(key))) >= 4.5, `${key} action text must meet 4.5:1`);
+  assert.ok(css.includes('button:disabled{opacity:.5;cursor:not-allowed}'));
   for (const semantic of ['ok', 'warn', 'bad', 'info']) {
     const bg = composite(rgb(value(`--${semantic}-soft`)), rgb(value('--panel')));
     assert.ok(contrast(rgb(value(`--${semantic}`)), bg) >= 4.5, `${semantic} badge text must meet 4.5:1`);
