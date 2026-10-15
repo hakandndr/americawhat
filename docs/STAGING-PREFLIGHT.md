@@ -1,5 +1,66 @@
 # AmericaWhat — Boss renk uyumu ve staging preflight
 
+## Güncel altyapı kaydı — 2026-10-15, açık sahip onayı sonrası
+
+Önceki "sandbox yok / Access uygulaması yok / AUD boş" kayıtları eski gözlem
+ve hazırlık aşamasıdır. **Access uygulamasının mevcut olduğu sahibi tarafından
+doğrulandı; mevcut API oturumunun liste cevabı yokluk kanıtı değildir.**
+
+- GitHub sandbox private/fork değil, **yalnız dört JSON** ile başlatıldı;
+  production eaef194 snapshot'ındaki bütün blob/SHA256 değerleri aynı.
+  main ve content-staging: **58cedb3e4b265ffec44d0394072b226fbd5285e9**.
+  Actions **disabled**, workflow/fetch/FTP yok. Dört seed commit'i owner
+  author/committer kullanır; geçmiş değiştirilmedi, production main aynı.
+- Access app **932d247c-4d98-479e-a8c8-50da8a0550d1**, hesap
+  **c8999b29b2123e2f9634248c58f43f14**; team **dndrnet.cloudflareaccess.com**;
+  worker americawhat-boss-staging; policy **dndr-staging-owner-only**, yalnız
+  **hakan@dndr.net**, **All traffic**. Bunlar sahibinin doğruladığı değerlerdir.
+  Yerel staging AUD:
+  `f750490dc8657f942cf2eb7af70137e0f00bd19c9b437e7d82b0f0f2fd8b194b`.
+  API policy içeriği henüz bağımsız doğrulanamadı.
+- `GET /accounts/{account}/access/apps/932d247c-4d98-479e-a8c8-50da8a0550d1`
+  ve aynı app'in `/policies` GET'i **HTTP403, code1010, auth.forbidden**.
+  Organization GET'i **HTTP403, code10000, Authentication error**.
+  Mevcut Wrangler OAuth tokenPermissions listesinde Access scope yok.
+  App/policy için gereken minimum izin **Access: Apps and Policies Read**;
+  org için **Access: Organizations, Identity Providers, and Groups Read**.
+  Write/admin izin genişletmesi gerekmez. Yeni token bu sprintte oluşturulmadı.
+  [App izinleri](https://developers.cloudflare.com/api/resources/zero_trust/subresources/access/subresources/applications/methods/get/),
+  [Organization izinleri](https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/organizations/methods/list/).
+- Uygulama/policy yeniden oluşturulmadı, Cloudflare hesap ayarı değişmedi.
+  Yerel/uzak Boss workers.dev ve previews **kapalı**. Local origin doğru;
+  uzak origin/repo/AUD vars eski hâlinde; güncelleme bu onayın kapsamında değil.
+  APP_DB ve ANALYTICS_DB mevcut doğru staging ID'leriyle aynı; veri/şema yok.
+- GitHub PAT sahibi oluşturdu, bitiş2026-11-14; değer alınmadı/yazdırılmadı.
+  Runtime PAT seçilmiş repo/izinleri bağımsız doğrulanmadı. Provisioning için
+  kullanılan mevcut owner gh yönetim oturumu staging PAT değildir ve Worker'a
+  kurulmadı. Production GET200 veya yönetim oturumu repo.permissions.push
+  runtime PAT scope kanıtı sayılmaz. Production negatif yazma testi yapılmaz.
+  **GITHUB_TOKEN ve BOSS_CSRF_SECRET uzakta hâlâ yok**; secret kurulumu ayrı,
+  güvenli işlem gerektirir. Secret değeri sohbete/rapora/Git'e konmaz.
+
+OG125 + orijinal zip hash'i **25b1d8cb08c0f923b544944ae1f1d0e13805cdb5a1962d06d4d60aa514c1d52a**
+doğrulandı. İkinci byte/hash eşit backup, repo dışındaki
+`C:\Users\Hakan\.codex\visualizations\2026\10\15\01a13de0-e293-7e11-b729-33732ac6f77e\AmericaWhat-RC-backup`
+dizininde; `.gitignore=*`, Git'e alınmaz. OG yeniden üretilmedi.
+
+Config AUD değiştiğinden yeni yerel commit/tam SHA ve artifact manifest üretimi
+zorunludur; güncel kayıt **reports/infra-release-manifest.json**, statik envanter
+**reports/infra-static-manifest.json**. Önceki4ba890c raporları ve backup korunur.
+Uygulama/public kaynak/lock/migration aynı: gereksiz npm ci/audit/full136/workerd18
+tekrarı yok; auth/CSRF/release regresyonu, config guard/types, RC build iki tur,
+static/approved parity ve staging dry-run yeni tam SHA için kaydedilir.
+
+Sonraki işler: mevcut app/policy için gerekli Read erişimiyle API doğrulaması
+veya sahibi dashboard incelemesinin kaydı; PAT ekranında yalnız sandbox /
+Contents RW / Metadata read kapsam kanıtı; güvenli bağımsız CSRF ve PAT secret
+hazırlığı; uzak vars uyumu. **Bu sprint Web/Boss deploy veya URL açma izni yok.**
+Vars/secret yönteminin yeni sürüm/deployment yaratıp yaratmadığı uygulanmadan
+kontrol edilir; `wrangler secret put` doğrudan çalıştırılmaz. Sonraki ayrıca
+onaylı deploy gerçek tamamlanmış config/yeni tam SHA ile yapılır; şu anki
+kapalı Worker config'i üretime açık Boss RC'si sayılmaz. D1/retention/oy/log,
+Hostinger/mail/DNS ve diğer projeler korunur.
+
 ## Geçerli kayıt — staging release candidate hazırlığı (2026-10-15)
 
 Bu bölüm aşağıdaki eski "merge yapılmadı", b1312bf, config origin/repo ve

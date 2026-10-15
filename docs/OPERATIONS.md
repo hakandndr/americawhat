@@ -1,5 +1,24 @@
 # americawhat — Operations
 
+## Staging altyapısı sonrası geçerli kapı (2026-10-15)
+
+Sandbox repo oluşturuldu/seed edildi: yalnız4 JSON; main ve content-staging
+58cedb3e4b265ffec44d0394072b226fbd5285e9; Actions disabled. Production main'e
+push/merge yok. Mevcut Access app ve owner-only policy bilgisi sahibi tarafından
+doğrulandı; doğrudan API GET403/1010, org403/10000. OAuth Access read scope'u
+yok. STAGING-PREFLIGHT'ın yeni üst bölümü exact hata/izin ve onay sınırıdır.
+Uygulamayı/policy'yi yeniden oluşturma. Gerçek AUD yerel config'te; workers.dev
+ve previews kapalı, production aynı. Runtime PAT/CSRF secret yok/kurulmadı.
+
+Yeni yerel SHA/hash: reports/infra-release-manifest.json; statik manifest:
+reports/infra-static-manifest.json. Önceki4ba890c raporları/zip korunur.
+build:rc sabit rc-static-manifest.json çıktısını yazar; yeni turda önce eski
+manifest'i koru, yeni sonucu infra-static-manifest.json olarak kaydet, tarihsel
+rc-static-manifest.json dosyasını geri koy. OG üretme; mevcut125 onaylı dosyayı
+ve dış backup hash'ini kullan. Config-only değişimde auth/CSRF/release odaklı
+testler + config/types/build/parity/dry-run gerekir; eski136/18 sonuçları yeni
+tam turmuş gibi raporlanmaz. Bu sprint deploy komutları çalıştırılmaz.
+
 ## Staging RC'yi yeniden üretme (2026-10-15)
 
 Geçerli dal `codex/staging-rc`, worktree `tmp/security-boss`.

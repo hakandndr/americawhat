@@ -1,5 +1,25 @@
 # americawhat — Handoff
 
+## Son devir — staging sandbox kuruldu (2026-10-15)
+
+Dal/worktree aynı: codex/staging-rc / tmp/security-boss. Sahibi açık onayından
+sonra yalnız sandbox repo başlatıldı, content-staging oluşturuldu ve Actions
+kapatıldı. Dört JSON eaef194 ile aynı; iki dal58cedb3e4b265ffec44d0394072b226fbd5285e9.
+Production main değişmedi. Başlangıç GitHub commit'leri owner author/committer;
+API'de kimliği açıkça belirlemek için mevcut yönetim CLI oturumuyla REST kullanıldı.
+Bu yönetim credential'ı Worker'a kopyalanmadı; staging PAT kapsam kanıtı değildir.
+
+Access app932d247c-4d98-479e-a8c8-50da8a0550d1 mevcut/sahibi doğruladı; AUD
+yerel config'e alındı. API app/policy403/1010; org403/10000; OAuth'ta Access
+scope yok. Uygulama/policy yeniden yaratılmaz veya değiştirilmez. Yalnız owner
+email/All traffic bilgisi sahibi doğrulamasıdır; API bağımsız kontrolü bekler.
+Boss route/previews kapalı, production aynı; secret kurulmadı, deploy yok.
+
+Final yerel SHA/config/hash/yalnız gerekli kontrol sonuçları
+reports/infra-release-manifest.json. Önceki136/18 sonuçları geçerli kaynak
+tabanıdır; bu tur auth/CSRF/release odaklı regresyon + config/build/parity/dry-run
+yeterlidir. OG üretme; onaylı zip ve depo dışı backup receipt korunur.
+
 ## Son devir — yerel staging RC (2026-10-15)
 
 Çalışma alanı `D:\IT\AmericaWhat\americawhat\tmp\security-boss`, dal

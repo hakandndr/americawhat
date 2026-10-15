@@ -1,5 +1,28 @@
 # americawhat — Current State
 
+## Son durum — onaylı staging altyapı hazırlığı (2026-10-15)
+
+Private/fork olmayan `hakandndr/americawhat-staging-content` onayla başlatıldı.
+Yalnız dört JSON, eaef194 snapshot'ıyla blob/SHA256 aynı; main ve content-staging
+**58cedb3e4b265ffec44d0394072b226fbd5285e9**. Actions kapalı, workflow yok;
+dört başlangıç commit'inin author/committer'ı Hakan Dundar <hakan@dndr.net>.
+Production main eaef194 aynı; uygulama production main'e merge edilmedi.
+
+Mevcut Access app **932d247c-4d98-479e-a8c8-50da8a0550d1** sahibi tarafından
+doğrulandı: dndrnet.cloudflareaccess.com, dndr-staging-owner-only, yalnız
+hakan@dndr.net, bu Worker için All traffic. Yerel staging config gerçek AUD'yi
+içerir; URL/previews kapalı, production config aynı. Doğrudan app/policy GET
+403/1010 auth.forbidden; org GET403/10000 Authentication error. Wrangler OAuth
+scope listesinde Access izinleri yok; eski boş listeden uygulama yokluğu
+çıkarılmaz. API bağımsız policy doğrulaması eksik; uygulama yeniden oluşturulmadı.
+
+PAT sahibi tarafından oluşturuldu (2026-11-14 bitiş); token/kapsamı alınmadı.
+Uzak GITHUB_TOKEN/BOSS_CSRF_SECRET hâlâ yok; D1 binding'leri doğru. Cloudflare
+hesap ayarı/deploy/URL açılışı/gerçek veri işlemi yapılmadı. Yeni config commit'i
+ve artifact manifest'i `reports/infra-release-manifest.json`; önceki4ba890c RC
+raporları tarihsel olarak korunur. OG125/arşiv ve depo dışı ikinci yedek doğrulandı.
+Sonraki kapılar ve exact API izinleri STAGING-PREFLIGHT'ın en üstündedir.
+
 ## Son durum — staging RC hazırlığı (2026-10-15)
 
 `tmp/security-boss` artık **`codex/staging-rc`** dalında; başlangıç kabul edilmiş

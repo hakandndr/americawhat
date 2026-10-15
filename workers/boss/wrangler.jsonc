@@ -20,8 +20,8 @@
     "BOSS_ORIGIN": "https://americawhat-boss-staging.hakan-c89.workers.dev",
     "BOSS_ALLOWED_EMAILS": "hakan@dndr.net",
     "BOSS_ACCESS_TEAM_DOMAIN": "dndrnet.cloudflareaccess.com",
-    "BOSS_ACCESS_AUD": "",
-    // Proposed isolated repository; creation and credential setup still require approval.
+    "BOSS_ACCESS_AUD": "f750490dc8657f942cf2eb7af70137e0f00bd19c9b437e7d82b0f0f2fd8b194b",
+    // Independent staging repository; the runtime credential must be scoped only to it.
     "BOSS_GITHUB_REPOSITORY": "hakandndr/americawhat-staging-content",
     "BOSS_GITHUB_BRANCH": "content-staging",
     "BOSS_COMMIT_AUTHOR_NAME": "Hakan Dundar",
