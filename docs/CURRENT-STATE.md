@@ -1,21 +1,21 @@
 # americawhat — current state
 
-Single source of truth for what is live. Verified 2026-10-16 20:55 UTC
-(release 2ef6a57). Update the tables in place when something changes.
+Single source of truth for what is live. Verified 2026-10-16 21:40 UTC
+(release 03e6c1b). Update the tables in place when something changes.
 
 ## Production (Cloudflare Workers, live since 2026-10-16 04:02 UTC)
 
 | Item | Value |
 |---|---|
-| Source | `main` @ **2ef6a57** (GitHub `hakandndr/americawhat`, merge of PR #13 over PR #12's 8a9cf35; deploy run 38965061169, owner-approved) |
-| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `2c785866-179f-4871-975b-18ce3cc1f8ae`; binding `DNDR_COLLECTOR` → `dndr-collector#ProducerApi` (`prd_americawhat_native`), cron `*/15 * * * *` (DNDR outbox recovery) |
-| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `ca9420f0-1896-4399-85b9-1de6a4b8be0a`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
-| Previous versions (rollback) | Web `a1190c3c-bf76-45c4-ade3-ee67b9244158`, Boss `92a81be7-9187-4dcc-9844-53c9b09205e0` (release 8a9cf35); before that Web `55912dc3…`, Boss `187c1ab2…` (09c90da) |
-| Health | `/api/health`: status ok, environment production, release 2ef6a57, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
+| Source | `main` @ **03e6c1b** (GitHub `hakandndr/americawhat`): signed Boss content commit (aw-0141) deployed automatically to Web by run 38969184397 (`production-content`, no approval) over the owner-approved baseline 224a1ae (run 38968358107; code = 2ef6a57 + docs) |
+| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `f7b6d7be-7c53-43c5-9607-71cf4d45ef96` (content 03e6c1b); binding `DNDR_COLLECTOR` → `dndr-collector#ProducerApi` (`prd_americawhat_native`), cron `*/15 * * * *` (DNDR outbox recovery) |
+| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `9b5217b0-7a13-4afe-96f7-53d9d286d355` (224a1ae; holds `BOSS_CONTENT_SIGNING_KEY`), behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
+| Previous versions (rollback) | Web `d2d22121-5134-4c64-bfeb-fa0e4094a15e` (baseline 224a1ae), Boss `8007211d-8e33-462d-8624-1936ff45afd0` (2ef6a57 + signing key); before that Web `2c785866…`, Boss `ca9420f0…` (2ef6a57); Web `a1190c3c-bf76-45c4-ade3-ee67b9244158`, Boss `92a81be7-9187-4dcc-9844-53c9b09205e0` (release 8a9cf35); before that Web `55912dc3…`, Boss `187c1ab2…` (09c90da) |
+| Health | `/api/health`: status ok, environment production, release 03e6c1b, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
 | D1 | `americawhat-app-production` `3097933b-4feb-4e50-bb59-760fd06a640e`, `americawhat-analytics-production` `1012183d-96cd-4d7f-8e93-ca247ca43589` (WNAM, migration 0001 each) |
 | Analytics | 1,083 legacy events (Hostinger log S1, imported idempotently; ledger 1,084 incl. 1 line without a page) + native page views since cutover (30 at 20:50 UTC; collection re-verified after the release) |
 | Reactions | S1 baseline **applied** through Boss: 1 import (`baseline`, 14 items, +19 votes); live votes are added on top (21 in total at the time of writing) |
-| Content | 129 published stories (all 129 item pages and 156 sitemap URLs answer 200 after the release), 30 pending candidates (Boss shows the live count beside Published); 125 approved OG images (frozen archive, 124 stories + default); stories approved later (aw-0136 onward) get their image from the pinned renderer at release (`gen-og.py --missing`); the RSS fetch keeps adding candidates three times a day |
+| Content | 130 published stories (aw-0141 live with its OG image after the automatic content deploy), 29 pending candidates (Boss shows the live count beside Published); 125 approved OG images (frozen archive, 124 stories + default); stories approved later (aw-0136 onward) get their image from the pinned renderer at release (`gen-og.py --missing`); the RSS fetch keeps adding candidates three times a day |
 | HTTPS | Cloudflare certificates on all three hostnames; `http://` → 301 `https://` |
 
 Fixed after cutover (both live): Boss form POSTs were refused as
@@ -43,7 +43,7 @@ story column with live URLs; Reactions search/sort; full Analytics).
 | Feature | State |
 |---|---|
 | Boss redesign (PR #12) | **Live** — 8a9cf35 |
-| Automatic Web-only deploy of signed Boss content (`production-content`) | **Deployed, not enabled** — awaiting owner setup: Environment, Web-only token, Ed25519 key, `CF_CONTENT_DEPLOY_ENABLED` ([DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup)). Until then every release, news included, waits for `production` approval |
+| Automatic Web-only deploy of signed Boss content (`production-content`) | **Live** since 2026-10-16 21:26 UTC: Environment `production-content` (branch `main` only, no reviewer, admin bypass off) with its own Web-only token (owner-created, expiring); Ed25519 proof key in production Boss only, `BOSS_CONTENT_PUBLIC_KEY` and `CF_CONTENT_DEPLOY_ENABLED=true` set. Accepted live with aw-0141 (run 38969184397: `content_deploy` ok, `deploy` skipped, 0 approvals). Any non-content commit since the live release (docs included) sends the next news to `production` review ([DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup)) |
 | DNDR forwarding (`prd_americawhat_native`) | **Live** since 2ef6a57 (2026-10-16 20:52 UTC). DNDR registry rows applied and read back (owner-approved); two-sided check: one visit, same `event_uid` and path in both systems, counted once, no other site changed. Outbox recovery cron `*/15`. Cutover gap: Open items 4 |
 
 - `ci.yml`: tests and builds every push except `main` and every PR; no secrets.
