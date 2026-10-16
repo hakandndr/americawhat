@@ -85,6 +85,17 @@ available on the owner's plan. Verified through the GitHub API after creation:
 | Repository variable | `CF_PRODUCTION_DEPLOY_ENABLED` — **unset** (0 repository variables, checked) until cutover step "enable CI deploys" |
 | Repository secrets `FTP_SERVER`/`FTP_USERNAME`/`FTP_PASSWORD` | keep until the Hostinger rollback window ends (they are used only by the `hostinger-final` tag), then delete |
 
+Self-review (checked 2026-10-15): the only collaborator and the only reviewer
+is `hakandndr`, who also starts every run (manual dispatch, or a Boss/owner
+commit pushed to `main`). GitHub's "Prevent self-review" stops the person who
+triggered a run from approving it; with a single reviewer that would block
+every deployment, and `can_admins_bypass=false` would leave no way out. It
+is therefore deliberately **off** (`prevent_self_review=false`, verified via
+the API for both Environments). The approval still happens as a separate,
+recorded click, and the other gates (main only, opt-in variable, config
+check, admin bypass off) are unchanged. Turn it on only after a second
+reviewer account is added to the Environment.
+
 Add each token without echoing it (the command prompts for the value):
 
 ```bash
