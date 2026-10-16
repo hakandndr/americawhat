@@ -10,7 +10,7 @@ import { checkCsrf, csrfToken } from './csrf.mjs';
 import { addManual, deletePublished, editPublished, EditorialError, publishedItems, serialize } from './editorial.mjs';
 import { CONTENT_PATHS, createGitHub, githubConfig } from './github.mjs';
 import { errorPage, flashFrom, htmlResponse, redirect, envBar } from './html.mjs';
-import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, summary, top, daily, pagination, numberedStream, ipActivity } from './analytics-db.mjs';
+import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, summary, top, daily, pagination, numberedStream, newerCount, ipActivity } from './analytics-db.mjs';
 import {ipActivityParams} from './analytics-links.mjs';
 import {renderIpActivity} from './pages/ip-activity.mjs';
 import { exportResponse } from './export.mjs';
@@ -180,6 +180,9 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
     }
     if (path === '/analytics' && method === 'GET') {
       const f = parseFilters(url.searchParams, now);
+      // A URL without snapshot is the live view: it always shows the newest records
+      // and keeps its clean address. Only paging links pin an upper ALL #.
+      const pinned = f.snapshot != null;
       const plan = await pagination(adb, f);
       f.snapshot = plan.snapshot;
       f.p = plan.current;
@@ -189,8 +192,9 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
         adb.prepare('SELECT corpus_id, content_sha256, line_count, summary_json FROM analytics_import_corpora ORDER BY imported_at').all().then((r) => r.results),
         adb.prepare('SELECT state, COUNT(*) AS n FROM dndr_outbox GROUP BY state').all().then((r) => r.results),
       ]);
+      const newer = pinned ? await newerCount(adb, f, plan.snapshot) : 0;
       if (streamPage.changed || sum.view.events !== plan.total) return errorPage(409, 'The retained log changed while loading. Reload to refresh this view.');
-      return htmlResponse(renderAnalytics({ identity, flash, f, sum, days, tops: { page, country, referrer, agent }, streamPage, retention, coverage, corpora, outbox }), 200, { analyticsScript: true });
+      return htmlResponse(renderAnalytics({ identity, flash, f, sum, days, tops: { page, country, referrer, agent }, streamPage, retention, coverage, corpora, outbox, pinned, newer }), 200, { analyticsScript: true });
     }
     if (path === '/analytics/export' && method === 'GET') {
       const format = url.searchParams.get('format') === 'ndjson' ? 'ndjson' : 'csv';
