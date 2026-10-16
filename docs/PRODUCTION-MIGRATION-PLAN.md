@@ -42,6 +42,17 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 
 ## Cutover (one window, in this order)
 
+**Cutover log (2026-10-16, owner-authorized):** step 1 freeze declared (no
+Hostinger Boss approvals); step 2 tag `hostinger-final` → `36e1c9b` pushed
+(tag object a4b65051, no workflow ran); step 3 `reconcile-main.mjs` ok
+(published 124, pending 146, seen 11,492; main-only commits are fetch data);
+baseline backup hashes re-verified. **Stopped at step 4:** the final
+`aw_panel_log.txt` / `aw_votes.json` are not reachable over HTTP (403 by
+`analytics/.htaccess`) and no FTP/hPanel access exists in this session; the
+owner downloads them (hPanel → File Manager → `public_html/analytics/`) into
+`D:\PrivateBackups\AmericaWhat\<date>-final-s1\`. No merge, Worker release or
+routing change has happened.
+
 1. **Freeze editorial.** No Boss approvals on Hostinger from here on. The
    fetch workflow may keep running (it only touches candidate files).
 2. **Tag the rollback source:** `git tag hostinger-final origin/main` and push
