@@ -189,7 +189,7 @@ legend{font-size:14px;color:var(--muted);padding:0 8px}
 /* Data surfaces keep their reading size; only their own viewport scrolls. */
 .table-card{overflow:hidden;margin-bottom:20px}
 .scroll,.event-scroll{overflow-x:auto;overscroll-behavior-x:contain;max-width:100%;scrollbar-color:var(--muted) var(--bg-2)}
-.event-scroll{position:relative;max-height:75dvh;overflow:auto}
+.event-scroll{position:relative;max-height:75dvh;overflow:auto;container-type:inline-size}
 .scroll:focus-visible,.event-scroll:focus-visible{outline-offset:-3px}
 
 table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
@@ -461,7 +461,7 @@ details[open]>summary{margin-bottom:16px}
 .event-details>summary{display:block;width:max-content;margin-left:auto;font-size:13px;border:1px solid var(--info-line);border-radius:6px;padding:5px 9px;list-style:none}
 .event-details>summary::-webkit-details-marker{display:none}
 .event-details>summary:hover{background:var(--info-soft)}
-.event-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 28px;padding:24px;background:var(--sunk);border-radius:8px;margin:16px 0}
+.event-fields{position:sticky;left:20px;width:calc(100cqw - 40px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 28px;padding:24px;background:var(--sunk);border-radius:8px;margin:16px 0}
 .event-fields>div{min-width:0}
 .event-fields dt{font-size:12px;color:var(--muted);margin-bottom:4px}
 .event-fields dd{margin:0;overflow-wrap:anywhere;font-size:14px}
