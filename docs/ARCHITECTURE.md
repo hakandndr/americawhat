@@ -98,10 +98,15 @@ newly stored native row; the event id is the row's `event_uid`, so retries are
 idempotent on the DNDR side. A failure is recorded in `dndr_outbox` and never
 affects the visitor or the source row.
 
-The binding is **not configured** in any environment: enabling it requires a
-new DNDR producer registration, which is a change to the DNDR platform and needs
-separate approval. Legacy (imported) rows are never forwarded; DNDR already holds
-that history (see `ANALYTICS.md` §6).
+Only production forwards (staging has no binding and `forwardingEnabled`
+refuses every other environment). The production binding is
+`dndr-collector#ProducerApi` with `props.producerId = prd_americawhat_native`
+(DNDR site `site_americawhat`); `check-config` refuses any other binding. A
+15-minute cron resends pending/failed copies from the last 6 hours, bounded and
+attempt-limited; DNDR dates PAGE events on receipt, so older gaps are a reviewed
+import, not a retry. The producer must be registered on the DNDR side before
+this is deployed (DNDR change, separate approval). Legacy (imported) rows are
+never forwarded; DNDR already holds that history (see `ANALYTICS.md` §5).
 
 ## 6. Security boundaries
 

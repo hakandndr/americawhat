@@ -17,7 +17,7 @@ import { json, methodNotAllowed, readBody, safeEqual } from '../../shared/http.m
 import { schemaHealth } from '../../shared/schema.mjs';
 import { nowSeconds } from '../../shared/time.mjs';
 import { buildNativeEvent, storeNativeEvent } from './collector.mjs';
-import { dndrPageEvent, forwardAndRecord, forwardingEnabled } from './dndr-forward.mjs';
+import { dndrPageEvent, forwardAndRecord, forwardingEnabled, retryOutbox } from './dndr-forward.mjs';
 import { parseIds, readCounts, recordReaction } from './reactions.mjs';
 import { isHomepageRequest, serveHomepage } from './trending.mjs';
 
@@ -181,5 +181,10 @@ export default {
       response.headers.set('X-Robots-Tag', 'noindex, nofollow');
     }
     return response;
+  },
+  // Cron (production only): recovers DNDR copies that failed or never left.
+  async scheduled(event, env, ctx) {
+    if (!forwardingEnabled(env) || !env.SITE_HOSTNAME) return;
+    ctx.waitUntil(retryOutbox(env, env.ANALYTICS_DB, Math.floor(Date.now() / 1000), env.SITE_HOSTNAME));
   },
 };

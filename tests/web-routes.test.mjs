@@ -134,7 +134,7 @@ test('per-address rate limit drops excess events without failing the visitor', a
 test('DNDR forwarding: source row first, outbox records the outcome, failure never blocks', async () => {
   const calls = [];
   const collector = { recordPage: async (e) => { calls.push(e); return { status: 'accepted' }; } };
-  const { env } = makeEnv({ DNDR_COLLECTOR: collector });
+  const { env } = makeEnv({ DNDR_COLLECTOR: collector, ENVIRONMENT: 'production' });
   const c = { pending: [], waitUntil(p) { this.pending.push(p); } };
   const body = `path=%2F&referrer=&evt=${UUID}`;
   await worker.fetch(req('/analytics/log_df.php', { method: 'POST', body }), env, c);
@@ -144,7 +144,7 @@ test('DNDR forwarding: source row first, outbox records the outcome, failure nev
   assert.equal(env.ANALYTICS_DB.sqlite.prepare('SELECT state FROM dndr_outbox').get().state, 'sent');
 
   const failing = { recordPage: async () => { throw new Error('down'); } };
-  const second = makeEnv({ DNDR_COLLECTOR: failing });
+  const second = makeEnv({ DNDR_COLLECTOR: failing, ENVIRONMENT: 'production' });
   const c2 = { pending: [], waitUntil(p) { this.pending.push(p); } };
   const res = await worker.fetch(req('/analytics/log_df.php', { method: 'POST', body }), second.env, c2);
   await Promise.all(c2.pending);
@@ -203,9 +203,10 @@ test('staging stores no real visitor: only requests with the staging test key ar
   assert.equal(visitCollectionAllowed(new Request('https://americawhat.com/'), { ENVIRONMENT: 'production' }), true);
 });
 
-test('staging config binds no DNDR collector and production config has none yet', async () => {
+test('staging (top-level) config binds no DNDR collector', async () => {
   const fs = await import('node:fs');
   const cfg = fs.readFileSync(new URL('../workers/web/wrangler.jsonc', import.meta.url), 'utf8');
-  assert.doesNotMatch(cfg, /"services"\s*:/);
-  assert.doesNotMatch(cfg, /DNDR_COLLECTOR/);
+  const staging = cfg.slice(0, cfg.indexOf('"env"'));
+  assert.doesNotMatch(staging, /"services"\s*:/);
+  assert.doesNotMatch(staging, /DNDR_COLLECTOR/);
 });

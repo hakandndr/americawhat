@@ -208,6 +208,17 @@ jobs:
           code="$(curl -s -o /dev/null -w '%{http_code}' "$BOSS_URL/")"
           echo "Boss anonymous: $code"
           [ "$code" = 302 ] && printf '%s' "$location" | grep -q '\.cloudflareaccess\.com/'
+      # Versions do not carry cron triggers, and `wrangler triggers deploy`
+      # would also re-apply routes. This sets ONLY the Web Worker's schedules
+      # (DNDR outbox recovery) from the reviewed config. Not visitor-facing:
+      # a failure here warns and never rolls the release back.
+      - name: Apply Web cron schedules from the reviewed config (schedules only)
+        continue-on-error: true
+        run: |
+          body="$(node scripts/release/cf-release.mjs schedules "${{ needs.plan.outputs.target }}")"
+          curl -fsS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            --data "$body" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$WEB/schedules" > /dev/null
+          echo "Web schedules: $body"
       - name: Roll back on failure
         if: failure() && (steps.web_deploy.outcome == 'success' || steps.boss_deploy.outcome == 'success')
         run: |

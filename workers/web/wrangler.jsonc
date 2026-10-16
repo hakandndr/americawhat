@@ -57,6 +57,14 @@
       // public request (edge Trending is one D1 read), so a runaway request
       // fails fast instead of running up to the 30 s default.
       "limits": { "cpu_ms": 1000 },
+      // A copy of each stored native page view goes to DNDR Analytics
+      // (site_americawhat) as producer prd_americawhat_native; the producer
+      // identity is these props, never the event. Staging has no binding.
+      "services": [
+        { "binding": "DNDR_COLLECTOR", "service": "dndr-collector", "entrypoint": "ProducerApi", "props": { "producerId": "prd_americawhat_native" } }
+      ],
+      // Outbox recovery for copies that failed or never left (dndr-forward.mjs).
+      "triggers": { "crons": ["*/15 * * * *"] },
       "observability": { "enabled": true }
     }
   }
