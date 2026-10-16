@@ -1,5 +1,15 @@
 # americawhat — Cloudflare migration and release runbook
 
+> **HISTORICAL RUNBOOK — do not execute from this file.** As of 2026-10-15
+> the authoritative documents are [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md)
+> (cutover and rollback), [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md)
+> and [DEPLOYMENT.md](DEPLOYMENT.md). Dangerous outdated parts: merging
+> `dev/cloudflare-native` into `main` (§0, §1 pre-merge checks), keeping the
+> FTP deploy active after cutover (§4.5), "Workers plan unknown" (now Workers
+> Paid), Boss Access "missing" (exists on staging). §1 (Hostinger inventory)
+> and §2 (DNS requirements) remain useful reference.
+
+
 > **2026-10-15:** Güncel sıra, kaynak durumu ve bu belgenin güncelliğini
 > yitiren bölümleri [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md)
 > içindedir. Merge kaynağı artık `codex/staging-rc` (uzak yedek

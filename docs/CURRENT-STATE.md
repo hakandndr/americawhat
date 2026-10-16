@@ -1,5 +1,64 @@
 # americawhat — Current State
 
+## Authoritative status — production migration preparation (2026-10-15, evening)
+
+Read this section first. Everything below it is a dated **historical log**;
+where it disagrees with this section, this section wins.
+
+### Owner-confirmed facts
+- Cloudflare **Workers Paid** and **R2 Paid** are active (billing dashboard,
+  October 2026: no additional usage charges). The Free-plan 10 ms CPU concern
+  is resolved; production configs set explicit `limits.cpu_ms` ceilings.
+- Hostinger **baseline backup** completed (private folder outside the
+  repository, `D:\PrivateBackups\AmericaWhat\2026-10-15-baseline`) with a SHA-256 inventory
+  manifest; the six key files verified by the owner. These are NOT the final
+  analytics/vote snapshots.
+- Source backup branch `backup/cloudflare-staging-2026-10-15` (0281ef5) exists on GitHub.
+- Staging Web (c08cdfc) and Boss (209aa9e) are operational and accepted (UI,
+  typography, footer, Trending, Boss Analytics). No further redesign.
+- Hostinger stays active for **email** after the web migration.
+
+### Deployed to staging
+- Web `americawhat-web-staging` release c08cdfc (version 1346af78-327b-434d-8cd1-294d0bf39dc3).
+- Boss `americawhat-boss-staging` release 209aa9e (version 855652dd-d155-42db-a719-9c363256ab42).
+
+### Implemented locally on `codex/staging-rc` — committed, not pushed, not deployed
+| Commit | What |
+|---|---|
+| 7861020 | Approved 125-image OG archive committed and frozen; pinned, deterministic renderer for new stories ([OG-IMAGES.md](OG-IMAGES.md)) |
+| ef24272 | FTP deploy retired; gated deploy and rollback workflows; release gates and config checks; production CPU limits; production Boss target guard ([DEPLOYMENT.md](DEPLOYMENT.md)) |
+| 222bd9e | Read-only pre-merge content reconciliation (reconcile-main.mjs) |
+| docs commit | This consolidation, [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md), [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md) |
+
+The static output of this branch equals the staged 209aa9e package except
+rss.xml (commit-time date), so no visible change is pending.
+
+### Verified locally (2026-10-15)
+- Full test suite green, including workflow structure, release gates, OG pipeline and reconciliation.
+- The OG renderer reproduces all 125 approved images (Windows: bytes, Linux: pixels).
+- log_df.php accepts the POST beacon; legacy log and vote imports are
+  idempotent on the baseline copy ([HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md)).
+- Merging with origin/main 36e1c9b is conflict-free and loses no content.
+
+### Not verified / assumptions
+- GitHub-side behaviour of the new workflows (never run on GitHub; the
+  Environments, variable and tokens do not exist yet).
+- That the americawhat.com zone can be added to this Cloudflare account
+  without conflicts (nameservers are still Hostinger's).
+- Owner-session live Boss flows on staging.
+
+### Production prerequisites still open
+[PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md) P8–P12: push the
+branch for review, DNS zone on Cloudflare, production D1/Access/secrets/
+Workers/CI token, DNDR producer (or an accepted gap), privacy-retention wording,
+staging visitor rows. **The final aw_panel_log.txt / aw_votes.json snapshots
+stay pending until the cutover window.**
+
+### Untouched
+Hostinger files, DNS, main, production Cloudflare resources and every other
+project were not changed by this preparation.
+
+
 ## Son durum — Country · City düzeltmesi, kaynak yedeği, göç planı (2026-10-15)
 
 Boss 209aa9e6bf144052eaa2ff637aad36d8fe63157a, version

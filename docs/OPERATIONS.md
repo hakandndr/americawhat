@@ -1,5 +1,11 @@
 # americawhat — Operations
 
+> **2026-10-15:** Deployment after cutover: [DEPLOYMENT.md](DEPLOYMENT.md).
+> OG images: [OG-IMAGES.md](OG-IMAGES.md) (`npm run build:og` now renders only
+> missing images and never touches `public/og/`). §5 "Deploy chain" (FTP) is
+> historical: merging the release branch retires the FTP deploy.
+
+
 ## Geçerli release — responsive Analytics/IP activity (2026-10-15)
 
 720be24 staging rollout, exact UUID ve rollback hedefleri

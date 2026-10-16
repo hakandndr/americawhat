@@ -1,130 +1,108 @@
-# AmericaWhat — production geçiş planı (hazırlık, 2026-10-15)
+# americawhat — Production migration plan (authoritative, 2026-10-15)
 
-Bu belge yalnız plan ve tespittir. Hiçbir production kaynağı, D1, DNS kaydı,
-Hostinger dosyası veya `main` dalı değiştirilmedi. Her adım ayrı owner onayı
-ister. Eski runbook [CLOUDFLARE-MIGRATION.md](CLOUDFLARE-MIGRATION.md) ayrıntı
-kaynağıdır; aşağıdaki "güncelliğini yitirenler" listesi onun hangi kısımlarının
-bu plana göre okunacağını söyler.
+Supersedes the Turkish plan of the same date (git history) and the cutover /
+rollback parts of [CLOUDFLARE-MIGRATION.md](CLOUDFLARE-MIGRATION.md). Each
+numbered step needs its own owner approval. Nothing below has been executed
+in production.
 
-## Kaynak durumu (doğrulandı)
+Companion documents: [DEPLOYMENT.md](DEPLOYMENT.md) (CI/CD),
+[PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) (exact commands),
+[OG-IMAGES.md](OG-IMAGES.md), [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md).
 
-| Ref | SHA | Not |
+## Source of truth
+
+| Ref | SHA | Meaning |
 |---|---|---|
-| Yerel `codex/staging-rc` = uzak yedek `backup/cloudflare-staging-2026-10-15` | 209aa9e (+ bu belge commit'i) | Tüm onaylı staging işi; owner kimliği; CI başarılı |
-| `origin/dev/cloudflare-native` | 4438907 | Yedeğin tam atası (31 commit geride, 0 ileride) |
-| `origin/main` | 9f6c3fc | Ortak ata eaef194; main'de yedekte olmayan tek commit 9f6c3fc |
+| local `codex/staging-rc` | 222bd9e + docs commit | Release branch: staging work + production preparation (not pushed) |
+| `origin/backup/cloudflare-staging-2026-10-15` | 0281ef5 | Source backup of the staged code; ancestor of the local branch |
+| `origin/dev/cloudflare-native` | 4438907 | Older development line; ancestor of both |
+| `origin/main` | 36e1c9b (fetched 2026-10-15 evening) | Hostinger production; 2 fetch-only commits not in the release branch (9f6c3fc, 36e1c9b) |
 
-- 9f6c3fc (aw-bot, fetch) yalnız `pending.json`, `seen_ids.json`,
-  `fetch-status.json` değiştirir. `git merge-tree` çakışmasız; `published.json`
-  ve OG envanteri etkilenmez. Merge zamanında bu tür fetch commit'leri tekrar
-  birikmiş olacaktır; aynı yöntemle (merge-tree, sadece üç veri dosyası) kontrol
-  edilir. `published.json` değişmişse `scripts/release/approved-og.json` envanteri
-  yeni yayınlar için güncellenmeden build:rc durur (bilinçli kapı).
-- main'e göre fark: 138 dosya (docs, tests, workers, src, scripts, fontlar),
-  ayrıca `ci.yml` eklenir, `deploy.yml` (yalnız main'den manuel çalıştırma +
-  iki exclude) ve `fetch.yml` (yarış durumuna dayanıklı push) değişir.
+`node scripts/release/reconcile-main.mjs` (read-only) on that state: merge
+base eaef194, conflict-free merge tree, main changed only `pending.json`,
+`seen_ids.json`, `fetch-status.json`; published 124 → 124, pending 146 → 146,
+seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 
-## Kritik risk: yanlış yayın yolu
+## Prerequisites (before the cutover window)
 
-`main` push'u bugün **FTP ile Hostinger'a** yayın yapar (`deploy.yml`). Yedek dalı
-main'e merge etmek Cloudflare'a özel kodu Hostinger'a gönderir.
-`scripts/release/ftp-diff.mjs` (salt okunur, canlı sync-state) bu build için:
-44 yeni dosya (6 woff2 font, 8 `_astro`, 15 category, 10 feed, 5 archive),
-259 değişen dosya (neredeyse tüm HTML, rss/sitemap, **124 OG PNG**), 3 silinen
-eski `_astro` dosyası; PHP/.htaccess ve hassas dosya yok. Sonuç: Hostinger'da
-görünür tasarım değişir, yeni `tracking.js` POST beacon'ı Hostinger
-`log_df.php`'nin POST'u okuduğu doğrulanmadan devreye girer.
+| # | Item | Status |
+|---|---|---|
+| P1 | Hostinger baseline backup + SHA-256 manifest | **Done** (owner, 2026-10-15) |
+| P2 | Source backup branch on GitHub | **Done** (`backup/cloudflare-staging-2026-10-15`) |
+| P3 | Workers Paid plan | **Done** (owner-verified active) |
+| P4 | Staging Web + Boss operational and accepted | **Done** (Web c08cdfc, Boss 209aa9e) |
+| P5 | `log_df.php` POST compatibility | **Done** (compatible, [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md)) |
+| P6 | OG strategy | **Done in code** (frozen archive + pinned renderer); not deployed |
+| P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
+| P8 | Push the release branch for review (CI only) | Pending — owner approval |
+| P9 | DNS zone on Cloudflare (records copied, NS changed, site still on Hostinger) | Pending — owner |
+| P10 | Production D1, Access app, secrets, Workers without domains, CI token | Pending — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) |
+| P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
+| P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
 
-**Kural:** Cloudflare cutover'ından önce main'e merge yapılmaz. Merge, cutover
-penceresinde ve önce `deploy.yml` FTP job'u kapatılmış/Cloudflare deploy job'u
-ile değiştirilmiş olarak yapılır (ayrı onaylı PR).
+## Cutover (one window, in this order)
 
-## OG görselleri
+1. **Freeze editorial.** No Boss approvals on Hostinger from here on. The
+   fetch workflow may keep running (it only touches candidate files).
+2. **Tag the rollback source:** `git tag hostinger-final origin/main` and push
+   the tag (a tag push triggers nothing).
+3. **Reconcile:** `git fetch origin`, then
+   `node scripts/release/reconcile-main.mjs` must print `"ok": true`.
+4. **Final snapshots (now, not earlier):** download `analytics/aw_panel_log.txt`
+   and `analytics/aw_votes.json` (S1) into the private backup folder; record
+   their SHA-256.
+5. **Merge** the release branch into `main` through a reviewed PR (merge
+   commit; content files from `main` win, as reconcile showed). Effect: the
+   FTP deploy is retired; `deploy-cloudflare.yml` runs but skips (variable unset).
+6. **Content gate:** CI on the merge commit green; published items without an
+   approved OG image are listed by `reconcile-main.mjs` and rendered by the build.
+   If `main`'s `published.json` differs from what the Workers were created
+   with (P10), recreate them from the merged `main` with the `no-routes`
+   procedure first (still no domains).
+7. **Import S1:** `npm run analytics:legacy -- sql <S1 log> --out private/s1.sql`,
+   `npx wrangler d1 execute americawhat-analytics-production --remote --env production --config workers/web/wrangler.jsonc --file private/s1.sql`
+   twice (second run must add 0); delete the SQL file. The vote baseline is
+   imported in step 9 (Boss needs its domain for Access).
+8. **Attach domains:** `npx wrangler triggers deploy --env production --config workers/web/wrangler.jsonc`
+   and the same for Boss. Custom domains replace the apex/www/boss records;
+   email records are untouched.
+9. **Verify:** `npm run smoke -- https://americawhat.com`, `npm run parity:live`,
+   Boss via Access (another identity is refused), Boss → Reactions → import S1
+   `aw_votes.json` (baseline), one manual page view and reaction, Boss
+   Analytics shows native rows, `/api/health` ok, Workers/D1 metrics, social
+   preview of one story.
+10. **Enable CI deploys:** set `CF_PRODUCTION_DEPLOY_ENABLED=true`, run
+    "Deploy to Cloudflare" with target `production` and approve it in the
+    Environment. Its smoke test now reaches Cloudflare; this proves the
+    pipeline and the automatic rollback targets. (Never before step 8: the
+    smoke test would hit Hostinger and roll back.)
+11. **72 h later:** S2 snapshots from Hostinger (stale DNS clients) → delta
+    imports (analytics `sql` again; reactions delta). Then the observation window.
+12. **After 30 days, separately approved:** revoke the Hostinger Boss
+    credential, delete the FTP secrets, remove Hostinger web files. The
+    Hostinger plan stays for **email**.
 
-Production'ın sunduğu OG'ler, deploy job'unun sürümü sabitlenmemiş Pillow ile
-CI'da ürettiği dosyalardır (`public/og/` Git'te yok). Onaylı arşiv
-(`approved-og.json`, kaynak 16b10a4 staging build'i) bunlardan bayt düzeyinde
-farklı (örn. aw-0011: canlı 47.636 B, onaylı 52.304 B). Cutover sosyal önizleme
-görsellerini onaylı set ile değiştirir. Ayrıca yeni yayınlanan haberler için
-Cloudflare yolunda henüz bir OG üretim/onay adımı yok (build:rc yeni içerikte
-durur). Owner kararı: hangi set kanonik ve yeni haber OG'leri nasıl üretilecek.
+## Rollback
 
-## Plan (sırayla, her adım ayrı onay)
+| Situation | Action | Data effect |
+|---|---|---|
+| Bad release (code) | "Roll back Cloudflare Worker" workflow, or automatic rollback in the deploy job | none |
+| Site must return to Hostinger (before step 12) | Remove the Workers' custom domains (Workers → Domains & Routes), restore the recorded apex/www A/AAAA records to Hostinger; Boss → Reactions → export `aw_votes.json` and upload to Hostinger `analytics/`; if stories were published on Cloudflare, republish Hostinger with "Deploy to Hostinger" on a branch made from `hostinger-final` plus the current `src/data/*.json` | native analytics stay in D1; the PHP log continues; no double count |
+| D1 data damage | Forward fix; Time Travel restore only as last resort (rewinds ALL # numbering) | — |
+| CI misbehaves | Unset `CF_PRODUCTION_DEPLOY_ENABLED`; deploys stop, live version keeps serving | none |
 
-1. **Hostinger envanteri ve yedeği** (owner, salt okunur; runbook §1):
-   `public_html` arşivi + hash manifesti, cron/PHP/SSL/redirect listesi, tam DNS
-   zone listesi, e-posta hesap/forwarder adları. `log_df.php` POST desteği
-   kontrolü. Secret içerikleri sohbete/commit'e girmez.
-2. **Kaynak/CI hazırlığı** (PR, merge yok): `deploy.yml` FTP job'unu cutover
-   sonrası devre dışı bırakacak, Cloudflare production deploy job'unu
-   (`production` Environment, reviewer `hakandndr`, yalnız Workers+D1 yetkili
-   token) ekleyecek değişiklik; OG kararı uygulanır.
-3. **Workers planı ve CPU:** Hesap planını doğrula. Free planda 10 ms CPU;
-   Weekly review yerelde ~11 ms sıcak/~31 ms soğuk ölçüldü → Paid önerilir.
-   Edge Trending tek D1 okuması + isolate önbelleği; staging p50 ~104 ms.
-4. **Production D1** (ayrı onay): `americawhat-app-production`,
-   `americawhat-analytics-production` oluştur; id'leri `env.production`'a yaz
-   (şu an PRODUCTION_NOT_PROVISIONED); migrations `--remote --env production`;
-   önce Time Travel bookmark kaydı.
-5. **Boss Access ve secret'lar:** `boss.americawhat.com` için owner-only Access
-   uygulaması → AUD `BOSS_ACCESS_AUD`'a (şu an boş); secret'lar `GITHUB_TOKEN`
-   (yalnız bu repo, Contents RW, süreli), `BOSS_CSRF_SECRET`,
-   `REACTION_GUARD_SECRET`; `versions upload --secrets-file` ile, değerler
-   loglanmadan. Boss production hedefi `hakandndr/americawhat` / `main` (kod
-   yalnız production ortamında main'e yazmaya izin verir).
-6. **DNS taşıma** (runbook §2): zone'u Cloudflare'e ekle, kayıtları birebir
-   karşılaştır (MX/SPF/DKIM/DMARC Hostinger'da kalır, DNS-only), sonra NS
-   değişimi; site bu adımda taşınmaz. Geri dönüş: Hostinger NS'leri.
-7. **Final snapshot'lar — cutover penceresinde, erken değil:**
-   `aw_votes.json` ve `aw_panel_log.txt` indir; `npm run analytics:legacy --
-   inventory`, `sql` çıktısını production analytics D1'a uygula (iki kez; ikinci
-   çalıştırma 0 eklemeli); reactions Boss → Reactions import (SHA önekiyle).
-   Geçici .sql dosyası doğrulamadan sonra silinir. Staging verisi production'a
-   taşınmaz.
-8. **İçerik uzlaştırma:** Cutover commit'inde main'deki son fetch/onay
-   commit'leri merge-tree ile alınır; `published.json` sayısı, slug'lar,
-   OG envanteri, RSS/sitemap ve `verify:refinement`/`verify:static` kontrolleri.
-9. **App cutover:** `americawhat-web --env production` custom domain
-   `americawhat.com` + `www`; Boss production deploy; deploy.yml FTP kapalı.
-10. **Doğrulama:** `npm run smoke -- https://americawhat.com` (salt okunur),
-    `npm run parity:live`, bir manuel reaction ve sayfa görüntüleme, Boss
-    Analytics native satırı, font/footer/Trending kontrolü, Access'in başka
-    kimliği reddetmesi, CPU/D1 metrikleri.
-11. **72 saat sonra:** S2 snapshot'ları (yalnız yeni satırlar/delta) import.
-12. **Hostinger:** web dosyaları 30 gün sonra ayrı onayla kaldırılır;
-    **plan e-posta için aktif kalır** (MX/SPF/DKIM Hostinger'da).
+Hostinger must stay intact for this: see [HOSTINGER-COMPATIBILITY.md §5](HOSTINGER-COMPATIBILITY.md).
 
-## Geri dönüş
+## Superseded instructions (do not follow)
 
-- Site: custom domain'leri production Worker'dan ayır, kayıtlı Hostinger
-  A/AAAA/CNAME kayıtlarını geri koy. Bunun çalışması için Hostinger'ın güncel
-  kalması gerekir: cutover'dan sonra FTP kapalıysa, geri dönüşte son içerik
-  için bir kez manuel FTP yayını gerekir (bu plan değişikliği runbook §4.5'i
-  günceller).
-- Reactions: Boss'tan `aw_votes.json` export → Hostinger'a yükle.
-- Analytics: native satırlar D1'da kalır; PHP logger devam eder, çift sayım yok.
-- D1: ileri düzeltme; Time Travel yalnız son çare (ALL # numaralarını geri sarar).
-- Worker: kayıtlı önceki version UUID'ye `versions deploy UUID@100%`.
-
-## Açık konular (owner kararı/eylemi)
-
-1. Hostinger envanteri/yedeği ve `log_df.php` POST kontrolü yapılmadı.
-2. Workers planı doğrulanmadı.
-3. Kanonik OG seti ve yeni haberler için OG üretim yolu.
-4. FTP→Cloudflare deploy job değişimi (PR) ve merge zamanlaması.
-5. Gizlilik sayfasındaki ~90 gün sözü (retention yalnız manuel).
-6. Staging'deki 3 gerçek ziyaretçi satırı ve 2 oy: sil/koru kararı.
-7. 108/124 yayında Google News URL'si (editoryal geri doldurma).
-
-## Güncelliğini yitiren talimatlar
-
-- CLOUDFLARE-MIGRATION §0: Boss Access/AUD/secret/URL "yok/kapalı" ifadeleri
-  eski; Access owner-only ve staging Boss açık ([STAGING-READINESS.md](STAGING-READINESS.md)).
-- CLOUDFLARE-MIGRATION "Branch reconciliation" ve §1 pre-merge: merge kaynağı
-  artık `dev/cloudflare-native` değil, `codex/staging-rc` / yedek dal; "merge
-  yalnız beacon ve slug gönderir" ifadesi eski — FTP diff yukarıda.
-- §3a tamamlandı; §7 madde 2 (Access) tamamlandı, kalan karar 3 ziyaretçi satırı.
-- §4.5 "FTP deploy'u gözlem süresince açık tut" yeni kuralla çelişir; Cloudflare
-  kodunun Hostinger'a gitmemesi için cutover sonrası FTP job'u bu dalın
-  içeriğini yayınlamamalıdır.
-- CURRENT-STATE "Repository" bölümü (`302549b`, dev dalı) tarihseldir.
+- Anything that merges `dev/cloudflare-native` into `main`, or merges before
+  the cutover window (CLOUDFLARE-MIGRATION §0 "Branch reconciliation rule",
+  §1 "Pre-merge checks").
+- CLOUDFLARE-MIGRATION §4.5 "keep the FTP deploy running during observation":
+  the FTP deploy is retired by the merge; Hostinger rollback uses `hostinger-final`.
+- Running `python scripts/gen-og.py` to regenerate all images (old behaviour);
+  it now renders only missing images and never touches `public/og/`.
+- "Workers plan not verified / Free 10 ms CPU risk": resolved, Workers Paid.
+- Production deploy via local `wrangler deploy --env production` after cutover:
+  use the workflow; local `wrangler deploy` is for first creation only
+  (step P10, without domains).

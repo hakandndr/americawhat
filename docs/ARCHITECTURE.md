@@ -16,8 +16,9 @@ cutover in `CLOUDFLARE-MIGRATION.md`; the state of every part is tracked in
 | `APP_DB` (D1) | `migrations/app/` | Reactions, reaction imports, abuse guards, editorial decisions, Boss audit. |
 | `ANALYTICS_DB` (D1) | `migrations/analytics/` | Legacy and native page views, import ledger, retention aggregates, DNDR outbox, operator log. |
 | Fetch workflow | `.github/workflows/fetch.yml`, `scripts/fetch-sources.mjs` | Unchanged role: RSS → `pending.json`, three times a day. |
-| CI | `.github/workflows/ci.yml` | Tests, OG generation, build, static verification, Worker bundling. No deploy, no secrets. |
-| Legacy deploy | `.github/workflows/deploy.yml` | FTP to Hostinger from `main` until the Hostinger web hosting is retired. |
+| CI | `.github/workflows/ci.yml` | Tests, OG attestation, release build, static verification, Worker bundling (staging and production configs). No deploy, no secrets. |
+| Deploy | `.github/workflows/deploy-cloudflare.yml`, `rollback-cloudflare.yml` | Gated version upload/deploy to Cloudflare with automatic rollback ([DEPLOYMENT.md](DEPLOYMENT.md)). |
+| Retired deploy | `.github/workflows/deploy.yml` | Former FTP deploy to Hostinger; now manual-only and refuses to run. Hostinger rollback uses the `hostinger-final` tag. |
 
 Resource names: `americawhat-web-{staging,production}`,
 `americawhat-boss-{staging,production}`, `americawhat-app-{staging,production}`,
@@ -64,7 +65,7 @@ Boss weekly review: owner chooses approve / reject(reason) / skip per story
 Git Data API: read main → compute published.json + pending.json → ONE commit → fast-forward ref
    (if main moved meanwhile, recompute on the new head; nothing partial is ever written)
                  │
-deploy (today: FTP; after cutover: wrangler deploy of americawhat-web)
+deploy-cloudflare.yml (gated; on Hostinger main until cutover: FTP)
 ```
 
 Invariants enforced in `workers/boss/src/editorial.mjs` and tested:

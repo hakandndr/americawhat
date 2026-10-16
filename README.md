@@ -4,7 +4,7 @@ A curated feed of absurd, only-in-America news — each item hand-picked, catego
 
 🌐 **Live:** [americawhat.com](https://americawhat.com)
 
-[![Deploy to Hostinger](https://github.com/hakandndr/americawhat/actions/workflows/deploy.yml/badge.svg)](https://github.com/hakandndr/americawhat/actions/workflows/deploy.yml)
+[![Deploy to Cloudflare](https://github.com/hakandndr/americawhat/actions/workflows/deploy-cloudflare.yml/badge.svg)](https://github.com/hakandndr/americawhat/actions/workflows/deploy-cloudflare.yml)
 
 ---
 
@@ -17,7 +17,7 @@ Full handoff documentation lives in [`docs/`](docs/):
 - **[docs/OPERATIONS.md](docs/OPERATIONS.md)** — the curate → push → approve → deploy loop and known failure modes
 - **[docs/CURRENT-STATE.md](docs/CURRENT-STATE.md)** — live counts, known gaps, backlog
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the Cloudflare-native target (Workers Static Assets, Boss, D1)
-- **[docs/CLOUDFLARE-MIGRATION.md](docs/CLOUDFLARE-MIGRATION.md)** — approval-gated migration and release runbook
+- **[docs/PRODUCTION-MIGRATION-PLAN.md](docs/PRODUCTION-MIGRATION-PLAN.md)** — cutover and rollback; **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** — gated GitHub Actions → Cloudflare deploys
 - **[docs/ANALYTICS.md](docs/ANALYTICS.md)**, **[docs/SECURITY.md](docs/SECURITY.md)**, **[docs/DECISIONS.md](docs/DECISIONS.md)**
 
 ## Why this project is interesting
@@ -97,7 +97,7 @@ cutover described in `docs/CLOUDFLARE-MIGRATION.md`.
 
 ## Deployment
 
-Pushing to `main` triggers `.github/workflows/deploy.yml`, which builds the site and deploys `dist/` over FTP. FTP credentials are stored as **GitHub Secrets** — never in the repo.
+`.github/workflows/deploy-cloudflare.yml` builds the site and Workers once and, behind a GitHub Environment with a required reviewer, uploads new Worker versions to Cloudflare, smoke-tests them and rolls back automatically on failure. Production deploys run only from `main` and only once the owner enables them at cutover; see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The former FTP deploy to Hostinger (`deploy.yml`) is retired. Credentials live only in GitHub Environment secrets — never in the repo.
 
 ## Security & configuration
 

@@ -1,5 +1,26 @@
 # americawhat — Handoff
 
+## Start here (2026-10-15, evening)
+
+A new operator needs only these, in order:
+1. [CURRENT-STATE.md](CURRENT-STATE.md) — first section: facts, what is
+   deployed, what is only local, what is open.
+2. [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md) — prerequisites,
+   cutover steps, rollback, superseded instructions.
+3. [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) — exact commands for
+   production resources (not executed).
+4. [DEPLOYMENT.md](DEPLOYMENT.md) — GitHub workflows, gates, tokens, rollback.
+5. [OG-IMAGES.md](OG-IMAGES.md) and [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md).
+
+Rules that still hold: work on `codex/staging-rc` (worktree
+`tmp/security-boss`); never merge into `main` outside the cutover window
+(merging retires the Hostinger FTP deploy); never deploy production, change
+DNS or touch Hostinger without explicit owner approval; commits as
+`Hakan Dundar <hakan@dndr.net>` with no tool attribution.
+
+The dated sections below are a historical log.
+
+
 ## Son devir — yedek dal ve göç planı (2026-10-15)
 
 Uzak yedek: `backup/cloudflare-staging-2026-10-15` (hakandndr/americawhat).
