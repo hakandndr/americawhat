@@ -2,6 +2,8 @@
 
 ## PRODUCTION IS LIVE ON CLOUDFLARE (2026-10-16 04:02 UTC)
 
+**Update (main a6ef6b2, PR hakandndr/americawhat#3):** Boss Analytics no longer freezes at /analytics?snapshot=N&p=1: /analytics is the live view (newest first, Refresh keeps range and filters), only paging pins a snapshot (with "N newer records · Show latest"), and IP VISITS counts up to the same ALL # as the rows. Owner-approved run 38854060258 deployed Web `5fa975eb-873b-4340-bb67-ca8f780675dc`, Boss `6b2782ab-3cf4-4981-9f0b-35850f8465bf` (rollback: `de2f8985…` / `5aa28574…`). Article check: event 2176, path `/item/watch-ball-python-rescued-from-front-grille-of-new-jersey/`, 2026-10-15 21:35:20 PDT, PT day 2026-10-15.
+
 **Update (main 81b99b3, PR hakandndr/americawhat#2):** Boss form POSTs were refused with "Cross-origin request refused." because Boss pages sent `Referrer-Policy: no-referrer` (browsers then send `Origin: null` even on same-origin POSTs). Boss now sends `same-origin`; all checks unchanged. Owner-approved run 38851399888 deployed Web `de2f8985-e5d8-463c-b53e-804310b5e36f` and Boss `5aa28574-4b7f-4ad1-ba7c-7c8093d33c68` (rollback: `bc4b861b…` / `7478bfd0…`). The failed import attempts changed nothing (0 reaction imports, 0 votes) — the S1 vote import can be run now.
 
 | Item | Value |
