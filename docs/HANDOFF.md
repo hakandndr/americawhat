@@ -69,7 +69,9 @@ Item schema and status rules: `src/lib/items.js`, `src/lib/slug.js` (Boss pins
 2. Read [CURRENT-STATE.md](CURRENT-STATE.md) → "Open items".
 3. The redesigned Boss is live (8a9cf35). Automatic content deployment is
    live (accepted 2026-10-16 with aw-0141). After any code or docs merge, the
-   next news waits for an owner-approved `production` deploy (new baseline).
+   next news waits for an owner-approved `production` deploy (new baseline;
+   procedure in [DEPLOYMENT.md](DEPLOYMENT.md#operating-automatic-content)).
+   Batch docs into the same PR as code where possible.
 4. The owner decides the weekly review in Boss (drafts are
    already in `pending.json`, see CURRENT-STATE → Open items). S2 is waived; staging sync
    is deferred; DNDR forwarding is live (2ef6a57); its cutover gap needs an
