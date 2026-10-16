@@ -35,8 +35,8 @@
       "preview_urls": false,
       "routes": [{ "pattern": "boss.americawhat.com", "custom_domain": true }],
       "d1_databases": [
-        { "binding": "APP_DB", "database_name": "americawhat-app-production", "database_id": "PRODUCTION_NOT_PROVISIONED", "migrations_dir": "../../migrations/app" },
-        { "binding": "ANALYTICS_DB", "database_name": "americawhat-analytics-production", "database_id": "PRODUCTION_NOT_PROVISIONED", "migrations_dir": "../../migrations/analytics" }
+        { "binding": "APP_DB", "database_name": "americawhat-app-production", "database_id": "3097933b-4feb-4e50-bb59-760fd06a640e", "migrations_dir": "../../migrations/app" },
+        { "binding": "ANALYTICS_DB", "database_name": "americawhat-analytics-production", "database_id": "1012183d-96cd-4d7f-8e93-ca247ca43589", "migrations_dir": "../../migrations/analytics" }
       ],
       "vars": {
         "ENVIRONMENT": "production",
