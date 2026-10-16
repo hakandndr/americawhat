@@ -64,9 +64,8 @@ Item schema and status rules: `src/lib/items.js`, `src/lib/slug.js` (Boss pins
    (worktree `D:\IT\AmericaWhat\americawhat\tmp\security-boss` works; its
    branch `codex/staging-rc` is historical — do not reuse it for new work).
 2. Read [CURRENT-STATE.md](CURRENT-STATE.md) → "Open items".
-3. First tasks: the owner reviews/merges the open PRs and approves the deploy,
-   then decides the weekly review in Boss (drafts are already in
-   `pending.json`, see CURRENT-STATE → Open items). S2 is waived; staging sync
+3. First task: the owner decides the weekly review in Boss (drafts are
+   already in `pending.json`, see CURRENT-STATE → Open items). S2 is waived; staging sync
    and DNDR forwarding are deferred to separate sessions.
 4. Editorial drafting: `scripts/editorial/apply-curation.mjs` — `keep` fills
    fields, `propose_reject` records `draft_reason`/`draft_note` that Boss
