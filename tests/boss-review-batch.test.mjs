@@ -48,7 +48,7 @@ test('records and unique stories are distinguished; editors start compact; nothi
   const { html, document } = render();
   assert.match(html, /<b>7<\/b> pending records/);
   assert.match(html, /<b>6<\/b> unique stories/);
-  assert.match(document.getElementById('review-scope').textContent, /7 pending records · 6 unique stories · 1 extra duplicate records/);
+  assert.match(document.getElementById('review-scope').textContent, /1 extra duplicate record grouped with their story/);
   assert.equal(document.getElementById('review-tools').hasAttribute('hidden'), true, 'tools appear only when the script runs');
   assert.match(document.querySelector('[data-review="prepared"]').textContent, /Select prepared drafts \(1\)/);
   assert.equal(card(document, 'ready').getAttribute('data-prepared'), '1');

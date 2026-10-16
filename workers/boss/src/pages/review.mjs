@@ -102,7 +102,7 @@ export function renderReview({ identity, flash, review, fetchStatus, csrf, error
   <span><b id="review-ready-count">${prepared}</b> prepared</span>
   <span><b>${review.flagged}</b> flagged · <b>${review.foreign}</b> likely not US · <b>${review.alreadyPublished}</b> published matches</span>
 </div>
-<p class="small muted" id="review-scope">${review.candidates} pending records · ${review.stories} unique stories${copies > 0 ? ` · ${copies} extra duplicate records handled with their story` : ''}. Read sources, edit drafts, then select decisions. Flags are advisory; proposed rejections are preselected. Changes require confirmation.</p>
+<p class="small muted" id="review-scope">${copies > 0 ? `${copies} extra duplicate record${copies === 1 ? '' : 's'} grouped with their story. ` : ''}Read sources before approving. Flags are advisory; changes require confirmation.</p>
 <div class="review-tools" id="review-tools" hidden>
   <div class="review-filter"><input id="review-search" type="search" aria-label="Search candidates" placeholder="Search title, source or draft"><select id="review-filter" aria-label="Filter review stories"><option value="all">All stories</option><option value="prepared">Prepared</option><option value="incomplete">Incomplete</option><option value="selected">Selected decisions</option></select><span class="small muted" id="review-visible" role="status"></span></div>
   <button type="button" class="secondary" data-review="expand">Expand all</button>

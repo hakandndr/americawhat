@@ -300,7 +300,7 @@ main{max-width:calc(var(--shell) + 216px);margin:0 0 0 216px;padding:28px 28px 6
 .review-list .story:not(:has(input[value=reject]:checked)) .reject-fields{display:none}.reject-fields{display:flex;flex-wrap:wrap;gap:8px;max-width:100%}
 .review-tools{gap:8px}.review-filter{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-basis:100%}.review-filter input{flex:1 1 220px;width:auto;max-width:380px}.review-filter select{width:auto;max-width:100%}
 .review-foot{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}.review-foot .review-counts{margin:0}.review-list .opts{margin-top:10px}
-@media (max-width:760px){
+@media (max-width:960px){
  main{margin-left:0;padding:18px 14px 40px}.envbar{margin-left:0}.skip-link{left:16px}
  .mobile-nav{display:flex;position:sticky;top:0;z-index:20;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 14px}.mobile-nav .brand{padding:0;font-size:16px}
  .nav-toggle{display:block;position:fixed;left:20px;top:15px;width:1px;height:1px;opacity:0}.nav-toggle:focus-visible~.mobile-nav .menu-label{outline:2px solid var(--focus);outline-offset:2px}
@@ -309,7 +309,7 @@ main{max-width:calc(var(--shell) + 216px);margin:0 0 0 216px;padding:28px 28px 6
  .drawer-close{display:block;align-self:flex-end;margin-bottom:12px}.nav-toggle:checked~.drawer-shade{display:block;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:25;margin:0}
  .review-list .story{display:block;padding:10px}.review-list .story-head{grid-template-columns:22px minmax(0,1fr);gap:0 8px}.review-list .decide,.review-list .editor{margin:8px 0 0 30px;max-width:none}.review-list .editor .grid{grid-template-columns:minmax(0,1fr)}
  .review-list .decide input:not([type=radio]),.review-list .decide select{width:100%;max-width:100%}.review-list .choice label{min-height:40px}.review-tools button{white-space:normal}.review-counts{margin-left:0}
- .sticky-submit{position:sticky;bottom:0;padding:8px;gap:6px;box-shadow:0 -4px 16px var(--bg)}.sticky-submit button{white-space:normal;width:100%}.sticky-submit .review-foot>.small{display:none}
+ main:has(#review-form){padding-bottom:140px}.sticky-submit{position:fixed;bottom:0;left:14px;right:14px;padding:8px;gap:6px;box-shadow:0 -4px 16px var(--bg)}.sticky-submit button{white-space:normal;width:100%}.sticky-submit .review-foot>.small{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 `;
