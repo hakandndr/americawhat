@@ -101,12 +101,14 @@ test('rollback plans need a UUID, a typed target/worker and main for production'
   assert.equal(planRollback({ ref: 'refs/heads/x', inputTarget: 'staging', worker: 'boss', versionId: id, confirm: 'staging/boss' }).workerName, 'americawhat-boss-staging');
 });
 
-test('the committed configs: staging valid, production complete except the values provisioning will supply', () => {
+test('the committed configs: staging valid, production bound to its own D1 databases, only known values pending', () => {
   const configs = readConfigs();
   assert.deepEqual(checkTargetConfig('staging', configs), { errors: [], notProvisioned: [] });
   const prod = checkTargetConfig('production', configs);
   assert.deepEqual(prod.errors, []);
-  assert.deepEqual(prod.notProvisioned, ['web.APP_DB', 'web.ANALYTICS_DB', 'boss.APP_DB', 'boss.ANALYTICS_DB', 'boss.BOSS_ACCESS_AUD']);
+  // Only these values may still be pending; the D1 ids were provisioned on 2026-10-15.
+  for (const pending of prod.notProvisioned) assert.ok(['web.APP_DB', 'web.ANALYTICS_DB', 'boss.APP_DB', 'boss.ANALYTICS_DB', 'boss.BOSS_ACCESS_AUD'].includes(pending), pending);
+  assert.deepEqual(configs.web.env.production.d1_databases.map((d) => d.database_id), ['3097933b-4feb-4e50-bb59-760fd06a640e', '1012183d-96cd-4d7f-8e93-ca247ca43589']);
 });
 
 test('production refuses staging values, and set-production-config writes only env.production', () => {
