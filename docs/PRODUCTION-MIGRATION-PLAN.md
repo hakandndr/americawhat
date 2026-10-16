@@ -46,12 +46,33 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 Hostinger Boss approvals); step 2 tag `hostinger-final` → `36e1c9b` pushed
 (tag object a4b65051, no workflow ran); step 3 `reconcile-main.mjs` ok
 (published 124, pending 146, seen 11,492; main-only commits are fetch data);
-baseline backup hashes re-verified. **Stopped at step 4:** the final
-`aw_panel_log.txt` / `aw_votes.json` are not reachable over HTTP (403 by
-`analytics/.htaccess`) and no FTP/hPanel access exists in this session; the
-owner downloads them (hPanel → File Manager → `public_html/analytics/`) into
-`D:\PrivateBackups\AmericaWhat\<date>-final-s1\`. No merge, Worker release or
-routing change has happened.
+baseline backup hashes re-verified. Continued 2026-10-16 after the owner supplied S1:
+- **S1** (`D:\PrivateBackups\AmericaWhat\2026-10-16-S1\`): `aw_panel_log.txt`
+  SHA-256 `EA4894DBDDBC594406EDBA5B04EE9011BC6EA2B2A88064BC3CB9643CF5F6084C`
+  (1,084 lines, 1,083 importable, append-only continuation of the baseline);
+  `aw_votes.json` `55F0C0E0B96F933DC716700D5A45713E301E6E4586DE574AD8E743161E0955AE`
+  (14 ids, 19 votes, identical to the baseline).
+- **Merge:** PR hakandndr/americawhat#1 (CI green) merged as **d7e252a**; the
+  push-triggered "Deploy to Cloudflare" ran plan only ("production deploys
+  are disabled"); no Hostinger FTP run. Local on d7e252a: 198/198 tests, OG
+  125/125, verify:static 0 failures, published 124 / pending 146 / seen 11,492.
+- **Workers from d7e252a, no domains:** Web `2fc888da-7244-4680-9163-2c342e62818e`
+  (previous 7dfff6ea…), Boss `39b48810-e7d4-4998-9356-89afd82fe601` (previous
+  14998af5…); production D1, secrets and AUD verified; D1 schema matches.
+- **S1 analytics → production D1:** 1,083 legacy events, ledger 1,084
+  (1,083 imported + 1 missing_page), one corpus; the second run added 0. The
+  SQL file was deleted.
+- **Boss domain:** `boss.americawhat.com` attached; every path, a forged
+  identity header and an anonymous POST redirect to the dndrnet Access login.
+- **Web domains blocked:** `wrangler triggers deploy` refused with code 100117
+  ("americawhat.com already has externally managed DNS records"); nothing
+  changed (site still served by the Hostinger origin, DNS unchanged apart from
+  the new `boss` record). The CLI login has no DNS-edit permission. Owner
+  action: delete exactly `A americawhat.com 45.89.205.38`,
+  `AAAA americawhat.com 2a02:4780:1:2242:0:145e:6975:6` and
+  `CNAME www → americawhat.com` in the Cloudflare dashboard, then the Web
+  custom domains are attached at once. Rollback = re-add those three rows
+  (DNS-only) after removing the Worker custom domains.
 
 1. **Freeze editorial.** No Boss approvals on Hostinger from here on. The
    fetch workflow may keep running (it only touches candidate files).
