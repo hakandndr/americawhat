@@ -12,14 +12,18 @@ import { parseHTML, DOMParser } from 'linkedom';
 import { createBoss } from '../workers/boss/src/index.mjs';
 import { resetKeyCache } from '../workers/boss/src/auth.mjs';
 import { ANALYTICS_SCRIPT } from '../workers/boss/src/analytics-client.mjs';
+import { laDay, laMidnight } from '../workers/shared/time.mjs';
 import { D1Sqlite } from './helpers/d1-sqlite.mjs';
 import { AUD, TEAM, makeSigner } from './helpers/access-jwt.mjs';
 
 const ORIGIN = 'https://boss.americawhat.com';
 const signer = makeSigner();
 // Real clock (Access assertions are time-checked); events sit in the last hour of today (PT).
-const BASE_TIME = Math.floor(Date.now() / 1000) - 3600;
-const DAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(new Date(BASE_TIME * 1000));
+// Clamped to today's Pacific midnight: in the first hour after it, "an hour
+// ago" is yesterday and range=today would miss every event.
+const NOW = Math.floor(Date.now() / 1000);
+const DAY = laDay(NOW);
+const BASE_TIME = Math.max(NOW - 3600, laMidnight(DAY));
 const flush = async () => { for (let i = 0; i < 20; i++) await new Promise((r) => setImmediate(r)); };
 
 function setupServer() {
