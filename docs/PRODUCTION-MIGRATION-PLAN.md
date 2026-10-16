@@ -36,7 +36,7 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
 | P9 | DNS on Cloudflare with the site still on the Hostinger origin | **Done 2026-10-16** (owner): CDN disabled, zone active (`courtney/porter.ns.cloudflare.com`), records verified 15/15 DNS-only. Owner e-mail test pending — [DNS-READINESS.md](DNS-READINESS.md) |
 | P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Done 2026-10-16:** D1 ×2 + migrations, Workers without exposure, secrets incl. Boss `GITHUB_TOKEN`, GitHub Environments with per-Worker Editor tokens, Access app + AUD. CI needs no D1 permission (schema gate) |
-| P10b | Schema-aware release on staging (the deploy schema gate reads `/api/health` digests) | Pending — staging release by the documented local procedure; production gets it in cutover step 6 |
+| P10b | Schema-aware release on staging | **Done 2026-10-16**: Web 754be640…, Boss 17aa89e2… (release ae09988); schema gate ok on the real staging Worker — [STAGING-SCHEMA-RELEASE.md](STAGING-SCHEMA-RELEASE.md). Open: owner-authenticated Boss check; read-only token scope test by the owner |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
 | P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
 

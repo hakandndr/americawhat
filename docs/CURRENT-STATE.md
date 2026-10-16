@@ -40,7 +40,7 @@ where it disagrees with this section, this section wins.
   account id. CI needs no D1 permission: the deploy's migration check is now a
   schema gate through the serving Worker's /api/health digests (local only so
   far; the staging and production Workers still run the older release and the
-  gate fails closed on them until the schema-aware release is deployed).
+  gate now passes on staging; production gets the schema-aware build in cutover step 6). The per-Worker CI tokens have not been exercised yet.
   History of the DNS work: DNS (2026-10-16): the owner's Hostinger zone export is committed and
   reconciled (13 records incl. the Google verification CNAME; apex ALIAS TTL
   300) and equals the live answers of both Hostinger nameservers. **Hostinger
@@ -54,9 +54,13 @@ where it disagrees with this section, this section wins.
   create zones (HTTP 403, nothing created) — see [DNS-READINESS.md](DNS-READINESS.md). Details: [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md),
   DNS/email checklist: [DNS-READINESS.md](DNS-READINESS.md).
 
-### Deployed to staging
-- Web `americawhat-web-staging` release c08cdfc (version 1346af78-327b-434d-8cd1-294d0bf39dc3).
-- Boss `americawhat-boss-staging` release 209aa9e (version 855652dd-d155-42db-a719-9c363256ab42).
+### Deployed to staging (P10b, 2026-10-16)
+- Web `americawhat-web-staging` release ae09988 (version 754be640-dde9-43bb-8247-e672404a6858),
+  Boss `americawhat-boss-staging` release ae09988 (version 17aa89e2-9ff9-45f5-a2d5-358974fcc1a5);
+  rollback targets Web 1346af78… (c08cdfc), Boss 855652dd… (209aa9e).
+  Schema checks ok, staging schema gate passes, smoke 21/21, Boss anonymous
+  → Access; data unchanged. Owner-authenticated Boss check still open.
+  Record: [STAGING-SCHEMA-RELEASE.md](STAGING-SCHEMA-RELEASE.md).
 
 ### On `codex/staging-rc`, pushed as `backup/cloudflare-staging-2026-10-15` (6f21c0e, fast-forward from 0281ef5) — CI green, not deployed
 | Commit | What |

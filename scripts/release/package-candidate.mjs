@@ -28,7 +28,7 @@ assert.ok(!fs.existsSync(root), `${root} exists; frozen candidates are never rew
 fs.mkdirSync(path.join(root, 'config'), { recursive: true });
 const wrangler = path.resolve('node_modules/wrangler/bin/wrangler.js');
 for (const worker of ['web', 'boss']) {
-  execFileSync(process.execPath, [wrangler, 'deploy', '--dry-run', '--config', `workers/${worker}/wrangler.jsonc`, '--outdir', path.join(root, worker)], { stdio: ['ignore', 'ignore', 'inherit'], env: { ...process.env, CLOUDFLARE_API_TOKEN: '' } });
+  execFileSync(process.execPath, [wrangler, 'deploy', '--dry-run', '--env', '', '--config', `workers/${worker}/wrangler.jsonc`, '--outdir', path.join(root, worker)], { stdio: ['ignore', 'ignore', 'inherit'], env: { ...process.env, CLOUDFLARE_API_TOKEN: '' } });
   for (const extra of fs.readdirSync(path.join(root, worker))) if (extra.endsWith('.map')) fs.rmSync(path.join(root, worker, extra));
   fs.copyFileSync(`workers/${worker}/wrangler.jsonc`, path.join(root, 'config', `${worker}.jsonc`));
 }
