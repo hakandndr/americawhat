@@ -9,6 +9,10 @@ import { ogInputDigest, planOgRelease, sha256 } from '../scripts/release/og.mjs'
 const approved = JSON.parse(fs.readFileSync('scripts/release/approved-og.json', 'utf8'));
 const { items } = JSON.parse(fs.readFileSync('src/data/published.json', 'utf8'));
 const approvedFiles = () => new Map(approved.files.map((f) => [f.name, f.sha256]));
+// Stories approved after the frozen archive get their image from the pinned
+// renderer at release time (gen-og.py --missing), never from public/og.
+const uncovered = items.filter((it) => !approved.files.some((f) => f.name === `${it.id}.png`));
+const fakeEntry = (it, sha = 'a'.repeat(64)) => ({ file: `${it.id}.png`, inputSha256: ogInputDigest(it), sha256: sha, bytes: 1, status: 'rendered' });
 const newItem = { id: 'aw-9999', title: 'Synthetic story for the OG pipeline test', category: 'bureaucracy', source_name: 'Example Source' };
 
 test('the committed approved archive matches its manifest', () => {
@@ -28,21 +32,28 @@ test('the committed approved archive matches its manifest', () => {
 test('a new published item needs a fresh image from the pinned renderer', () => {
   const all = [...items, newItem];
   const missing = planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated: null, generatedFiles: new Map() });
-  assert.match(missing.errors.join(), /No OG image for aw-9999/);
+  // Every published story outside the archive is reported until it is rendered.
+  assert.deepEqual(missing.errors.map((e) => /No OG image for (aw-\d+)/.exec(e)?.[1]).sort(), [...uncovered.map((it) => it.id), 'aw-9999'].sort());
 
-  const entry = { file: 'aw-9999.png', inputSha256: ogInputDigest(newItem), sha256: 'a'.repeat(64), bytes: 1, status: 'rendered' };
-  const generated = { renderer: approved.renderer, items: { 'aw-9999': entry } };
-  const ok = planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated, generatedFiles: new Map([['aw-9999.png', 'a'.repeat(64)]]) });
+  const fresh = [...uncovered, newItem];
+  const generated = { renderer: approved.renderer, items: Object.fromEntries(fresh.map((it) => [it.id, fakeEntry(it)])) };
+  const generatedFiles = () => new Map(fresh.map((it) => [`${it.id}.png`, 'a'.repeat(64)]));
+  const ok = planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated, generatedFiles: generatedFiles() });
   assert.deepEqual(ok.errors, []);
-  assert.deepEqual(ok.copy, ['aw-9999.png']);
+  assert.deepEqual([...ok.copy].sort(), fresh.map((it) => `${it.id}.png`).sort());
+  const oneShort = new Map(generatedFiles());
+  if (uncovered.length) {
+    oneShort.delete(`${uncovered[0].id}.png`);
+    assert.notDeepEqual(planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated, generatedFiles: oneShort }).errors, [], 'a missing rendered file is an error');
+  }
 
-  const edited = planOgRelease({ items: [...items, { ...newItem, title: 'Edited' }], approved, approvedFiles: approvedFiles(), generated, generatedFiles: new Map([['aw-9999.png', 'a'.repeat(64)]]) });
+  const edited = planOgRelease({ items: [...items, { ...newItem, title: 'Edited' }], approved, approvedFiles: approvedFiles(), generated, generatedFiles: generatedFiles() });
   assert.match(edited.errors.join(), /Stale OG image for aw-9999/);
 
-  const tampered = planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated, generatedFiles: new Map([['aw-9999.png', 'b'.repeat(64)]]) });
+  const tampered = planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated, generatedFiles: new Map([...generatedFiles(), ['aw-9999.png', 'b'.repeat(64)]]) });
   assert.match(tampered.errors.join(), /does not match its manifest/);
 
-  const unpinned = planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated: { ...generated, renderer: { ...approved.renderer, pillow: '12.3.0' } }, generatedFiles: new Map([['aw-9999.png', 'a'.repeat(64)]]) });
+  const unpinned = planOgRelease({ items: all, approved, approvedFiles: approvedFiles(), generated: { ...generated, renderer: { ...approved.renderer, pillow: '12.3.0' } }, generatedFiles: generatedFiles() });
   assert.match(unpinned.errors.join(), /unpinned renderer/);
 });
 
@@ -87,15 +98,16 @@ test('gen-og.py --missing renders only unapproved items, deterministically, and 
     const read = () => JSON.parse(fs.readFileSync(path.join(generatedDir, 'manifest.json'), 'utf8'));
     const approvedBefore = fs.readdirSync(path.join(root, 'public/og')).map((f) => sha256(fs.readFileSync(path.join(root, 'public/og', f))));
 
+    const freshIds = [...uncovered.map((it) => it.id), 'aw-9999'].sort();
     write([...items, newItem]);
-    assert.match(run('--missing'), /"rendered": 1/);
+    assert.match(run('--missing'), new RegExp(`"rendered": ${freshIds.length}\\b`));
     const first = read();
-    assert.deepEqual(Object.keys(first.items), ['aw-9999']);
+    assert.deepEqual(Object.keys(first.items).sort(), freshIds);
     assert.deepEqual(first.renderer, approved.renderer);
     assert.equal(first.items['aw-9999'].inputSha256, ogInputDigest(newItem));
     assert.equal(first.items['aw-9999'].status, 'rendered');
 
-    assert.match(run('--missing'), /"kept": 1/);
+    assert.match(run('--missing'), new RegExp(`"kept": ${freshIds.length}\\b`));
     fs.rmSync(generatedDir, { recursive: true });
     run('--missing');
     assert.equal(read().items['aw-9999'].sha256, first.items['aw-9999'].sha256, 'same input, same bytes');
@@ -106,7 +118,7 @@ test('gen-og.py --missing renders only unapproved items, deterministically, and 
 
     write(items);
     run('--missing');
-    assert.deepEqual(read().items, {});
+    assert.deepEqual(Object.keys(read().items).sort(), uncovered.map((it) => it.id).sort());
     assert.ok(!fs.existsSync(path.join(generatedDir, 'aw-9999.png')), 'unpublished image removed');
 
     const afterwards = fs.readdirSync(path.join(root, 'public/og')).map((f) => sha256(fs.readFileSync(path.join(root, 'public/og', f))));

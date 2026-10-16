@@ -6,12 +6,19 @@ export function h(value) {
 }
 
 export const PENDING_MARKER = '<!--aw-pending-count-->';
+export const PUBLISHED_MARKER = '<!--aw-published-count-->';
 
-/** The red count beside "Weekly review"; empty when the count is unknown. */
-export function pendingBadge(count) {
+/** A count beside a navigation label; empty when the count is unknown. */
+function navBadge(count, label, tone = '') {
   if (!Number.isInteger(count) || count < 0) return '';
-  return `<span class="nav-count" aria-hidden="true">${count}</span><span class="visually-hidden"> (${count} pending)</span>`;
+  return `<span class="nav-count${tone ? ` ${tone}` : ''}" aria-hidden="true">${count}</span><span class="visually-hidden"> (${count} ${label})</span>`;
 }
+
+/** The red count beside "Weekly review": records awaiting a decision. */
+export function pendingBadge(count) { return navBadge(count, 'pending'); }
+
+/** The neutral count beside "Published": stories live on the site. */
+export function publishedBadge(count) { return navBadge(count, 'published', 'neutral'); }
 
 const NAV = [
   ['/review', 'Weekly review'],
@@ -55,7 +62,7 @@ code{font:12px var(--mono);color:var(--muted);overflow-wrap:anywhere}
 .nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}.nav::-webkit-scrollbar{display:none}
 .nav a{color:var(--muted);text-decoration:none;padding:15px 12px 13px;font-weight:500;white-space:nowrap;border-bottom:2px solid transparent}
 .nav a:hover{color:var(--accent-text);border-bottom-color:var(--line-2)}.nav a.on{color:var(--text);border-bottom-color:var(--accent);font-weight:650}
-.nav-count{display:inline-block;min-width:20px;margin-left:6px;padding:1px 6px;border-radius:999px;background:var(--accent-strong);color:var(--on-accent);font-size:11.5px;font-weight:700;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;vertical-align:1px}
+.nav-count{display:inline-block;min-width:20px;margin-left:6px;padding:1px 6px;border-radius:999px;background:var(--accent-strong);color:var(--on-accent);font-size:11.5px;font-weight:700;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;vertical-align:1px}.nav-count.neutral{background:var(--panel-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line-3)}
 .who{color:var(--faint);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 main{padding:26px 20px 72px;max-width:var(--shell);margin:0 auto}
 .page-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 18px;margin:0 0 18px}
@@ -159,7 +166,8 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .opts{display:flex;flex-wrap:wrap;gap:6px 16px}.opts label{display:inline-flex;gap:6px;align-items:center;margin:0;color:var(--muted);font-size:12.5px}
 .editor{margin-top:8px;padding:0 0 0 calc(3ch + 14px)}.editor[open]{padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg-2)}
 .editor>summary{font-weight:500;font-size:13px}
-.review-tools{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:12px 0}.review-tools[hidden]{display:none}.review-counts{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums;margin-left:auto}
+.review-tools{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:12px 0}.review-tools[hidden]{display:none}.review-tools button.is-selected{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}.review-selected{font-size:13px;font-weight:650;color:var(--ok)}
+.review-counts{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums;margin-left:auto}
 .story[data-choice=approve]{border-left-color:var(--ok)}.story[data-choice=reject]{border-left-color:var(--accent)}
 #review-preview{max-width:min(720px,calc(100vw - 32px));width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r);padding:18px 20px}#review-preview::backdrop{background:rgba(5,9,18,.7)}#review-preview h3{margin:14px 0 6px;font-size:14px}#review-preview ul{margin:0;padding-left:18px;max-height:40vh;overflow:auto}.dialog-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:16px}.decide select{max-width:260px}
 .sticky-submit{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 16px;margin:16px 0 0;background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:0 -8px 24px rgba(11,17,32,.45)}
@@ -278,7 +286,7 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 export function page({ title, active, identity, body, flash, lede = '', headActions = '', wide = false }) {
   // The Weekly review link carries a marker that index.mjs replaces with the
   // live pending count (or removes when GitHub cannot be read).
-  const nav = NAV.map(([href, label]) => `<a href="${href}"${active === href ? ' class="on" aria-current="page"' : ''}>${h(label)}${href === '/review' ? PENDING_MARKER : ''}</a>`).join('');
+  const nav = NAV.map(([href, label]) => `<a href="${href}"${active === href ? ' class="on" aria-current="page"' : ''}>${h(label)}${href === '/review' ? PENDING_MARKER : href === '/published' ? PUBLISHED_MARKER : ''}</a>`).join('');
   const flashHtml = flash ? `<div class="flash ${flash.type === 'err' ? 'err' : 'ok'}" role="${flash.type === 'err' ? 'alert' : 'status'}">${h(flash.message)}</div>` : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b1120"><title>${h(title)} · AmericaWhat Boss</title><style>${CSS}</style></head>

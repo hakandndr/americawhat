@@ -36,7 +36,8 @@ function setup({ files } = {}) {
       const html = await response.text();
       assert.ok(!html.includes('aw-pending-count'), 'the marker never reaches the browser');
       const link = parseHTML(html).document.querySelector('nav[aria-label="Boss sections"] a[href="/review"]');
-      return { status: response.status, link, badge: link?.querySelector('.nav-count')?.textContent ?? null };
+      const pub = parseHTML(html).document.querySelector('nav[aria-label="Boss sections"] a[href="/published"]');
+      return { status: response.status, link, badge: link?.querySelector('.nav-count')?.textContent ?? null, published: pub?.querySelector('.nav-count')?.textContent ?? null, pubLink: pub };
     },
   };
 }
@@ -68,4 +69,17 @@ test('an empty queue shows 0 and an unreadable GitHub drops the badge without br
   assert.equal(status, 200);
   assert.equal(badge, null);
   assert.equal(link.textContent, 'Weekly review');
+});
+
+test('Published shows the number of published stories from published.json, and follows new commits', async () => {
+  const ctx = setup({ files: { 'src/data/published.json': JSON.stringify({ items: [{ id: 'aw-0001' }, { id: 'aw-0002' }, { id: 'aw-0003' }] }), 'src/data/pending.json': JSON.stringify(pending), 'src/data/fetch-status.json': '{}' } });
+  for (const path of ['/review', '/published', '/audit']) {
+    const { published, pubLink, badge } = await ctx.nav(path);
+    assert.equal(published, '3', path);
+    assert.equal(badge, '5');
+    assert.match(pubLink.textContent, /^Published3 \(3 published\)$/);
+  }
+  ctx.gh.externalCommit((files) => { files['src/data/published.json'] = JSON.stringify({ items: [{ id: 'aw-0004' }, { id: 'aw-0001' }, { id: 'aw-0002' }, { id: 'aw-0003' }] }); });
+  ctx.advance(61 * 1000);
+  assert.equal((await ctx.nav('/audit')).published, '4');
 });

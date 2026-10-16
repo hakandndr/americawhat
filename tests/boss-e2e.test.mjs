@@ -18,6 +18,8 @@ const ORIGIN = 'https://boss.americawhat.com';
 const REPORTS = new URL('../reports/', import.meta.url);
 fs.mkdirSync(REPORTS, { recursive: true });
 const PUBLISHED = JSON.parse(fs.readFileSync(new URL('../src/data/published.json', import.meta.url), 'utf8'));
+// The next id follows the real published list, which grows with every approval.
+const NEXT_ID = `aw-${String(Math.max(...PUBLISHED.items.map((it) => Number(it.id.slice(3)))) + 1).padStart(4, '0')}`;
 const LOG = fs.readFileSync(new URL('./fixtures/legacy/panel-log-s1.ndjson', import.meta.url), 'utf8');
 const signer = makeSigner();
 const COMMENT = 'A Tampa man tried to pay a parking fine with a car wash coupon. The city declined, but kept the coupon.';
@@ -139,7 +141,7 @@ test('apply: approve one story and drop its copy in ONE commit; audit and decisi
   assert.match(loc(res), /1 approved, 1 rejected/);
   assert.equal(ctx.gh.commitCount(), before + 1);
   const files = ctx.gh.headFiles();
-  assert.equal(JSON.parse(files[CONTENT_PATHS.published]).items[0].id, 'aw-0136');
+  assert.equal(JSON.parse(files[CONTENT_PATHS.published]).items[0].id, NEXT_ID);
   assert.deepEqual(JSON.parse(files[CONTENT_PATHS.pending]).map((p) => p.id), ['aw-p-ccc']);
   assert.equal(ctx.env.APP_DB.count('editorial_decisions'), 2);
   assert.equal(ctx.env.APP_DB.count('boss_audit'), 1);

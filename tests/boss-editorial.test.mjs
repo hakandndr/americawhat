@@ -6,6 +6,8 @@ import { createGitHub, CONTENT_PATHS } from '../workers/boss/src/github.mjs';
 import { approveBatch, computeSlugs, deletePublished, editPublished, rejectBatch, serialize, validateFields } from '../workers/boss/src/editorial.mjs';
 
 const PUBLISHED = JSON.parse(fs.readFileSync(new URL('../src/data/published.json', import.meta.url), 'utf8'));
+// The next id follows the real published list, which grows with every approval.
+const NEXT_ID = `aw-${String(Math.max(...PUBLISHED.items.map((it) => Number(it.id.slice(3)))) + 1).padStart(4, '0')}`;
 const COMMENT = 'A Tampa man tried to pay a parking fine with a coupon for a free car wash. The city declined, but kept the coupon.';
 
 function pendingFixture() {
@@ -53,7 +55,7 @@ test('one approval is ONE commit that updates published and pending together', a
   const files = gh.headFiles();
   const pub = JSON.parse(files[CONTENT_PATHS.published]).items;
   const pend = JSON.parse(files[CONTENT_PATHS.pending]);
-  assert.equal(pub[0].id, 'aw-0136');
+  assert.equal(pub[0].id, NEXT_ID);
   assert.equal(pub[0].seen_id, 'src-aaa');
   assert.equal(pub[0].source_domain, 'wfla.com');
   assert.deepEqual(pend.map((p) => p.id), ['aw-p-bbb']);
