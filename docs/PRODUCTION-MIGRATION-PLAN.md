@@ -34,7 +34,7 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P6 | OG strategy | **Done in code** (frozen archive + pinned renderer); not deployed |
 | P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
 | P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
-| P9 | DNS zone on Cloudflare (records copied, NS changed, site still on Hostinger) | Pending — owner. Authoritative records verified, comparison tool `dns-compare.mjs` ready, procedure in [DNS-READINESS.md](DNS-READINESS.md). Zone not in the account; the CLI login cannot create zones (dashboard or a *Zone:Create* token). hPanel export still needed |
+| P9 | DNS: (A1) disable Hostinger CDN so the apex/`www` point at the origin server, (A2) pending Cloudflare zone from the fresh export, (A3) nameserver change — site still on Hostinger origin | Pending — owner. Hostinger CDN does **not** work with external nameservers, so A1 must come first ([DNS-READINESS.md](DNS-READINESS.md#critical-hostinger-cdn-does-not-work-with-external-nameservers)). Export reconciled (13 records incl. Google verification CNAME), tools ready; CLI cannot create zones |
 | P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Partly done 2026-10-15:** D1 ×2 + migrations, Workers without any exposure, fresh secrets, GitHub Environments. Open: Access app + AUD (needs P9), Boss `GITHUB_TOKEN`, Cloudflare API tokens — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md#status-2026-10-15) |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
 | P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
@@ -63,6 +63,7 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
    twice (second run must add 0); delete the SQL file. The vote baseline is
    imported in step 9 (Boss needs its domain for Access).
 8. **Attach domains:** `npx wrangler triggers deploy --env production --config workers/web/wrangler.jsonc`
+   The custom domains replace the apex and `www` **origin** records (Hostinger CDN was already disabled in P9/A1).
    and the same for Boss. Custom domains replace the apex/www/boss records;
    email records are untouched.
 9. **Verify:** `npm run smoke -- https://americawhat.com`, `npm run parity:live`,
@@ -86,7 +87,7 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | Situation | Action | Data effect |
 |---|---|---|
 | Bad release (code) | "Roll back Cloudflare Worker" workflow, or automatic rollback in the deploy job | none |
-| Site must return to Hostinger (before step 12) | Remove the Workers' custom domains (Workers → Domains & Routes), recreate the apex and `www` as DNS-only CNAMEs to Hostinger CDN ([DNS-READINESS.md](DNS-READINESS.md#hostinger-rollback-consequence) — the apex is a CDN alias, not fixed IPs); Boss → Reactions → export `aw_votes.json` and upload to Hostinger `analytics/`; if stories were published on Cloudflare, republish Hostinger with "Deploy to Hostinger" on a branch made from `hostinger-final` plus the current `src/data/*.json` | native analytics stay in D1; the PHP log continues; no double count |
+| Site must return to Hostinger (before step 12) | Remove the Workers' custom domains (Workers → Domains & Routes), recreate the apex and `www` as the DNS-only **origin A/AAAA records** from the post-A1 export ([DNS-READINESS.md](DNS-READINESS.md#rollback-after-the-worker-cutover); no nameserver change, Hostinger CDN stays off); Boss → Reactions → export `aw_votes.json` and upload to Hostinger `analytics/`; if stories were published on Cloudflare, republish Hostinger with "Deploy to Hostinger" on a branch made from `hostinger-final` plus the current `src/data/*.json` | native analytics stay in D1; the PHP log continues; no double count |
 | D1 data damage | Forward fix; Time Travel restore only as last resort (rewinds ALL # numbering) | — |
 | CI misbehaves | Unset `CF_PRODUCTION_DEPLOY_ENABLED`; deploys stop, live version keeps serving | none |
 

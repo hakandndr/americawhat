@@ -127,6 +127,11 @@ assumed to match the repository copies.
 Worker custom domains need the zone on Cloudflare (full setup). Current public
 records (read 2026-10-14):
 
+> **Superseded 2026-10-16:** this table is incomplete (it lacks the Google
+> verification CNAME and uses wrong TTLs) and its "keep the Hostinger CDN
+> records on Cloudflare DNS" plan is unsupported by Hostinger. Use
+> [DNS-READINESS.md](DNS-READINESS.md).
+
 | Record | Value | On Cloudflare |
 |---|---|---|
 | NS | `hermes.dns-parking.com`, `artemis.dns-parking.com` | replaced by the Cloudflare pair at the registrar |

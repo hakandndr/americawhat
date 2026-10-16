@@ -50,10 +50,10 @@ command line, chat, commit or log.
 
 1. The `americawhat.com` zone is active on Cloudflare in this account, with all
    records copied exactly (MX/SPF/DKIM/DMARC stay pointing at Hostinger,
-   DNS-only), and the apex/www records still pointing at Hostinger. Custom
-   domains cannot be attached before this. (Today the nameservers are
-   Hostinger's; [CLOUDFLARE-MIGRATION.md](CLOUDFLARE-MIGRATION.md) §2 describes
-   the DNS move.)
+   DNS-only), and the apex/www records pointing at the Hostinger **origin**
+   server (Hostinger CDN disabled first; it does not work with external
+   nameservers). Custom domains cannot be attached before this. Procedure:
+   [DNS-READINESS.md](DNS-READINESS.md), steps A1–A3.
 2. This branch's code reviewed; `npm test` green; `node scripts/release/reconcile-main.mjs` ok.
 
 ## 1. D1 databases

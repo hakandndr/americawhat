@@ -6,6 +6,8 @@
 //
 //   node scripts/release/dns-compare.mjs                       # Hostinger (current)
 //   node scripts/release/dns-compare.mjs --servers <ns1>,<ns2> # e.g. the two Cloudflare-assigned nameservers
+//   node scripts/release/dns-compare.mjs --zone-file <BIND export> [--servers ...]
+//       expected records taken from a zone export (SOA/NS ignored) instead of dns-records.json
 //
 // Before the nameserver change run it against the Cloudflare-assigned servers
 // of the PENDING zone: every line must be OK (exit 0). The apex alias is
@@ -14,6 +16,7 @@
 import fs from 'node:fs';
 import { Resolver } from 'node:dns/promises';
 import { pathToFileURL } from 'node:url';
+import { parseBind, specFromZone } from './dns-zone.mjs';
 
 export const HOSTINGER_NS = ['hermes.dns-parking.com', 'artemis.dns-parking.com'];
 
@@ -95,7 +98,12 @@ if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
   const argv = process.argv.slice(2);
   const i = argv.indexOf('--servers');
   const servers = i >= 0 ? argv[i + 1].split(',') : HOSTINGER_NS;
-  const spec = JSON.parse(fs.readFileSync(new URL('./dns-records.json', import.meta.url), 'utf8'));
+  const z = argv.indexOf('--zone-file');
+  let spec;
+  if (z >= 0) {
+    const zone = parseBind(fs.readFileSync(argv[z + 1], 'utf8'));
+    spec = { zone: zone.origin, records: specFromZone(zone) };
+  } else spec = JSON.parse(fs.readFileSync(new URL('./dns-records.json', import.meta.url), 'utf8'));
   const result = await compareZone({ servers, spec });
   if (argv.includes('--json')) console.log(JSON.stringify(result, null, 2));
   else {

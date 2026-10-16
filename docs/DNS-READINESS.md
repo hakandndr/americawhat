@@ -1,127 +1,183 @@
 # americawhat — DNS zone move readiness and email continuity
 
-Authoritative for the DNS part of the migration (verified 2026-10-15/16).
-**Read-only so far:** no nameserver, Hostinger DNS record, email setting,
-registrar setting or Cloudflare zone was changed or created.
+Authoritative for the DNS part of the migration (verified 2026-10-16).
+**Nothing has been changed:** no nameserver, Hostinger DNS record, CDN
+setting, email setting or registrar setting, and no Cloudflare zone exists.
 
-## Verified facts
+## Sources of truth
 
-| Fact | How verified |
-|---|---|
-| Authoritative nameservers: `hermes.dns-parking.com`, `artemis.dns-parking.com` (Hostinger); SOA admin `dns.hostinger.com`, serial 2026101501 | queried both servers directly |
-| Both servers return the identical record set (table below) | direct queries to each server |
-| No wildcard record (a random name is NXDOMAIN); `boss` does not exist | direct probe |
-| No DNSSEC (no DS, no DNSKEY) — nothing to remove at the registrar before a nameserver change | DNS-over-HTTPS with DO bit |
-| The apex has no fixed address: Hostinger answers 2 A + 2 AAAA that change on every query (TTL 60), i.e. an alias of its CDN | repeated direct queries |
-| `americawhat.com.cdn.hstgr.net` and `www.americawhat.com.cdn.hstgr.net` serve the site with a valid certificate (HTTP 200, TLS verify OK, `server: hcdn`) | `curl --resolve` to the CDN host addresses, read-only GET of `/robots.txt` |
-| The zone is **not** in the Cloudflare account | API read |
-| The CLI login **cannot create zones** (`com.cloudflare.api.account.zone.create` missing; HTTP 403, nothing created) | one attempt with `jump_start=false` |
+- Owner's Hostinger export: [`docs/dns/hostinger-export-2026-10-16.zone`](dns/hostinger-export-2026-10-16.zone)
+  (BIND, generated 2026-10-16 01:28 UTC, SHA-256 `aa00d64b…0ce837`).
+- Inventory derived from it: [`scripts/release/dns-records.json`](../scripts/release/dns-records.json)
+  (`node scripts/release/dns-zone.mjs spec <export>` regenerates it).
+- `node scripts/release/dns-zone.mjs reconcile <export>` — export vs inventory
+  (names, types, values, TTLs); exit 1 on any difference.
+- `node scripts/release/dns-compare.mjs [--zone-file <export>] [--servers <ns1>,<ns2>]`
+  — asks authoritative servers directly; fails on a missing/changed record, a
+  Cloudflare proxy address, a CNAME that no longer answers as CNAME (unwanted
+  flattening), an empty apex, an existing `boss` name or a wildcard.
+- `node scripts/release/dns-compare.mjs --zone-file docs/dns/hostinger-export-2026-10-16.zone`
+  against both Hostinger servers on 2026-10-16: **14/14 OK**.
 
-## Records to preserve (exact; all DNS-only / grey cloud)
+## Records (export = live, both Hostinger servers)
 
-Machine-readable copy: [`scripts/release/dns-records.json`](../scripts/release/dns-records.json).
+| Name | Type | Value | TTL | Purpose | In Cloudflare |
+|---|---|---|---|---|---|
+| `@` | MX | `5 mx1.hostinger.com` | 14400 | **email** | MX, DNS-only |
+| `@` | MX | `10 mx2.hostinger.com` | 14400 | **email** | MX, DNS-only |
+| `@` | TXT | `v=spf1 include:_spf.mail.hostinger.com ~all` | 3600 | **SPF** (one SPF record only) | identical |
+| `_dmarc` | TXT | `v=DMARC1; p=none` | 3600 | **DMARC** | identical |
+| `hostingermail-a._domainkey` | CNAME | `hostingermail-a.dkim.mail.hostinger.com` | 300 | **DKIM** | CNAME, DNS-only, not flattened |
+| `hostingermail-b._domainkey` | CNAME | `hostingermail-b.dkim.mail.hostinger.com` | 300 | **DKIM** | CNAME, DNS-only, not flattened |
+| `hostingermail-c._domainkey` | CNAME | `hostingermail-c.dkim.mail.hostinger.com` | 300 | **DKIM** | CNAME, DNS-only, not flattened |
+| `autoconfig` | CNAME | `autoconfig.mail.hostinger.com` | 300 | mail clients | CNAME, DNS-only |
+| `autodiscover` | CNAME | `autodiscover.mail.hostinger.com` | 300 | mail clients | CNAME, DNS-only |
+| `zzwor4l5qvov` | CNAME | `gv-5bsl4swe37pvva.dv.googlehosted.com` | 14400 | **Google domain verification** (was missing from the first inventory) | CNAME, DNS-only, not flattened |
+| `ftp` | A | `45.89.205.38` | 1800 | Hostinger FTP (= the hosting server) | A, DNS-only |
+| `@` | ALIAS | `americawhat.com.cdn.hstgr.net` | **300** | web via Hostinger CDN | **must change first, see below** |
+| `www` | CNAME | `www.americawhat.com.cdn.hstgr.net` | 300 | web via Hostinger CDN | **must change first, see below** |
+| `@` | SOA, NS | Hostinger values | — | provider records | **not copied**; Cloudflare publishes its own |
 
-| Name | Type | Value | TTL | Purpose |
-|---|---|---|---|---|
-| `@` | MX | `5 mx1.hostinger.com` | 14400 | **email** |
-| `@` | MX | `10 mx2.hostinger.com` | 14400 | **email** |
-| `@` | TXT | `v=spf1 include:_spf.mail.hostinger.com ~all` | 3600 | **email – SPF** (only one SPF record allowed) |
-| `_dmarc` | TXT | `v=DMARC1; p=none` | 3600 | **email – DMARC** |
-| `hostingermail-a._domainkey` | CNAME | `hostingermail-a.dkim.mail.hostinger.com` | 300 | **email – DKIM** (keep as CNAME, never copy the TXT behind it) |
-| `hostingermail-b._domainkey` | CNAME | `hostingermail-b.dkim.mail.hostinger.com` | 300 | **email – DKIM** |
-| `hostingermail-c._domainkey` | CNAME | `hostingermail-c.dkim.mail.hostinger.com` | 300 | **email – DKIM** |
-| `autodiscover` | CNAME | `autodiscover.mail.hostinger.com` | 300 | mail client setup |
-| `autoconfig` | CNAME | `autoconfig.mail.hostinger.com` | 300 | mail client setup |
-| `ftp` | A | `45.89.205.38` | 1800 | Hostinger FTP (until web retirement) |
-| `www` | CNAME | `www.americawhat.com.cdn.hstgr.net` | 300 | web until cutover |
-| `@` | CNAME (flattened) | `americawhat.com.cdn.hstgr.net` | Auto | web until cutover (Hostinger shows it as an alias) |
+Export notes: the MX targets are written without a trailing dot
+(`mx1.hostinger.com`). Strict BIND reads that as
+`mx1.hostinger.com.americawhat.com`; the live servers answer
+`mx1.hostinger.com`, and our tools read it the same way and write
+fully-qualified targets (`mx1.hostinger.com.`) into the Cloudflare import
+file. **Never upload the raw Hostinger export to Cloudflare.** The export's SOA
+serial (2026072102) differs from the live SOA serial (2026101501); the record
+data is identical. No wildcard, no DNSSEC, no CAA/SRV/other names in the export.
 
-Not found by any query (confirm with the hPanel export): verification TXT
-records, CAA, SRV, MTA-STS/TLS-RPT, `mail`, `webmail`, `smtp`, `imap`, other
-subdomains.
+## Critical: Hostinger CDN does not work with external nameservers
 
-## Needed from hPanel (owner, one time)
+Hostinger's documentation ([Hostinger CDN and your DNS records](https://www.hostinger.com/support/hostinger-cdn-and-your-dns-records/))
+states that Hostinger CDN **requires Hostinger nameservers**, that a domain on
+external nameservers **including Cloudflare** cannot be routed through the CDN,
+and (related support pages) that this holds even with Cloudflare proxying off.
+The CDN works by Hostinger editing the apex A/AAAA and `www` records in a zone
+it manages.
 
-1. **The full DNS zone of americawhat.com** (hPanel → Domains → DNS / Nameservers:
-   export, or screenshots of every row with name, type, value, TTL). Public
-   queries cannot list names that nobody knows about.
-2. **How the apex is defined there** (ALIAS / CDN record, or A records) and
-   whether hPanel → Website → CDN states different records to use with external
-   nameservers.
-3. **Email → DNS / Mail service settings** page: the records Hostinger expects
-   for this mailbox domain (to confirm MX, SPF, the three DKIM selectors, DMARC).
-4. **Registrar and lock:** where the domain is registered, that the owner can
-   change nameservers there, and the expiry date.
+The earlier plan in this file ("change nameservers, keep the CDN targets, the
+site keeps running on Hostinger") was therefore an **unsupported assumption
+and is withdrawn**. The fact that `americawhat.com.cdn.hstgr.net` answers
+today with a valid certificate only proves today's behaviour; once Hostinger no
+longer manages the zone it may stop serving, stop renewing the edge
+certificate, or detach the CDN at any time, without notice.
 
-## Safe procedure (each phase needs its own owner approval)
+What is supported: serving the site **directly from the hosting server**.
+Verified read-only on 2026-10-16: `45.89.205.38` (LiteSpeed, `platform:
+hostinger`) answers `https://americawhat.com/` and `https://www.americawhat.com/`
+with HTTP 200 and a valid Let's Encrypt certificate covering both names
+(expires 2026-12-04). Which A/AAAA values hPanel restores after disabling the
+CDN must still be read from hPanel (expected: this address; IPv6 unknown).
 
-### Phase 1 — pending zone (no effect on live DNS)
+## Options compared
 
-1. Cloudflare dashboard → Add a domain → `americawhat.com` → **Manually enter
-   DNS records** (not "quick scan", which can import the rotating apex
-   addresses as fixed records and mark records proxied) → Free plan. Or with
-   an API token that has *Zone:Create*:
-   `POST /zones {"name":"americawhat.com","account":{"id":"c8999b29b2123e2f9634248c58f43f14"},"type":"full","jump_start":false}`.
-2. **Stop at the nameserver screen.** The zone stays "Pending nameserver
-   update"; Hostinger remains authoritative, so nothing changes for visitors
-   or email. Note the two assigned `*.ns.cloudflare.com` names. **Free-plan zones
-   pending for more than 28 days are deleted automatically**, so add the zone
-   at most about three weeks before the planned nameserver change (recreating
-   it is harmless, but the assigned nameservers may then differ).
-3. Enter every row of the table (and of the hPanel export) with proxy **off**.
-4. Do **not** enable Email Routing (it replaces MX), "Email Security" DMARC
-   management, or any proxy feature.
+| | **A. Disable the CDN first, then move nameservers (recommended)** | **B. Nameserver move and Worker cutover in one window** |
+|---|---|---|
+| What happens | (1) hPanel: disable Hostinger CDN; records return to the origin server. (2) Export again; pending Cloudflare zone with the origin A records. (3) Nameserver change. (4) Later, separate window: Worker cutover. | Pending zone prepared; in one window: nameserver change, zone activation, Worker custom domains on apex/www, Access for Boss, imports. |
+| Supported at every moment | Yes: Hostinger origin with external DNS is a normal setup; the CDN is never used with Cloudflare DNS | Only if the Cloudflare zone never points at the CDN; the window must start the moment the zone activates |
+| Downtime | CDN switch-off: Hostinger warns of minutes to hours where some visitors may still hit the CDN or a placeholder. Nameserver change: none (same origin answers on both sides) | Up to 24–48 h of split traffic (old resolvers → Hostinger CDN, new → Workers); first minutes after activation until the custom-domain certificates exist |
+| DNS propagation | Two independent propagations, each with identical answers on both sides | One propagation that also switches the application |
+| Email | Untouched in both steps (MX/SPF/DKIM/DMARC copied 1:1; verified by `dns-compare`) | Same records, but verified under time pressure |
+| HTTPS | Origin certificate valid until 2026-12-04; Let's Encrypt HTTP-01 renewal keeps working with DNS-only records pointing at the origin | Worker certificates issued after activation; Hostinger CDN certificate for stale resolvers |
+| Validation before cutover | Zone active weeks before cutover: Access app for `boss.americawhat.com` can be created and tested, CI tokens and DNS verified calmly | Access, tokens and DNS all verified inside the window |
+| Rollback | Each step alone: re-enable CDN (step 1); nameservers back (step 3, slow: .com delegation up to 48 h); after cutover, remove custom domains and restore the origin A records **inside Cloudflare in minutes** | Mostly a nameserver reversal (up to 48 h) or the same in-Cloudflare restore, but several changes must be unwound together |
+| Cost | Site without Hostinger CDN for some weeks (static hobby site, negligible), one extra hPanel step | Fewer steps, much higher blast radius |
 
-### Phase 2 — comparison (read-only)
+**Recommendation: A.** It never relies on unsupported behaviour, keeps the
+nameserver move and the application cutover apart, lets the Boss Access
+application be created and verified on the active zone before Boss is ever
+exposed, and makes the post-cutover rollback a two-record change inside
+Cloudflare. Run step 1 at a quiet hour.
+
+## Procedure A (each step needs its own approval; none started)
+
+### A1 — disable Hostinger CDN (owner, hPanel)
+
+1. hPanel → Websites → Dashboard → Performance → CDN → **Disable**.
+2. Wait until the apex no longer answers with `*.cdn.hstgr.net` addresses
+   (`node scripts/release/dns-compare.mjs` will start failing on the ALIAS/`www`
+   rows — expected), then **export the zone again** (BIND) into
+   `docs/dns/hostinger-export-<date>.zone`.
+3. `node scripts/release/dns-zone.mjs reconcile <new export>` — only the apex
+   and `www` rows may differ; then `node scripts/release/dns-zone.mjs spec <new export>`
+   to refresh the inventory and commit it.
+4. `curl -sI https://americawhat.com/` shows `server: LiteSpeed` and a valid
+   certificate; a test e-mail still arrives (MX untouched).
+5. Rollback: enable the CDN again.
+
+### A2 — pending Cloudflare zone (owner, dashboard; no effect on live DNS)
+
+1. `node scripts/release/dns-zone.mjs cloudflare <new export> > <file outside the repo or docs/dns/>`
+   — fully-qualified names, no SOA/NS, every line `cf_tags=cf-proxied:false`,
+   no `cf-flatten-cname`.
+2. Cloudflare dashboard → **Add a domain** → `americawhat.com` → choose
+   **Manually enter DNS records** (not the quick scan) → **Free** plan.
+3. DNS → Records → **Import and Export → Import**: upload the generated file;
+   **untick "Proxy imported DNS records"** (the per-record tags also force
+   DNS-only).
+4. Check the list: every record **DNS only (grey cloud)**; the three
+   `hostingermail-*._domainkey` and `zzwor4l5qvov` rows are **CNAME** records;
+   MX targets read `mx1.hostinger.com` / `mx2.hostinger.com` (not
+   `….americawhat.com`); no extra scanned rows; no `boss` row.
+5. DNS → Settings: leave CNAME flattening at the default (apex only; do not
+   choose "flatten all CNAMEs"); DNSSEC off. **Email → Email Routing: do not
+   enable** (it would replace MX). No Page/Redirect rules, no proxy features.
+6. **Stop at the nameserver screen.** Note the two assigned
+   `*.ns.cloudflare.com` names. The zone stays "Pending nameserver update".
+   Free-plan zones pending for more than **28 days are deleted**, so create it
+   at most ~3 weeks before A3.
+7. If you prefer the API instead of the dashboard: a token with
+   *Zone:Create* and *DNS:Edit*, `POST /zones {"name":"americawhat.com","account":{"id":"c8999b29b2123e2f9634248c58f43f14"},"type":"full","jump_start":false}`,
+   then `POST /zones/<id>/dns_records/import` with the file and `proxied=false`.
+   (The CLI login used so far lacks `zone.create`; the one attempt returned
+   HTTP 403 and created nothing.)
+
+### A3 — compare, then change nameservers (separate approval)
 
 ```bash
-node scripts/release/dns-compare.mjs --servers <assigned-ns-1>,<assigned-ns-2>
+node scripts/release/dns-compare.mjs --zone-file <new export> --servers <assigned-ns-1>,<assigned-ns-2>
 ```
 
-It queries the Cloudflare nameservers directly for every record and fails on
-a missing or different value, on a Cloudflare proxy address, on an apex
-without answers, if `boss` exists, or if a wildcard answers. If the assigned nameservers do not answer
-for a still-pending zone (REFUSED or timeout — Cloudflare does not document
-this case), compare the dashboard export (DNS → Records → Export, BIND
-format) with `scripts/release/dns-records.json` instead, and run the tool
-again right after the nameserver change. Run it without `--servers` to
-re-check Hostinger. Both must print
-`RESULT: all records match`. Also compare against the hPanel export by eye.
+Must print `RESULT: all records match`. If Cloudflare's servers do not answer
+for a still-pending zone (undocumented case), compare the dashboard export
+(DNS → Records → Export) with `node scripts/release/dns-zone.mjs reconcile`.
+Then at the registrar replace `hermes/artemis.dns-parking.com` with the two
+assigned names. Afterwards run the comparison again (with and without
+`--servers`), send and receive a test message (`spf=pass`, `dkim=pass`), and
+check `curl -sI https://americawhat.com/` still answers from the origin.
+Reverting the nameservers brings back the untouched Hostinger zone, so the
+Hostinger zone must not be edited or deleted during the migration.
 
-### Phase 3 — nameserver change (separate approval; still no website change)
+### A4 — enables
 
-At the registrar replace `hermes/artemis.dns-parking.com` with the two
-Cloudflare nameservers. The site keeps running on Hostinger (same CDN
-targets), email keeps going to Hostinger. Afterwards:
-- `node scripts/release/dns-compare.mjs --servers <assigned-ns-1>,<assigned-ns-2>` again;
-- send and receive a test message; its headers show `spf=pass` and `dkim=pass`;
-- `curl -sI https://americawhat.com/` still shows `server: hcdn`.
+On the active zone: Boss Access application (below), CI tokens, then the
+cutover window in [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md),
+where the Worker custom domains replace the apex and `www` origin records.
 
-**Reverting the nameservers** brings back the untouched Hostinger zone, so
-the Hostinger DNS zone must not be edited or deleted during the migration.
-.com delegation TTL is up to 48 h, so a reversal is not instant.
+## Rollback after the Worker cutover
 
-### Phase 4 — what this enables
-
-Only after the zone is **active**: the Boss Access application (below), then
-the cutover in [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md),
-where the Worker custom domains replace the apex and `www` rows.
-
-## Hostinger rollback after cutover
-
-The apex is a CDN alias, so a website rollback does not restore fixed
-addresses: remove the Worker custom domains and recreate `@` as flattened
-CNAME `americawhat.com.cdn.hstgr.net` and `www` as CNAME
-`www.americawhat.com.cdn.hstgr.net`, both DNS-only.
+Remove the Worker custom domains and recreate the apex and `www` as the
+**origin A (and, if hPanel gives one, AAAA) records** from the post-A1 export,
+DNS-only. No nameserver change is needed. (Re-enabling Hostinger CDN would
+require Hostinger nameservers again — a slow path that is not part of the
+rollback.)
 
 ## Boss Access dependency
 
-A self-hosted Access application for `boss.americawhat.com` needs the zone in
-this account (and the CLI login has no Access permission). Order: zone active
-→ owner creates the application in the dashboard (team
+A self-hosted Access application for `boss.americawhat.com` needs the zone
+active in this account (and the CLI login has no Access permission). After
+A3: owner creates the application in the dashboard (team
 `dndrnet.cloudflareaccess.com`, policy Allow, Include emails `hakan@dndr.net`
 only, session ≤ 24 h) → copy the AUD →
 `node scripts/release/set-production-config.mjs --app-db 3097933b-4feb-4e50-bb59-760fd06a640e --analytics-db 1012183d-96cd-4d7f-8e93-ca247ca43589 --access-aud <AUD>`
 → upload a Boss version → only then attach `boss.americawhat.com`. Until then
 the production Boss has an empty AUD (503 for every request) and no route,
 workers.dev or preview URL.
+
+## Still needed from the owner
+
+1. After A1: the A (and AAAA, if any) values hPanel restores for `@` and
+   `www`, and a fresh zone export.
+2. Registrar access: where the domain is registered, that nameservers can be
+   changed there, lock status and expiry date.

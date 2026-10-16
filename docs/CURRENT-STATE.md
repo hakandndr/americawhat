@@ -30,10 +30,14 @@ where it disagrees with this section, this section wins.
   reviewer `hakandndr` and no admin bypass; only `CLOUDFLARE_ACCOUNT_ID` set;
   `CF_PRODUCTION_DEPLOY_ENABLED` unset.
 - Blocked: Access application (zone not in the account), Cloudflare CI tokens
-  and the Boss PAT (owner-only). DNS: authoritative records verified on both
-  Hostinger nameservers and recorded in `scripts/release/dns-records.json`;
-  adding the zone failed safely (CLI lacks zone-create permission, HTTP 403,
-  nothing created) — see [DNS-READINESS.md](DNS-READINESS.md). Details: [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md),
+  and the Boss PAT (owner-only). DNS (2026-10-16): the owner's Hostinger zone export is committed and
+  reconciled (13 records incl. the Google verification CNAME; apex ALIAS TTL
+  300) and equals the live answers of both Hostinger nameservers. **Hostinger
+  CDN does not work with external nameservers**, so the earlier "keep the CDN
+  targets" plan is withdrawn: recommended order is disable the CDN (site served
+  from the origin 45.89.205.38, verified with a valid certificate) → pending
+  Cloudflare zone → nameserver change → later Worker cutover. The CLI cannot
+  create zones (HTTP 403, nothing created) — see [DNS-READINESS.md](DNS-READINESS.md). Details: [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md),
   DNS/email checklist: [DNS-READINESS.md](DNS-READINESS.md).
 
 ### Deployed to staging

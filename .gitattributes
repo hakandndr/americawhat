@@ -3,3 +3,4 @@
 *.png binary
 *.woff2 binary
 *.ttf binary
+*.zone text eol=lf
