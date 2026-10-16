@@ -84,7 +84,6 @@ autoconfig/autodiscover).
 ## DNDR
 
 Hostinger's `log_df.php` copied page views to DNDR; that stopped at cutover.
-Forwarding as `prd_americawhat_native` is implemented (ANALYTICS.md §5) and
-waits for the DNDR-side producer registration and an owner-approved release.
-Until then AmericaWhat's native analytics are complete on their own; DNDR has a
-gap from 2026-10-16 (native rows only).
+Forwarding as `prd_americawhat_native` is live since 2026-10-16 20:52 UTC
+(ANALYTICS.md §5). DNDR lacks only the native rows from the cutover until then
+(owner-approved history import pending, CURRENT-STATE open item 4).

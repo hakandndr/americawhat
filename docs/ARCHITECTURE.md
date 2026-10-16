@@ -104,8 +104,8 @@ refuses every other environment). The production binding is
 (DNDR site `site_americawhat`); `check-config` refuses any other binding. A
 15-minute cron resends pending/failed copies from the last 6 hours, bounded and
 attempt-limited; DNDR dates PAGE events on receipt, so older gaps are a reviewed
-import, not a retry. The producer must be registered on the DNDR side before
-this is deployed (DNDR change, separate approval). Legacy (imported) rows are
+import, not a retry. The producer is registered on the DNDR side (applied
+2026-10-16 with owner approval); forwarding is live since 2ef6a57. Legacy (imported) rows are
 never forwarded; DNDR already holds that history (see `ANALYTICS.md` §5).
 
 ## 6. Security boundaries

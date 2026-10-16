@@ -1,17 +1,17 @@
 # americawhat — current state
 
-Single source of truth for what is live. Verified 2026-10-16 20:50 UTC
-(release 8a9cf35). Update the tables in place when something changes.
+Single source of truth for what is live. Verified 2026-10-16 20:55 UTC
+(release 2ef6a57). Update the tables in place when something changes.
 
 ## Production (Cloudflare Workers, live since 2026-10-16 04:02 UTC)
 
 | Item | Value |
 |---|---|
-| Source | `main` @ **8a9cf35** (GitHub `hakandndr/americawhat`, merge of PR #12; deploy run 38962431640, owner-approved) |
-| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `a1190c3c-bf76-45c4-ade3-ee67b9244158` |
-| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `92a81be7-9187-4dcc-9844-53c9b09205e0`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
-| Previous versions (rollback) | Web `55912dc3-44a8-49e6-ab6e-c1a083e4d002`, Boss `187c1ab2-e207-49ae-9490-cbe129a924cb` (release 09c90da); before that Web `7fd196f8…`, Boss `0553c2ea…` (032e88f) |
-| Health | `/api/health`: status ok, environment production, release 8a9cf35, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
+| Source | `main` @ **2ef6a57** (GitHub `hakandndr/americawhat`, merge of PR #13 over PR #12's 8a9cf35; deploy run 38965061169, owner-approved) |
+| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `2c785866-179f-4871-975b-18ce3cc1f8ae`; binding `DNDR_COLLECTOR` → `dndr-collector#ProducerApi` (`prd_americawhat_native`), cron `*/15 * * * *` (DNDR outbox recovery) |
+| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `ca9420f0-1896-4399-85b9-1de6a4b8be0a`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
+| Previous versions (rollback) | Web `a1190c3c-bf76-45c4-ade3-ee67b9244158`, Boss `92a81be7-9187-4dcc-9844-53c9b09205e0` (release 8a9cf35); before that Web `55912dc3…`, Boss `187c1ab2…` (09c90da) |
+| Health | `/api/health`: status ok, environment production, release 2ef6a57, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
 | D1 | `americawhat-app-production` `3097933b-4feb-4e50-bb59-760fd06a640e`, `americawhat-analytics-production` `1012183d-96cd-4d7f-8e93-ca247ca43589` (WNAM, migration 0001 each) |
 | Analytics | 1,083 legacy events (Hostinger log S1, imported idempotently; ledger 1,084 incl. 1 line without a page) + native page views since cutover (30 at 20:50 UTC; collection re-verified after the release) |
 | Reactions | S1 baseline **applied** through Boss: 1 import (`baseline`, 14 items, +19 votes); live votes are added on top (21 in total at the time of writing) |
@@ -44,7 +44,7 @@ story column with live URLs; Reactions search/sort; full Analytics).
 |---|---|
 | Boss redesign (PR #12) | **Live** — 8a9cf35 |
 | Automatic Web-only deploy of signed Boss content (`production-content`) | **Deployed, not enabled** — awaiting owner setup: Environment, Web-only token, Ed25519 key, `CF_CONTENT_DEPLOY_ENABLED` ([DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup)). Until then every release, news included, waits for `production` approval |
-| DNDR forwarding (`prd_americawhat_native`) | **Implemented, awaiting deployment** — draft PR #13; **blocked on DNDR-side approval** (producer registration). See Open items 4 |
+| DNDR forwarding (`prd_americawhat_native`) | **Live** since 2ef6a57 (2026-10-16 20:52 UTC). DNDR registry rows applied and read back (owner-approved); two-sided check: one visit, same `event_uid` and path in both systems, counted once, no other site changed. Outbox recovery cron `*/15`. Cutover gap: Open items 4 |
 
 - `ci.yml`: tests and builds every push except `main` and every PR; no secrets.
 - `deploy-cloudflare.yml`: on push to `main` (site/Worker paths) or manual;
@@ -73,7 +73,7 @@ Access app, staging content repository `hakandndr/americawhat-staging-content`.
 | — | Staging sync to the production code: deferred to a separate session (approval needed) | deferred |
 | 2 | 30-day observation; then retire Hostinger web files, delete the FTP secrets, revoke the old Hostinger Boss credential (e-mail stays) | until 2026-11-15, then separate approval |
 | 3 | Credential expiry: note and rotate the Boss GitHub PAT (≤90 days) and both Cloudflare CI tokens | track dates in the owner's vault |
-| 4 | DNDR forwarding: AmericaWhat side ready in draft PR #13 (production-only binding as `prd_americawhat_native`, outbox recovery). Blocked on the DNDR-side registry rows (owner approval), then PR #13 release and a two-sided read-back. Native rows since cutover (30 at 20:50 UTC) need an owner-approved DNDR history import; not replayed through `recordPage` (DNDR dates PAGE events on receipt) | blocked on DNDR approval |
+| 4 | DNDR cutover gap: native rows stored 2026-10-16 04:03–20:46 UTC (30; forwarding live since 20:52) are not in DNDR. Fill only through an owner-approved DNDR history import keyed on `event_uid` (DNDR dates `recordPage` events on receipt, so no replay) | owner decision |
 | 5 | Privacy page "~90 days" wording vs. manual-only retention; 3 real visitor rows / 2 votes in staging (delete or keep) | owner decision |
 
 ## Backups and rollback anchors

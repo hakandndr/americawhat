@@ -167,10 +167,10 @@ the staging databases, or keep them.
 - Forwarding native rows: implemented (production-only binding
   `DNDR_COLLECTOR` → `dndr-collector#ProducerApi`, producer
   `prd_americawhat_native`, outbox + 15-minute recovery cron; ARCHITECTURE §5).
-  **Not live until** the producer row and its `site_americawhat` link exist in
-  DNDR's production registry (DNDR change, separate approval) and the Web
-  Worker is released through the owner-approved deploy. Order: DNDR registry →
-  AmericaWhat deploy → one controlled visit read back on both sides.
+  **Live since 2ef6a57 (2026-10-16 20:52 UTC)**: DNDR registry rows applied
+  (owner-approved), then the owner-approved release; the first controlled
+  visit was read back once in both systems under the same `event_uid`.
+  Rollback on DNDR's side: `enabled = 0` on `prd_americawhat_native`.
 - Cutover gap (native rows stored before forwarding is live): DNDR stamps PAGE
   events on receipt, so these are not replayed through `recordPage`. They are
   an owner-approved DNDR history import keyed on `event_uid`, limited to
