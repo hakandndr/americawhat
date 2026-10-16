@@ -45,7 +45,7 @@
         "BOSS_ACCESS_TEAM_DOMAIN": "dndrnet.cloudflareaccess.com",
         // Set to the AUD tag of the boss.americawhat.com Access application when it
         // exists (scripts/release/set-production-config.mjs). Empty = Boss answers 503.
-        "BOSS_ACCESS_AUD": "",
+        "BOSS_ACCESS_AUD": "6b54c07908a77fa116828586421b9c338e071caae971854849207bbf84a224fe",
         "BOSS_GITHUB_REPOSITORY": "hakandndr/americawhat",
         "BOSS_GITHUB_BRANCH": "main",
         "BOSS_COMMIT_AUTHOR_NAME": "Hakan Dundar",
