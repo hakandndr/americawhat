@@ -98,6 +98,25 @@ test('client: expand/collapse all, select prepared drafts, live counts', () => {
   assert.equal(counts(), 'Story cards: Approve 1 · Reject 0 · Skip 5');
 });
 
+test('client: Select prepared drafts confirms itself next to the button and follows manual changes', () => {
+  const { document, window, form, click } = runClient();
+  const button = document.querySelector('[data-review="prepared"]');
+  const status = () => document.getElementById('review-prepared-status').textContent;
+  assert.equal(status(), '');
+  assert.equal(button.getAttribute('aria-pressed'), 'false');
+  click('[data-review="prepared"]');
+  assert.equal(status(), '1 draft selected ✓');
+  assert.equal(button.classList.contains('is-selected'), true);
+  assert.equal(button.getAttribute('aria-pressed'), 'true');
+  card(document, 'ready').querySelector('input[type=radio][value=skip]').checked = true;
+  form.dispatchEvent(new window.Event('change', { bubbles: true }));
+  assert.equal(status(), '', 'a manual change is reflected');
+  assert.equal(button.classList.contains('is-selected'), false);
+  card(document, 'ready').querySelector('input[type=radio][value=approve]').checked = true;
+  form.dispatchEvent(new window.Event('change', { bubbles: true }));
+  assert.equal(status(), '1 draft selected ✓');
+});
+
 test('client: submit shows a preview of what will be published and rejected; only Confirm submits', () => {
   const { document, dialog, form, click, window, submitted } = runClient();
   click('[data-review="prepared"]');

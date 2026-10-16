@@ -10,6 +10,9 @@ export const REVIEW_SCRIPT = String.raw`(() => {
   if (!form || !tools || !dialog) return;
   const cards = Array.from(form.querySelectorAll('article.story'));
   const counts = document.getElementById('review-counts');
+  const preparedButton = tools.querySelector('[data-review="prepared"]');
+  const preparedStatus = document.getElementById('review-prepared-status');
+  const prepared = cards.filter((card) => card.getAttribute('data-prepared') === '1');
   const choice = (card) => (card.querySelector('input[type=radio]:checked') || {}).value || 'skip';
   const setChoice = (card, value) => {
     const radio = card.querySelector('input[type=radio][value="' + value + '"]');
@@ -29,6 +32,14 @@ export const REVIEW_SCRIPT = String.raw`(() => {
       card.setAttribute('data-choice', value);
     }
     counts.textContent = 'Story cards: Approve ' + n.approve + ' · Reject ' + n.reject + ' · Skip ' + n.skip;
+    // Reflects the current choices, manual changes included.
+    const selected = prepared.filter((card) => choice(card) === 'approve').length;
+    const label = selected + ' of ' + prepared.length;
+    preparedStatus.textContent = selected === 0 ? ''
+      : selected === prepared.length ? selected + ' draft' + (selected === 1 ? '' : 's') + ' selected ✓'
+      : label + ' drafts selected';
+    preparedButton.classList.toggle('is-selected', selected > 0 && selected === prepared.length);
+    preparedButton.setAttribute('aria-pressed', String(selected > 0 && selected === prepared.length));
   }
 
   function item(text, sub) {

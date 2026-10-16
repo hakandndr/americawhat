@@ -121,7 +121,8 @@ export function renderReview({ identity, flash, review, fetchStatus, csrf, error
 <div class="review-tools" id="review-tools" hidden>
   <button type="button" class="secondary" data-review="expand">Expand all</button>
   <button type="button" class="secondary" data-review="collapse">Collapse all</button>
-  <button type="button" class="secondary" data-review="prepared">Select prepared drafts (${prepared})</button>
+  <button type="button" class="secondary" data-review="prepared" aria-pressed="false"${prepared ? '' : ' disabled'}>Select prepared drafts (${prepared})</button>
+  <span class="review-selected" id="review-prepared-status" role="status" aria-live="polite"></span>
   <span class="review-counts" id="review-counts" role="status" aria-live="polite"></span>
 </div>
 <form method="post" action="/review/apply" id="review-form">
