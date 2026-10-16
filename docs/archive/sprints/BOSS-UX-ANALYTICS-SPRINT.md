@@ -6,7 +6,7 @@ Worktree `D:\IT\AmericaWhat\americawhat\tmp\security-boss`.
 **Yalnızca yerel uygulama/test/commit. Push, merge, deploy, gerçek ziyaretçi
 okuması veya uzak veri/Access/DNS/Hostinger değişikliği yok.** Önceki staging
 preflight bu sprintte gereksiz yere tekrarlanmadı; tarihi kanıtları
-[STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) içinde korunur.
+[STAGING-PREFLIGHT.md](../staging/STAGING-PREFLIGHT.md) içinde korunur.
 
 ## Commit’ler ve değişen dosyalar
 

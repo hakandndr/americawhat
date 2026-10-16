@@ -3,7 +3,7 @@
 Sonraki sprint notu: Boss renkleri `0f3fe02` ile public kaynağa hizalandı;
 117 test/18 workerd geçti. Staging deployment/version, iki D1 DDL uyumu ve
 Access/secret eksikleri artık hesap düzeyinde okundu. Güncel kanıt ve gelecek
-rollout/rollback planı [STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) içindedir.
+rollout/rollback planı [STAGING-PREFLIGHT.md](../staging/STAGING-PREFLIGHT.md) içindedir.
 Aşağıdaki ilk entegrasyon raporu tarihsel kayıttır; uygulanmamış content merge
 reçetesi hâlâ geçerlidir, yeni main ucu her defasında yeniden doğrulanır.
 
@@ -237,5 +237,5 @@ $env:CI = 'true'
 node node_modules/wrangler/bin/wrangler.js dev --local --config workers/web/wrangler.jsonc --ip 127.0.0.1 --port 8817 --inspector-port 9317 --persist-to .wrangler/web-test --var PUBLIC_ORIGINS:http://127.0.0.1:8817 --var RELEASE_ID:security-phase-a
 ```
 
-Boss preview/test komutları [OPERATIONS.md](OPERATIONS.md) başındadır.
+Boss preview/test komutları [OPERATIONS.md](../status/OPERATIONS-2026-10-15.md) başındadır.
 Çalışan başka AmericaWhat önizlemesine müdahale edilmez.

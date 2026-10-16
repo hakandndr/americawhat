@@ -1,70 +1,36 @@
 # americawhat — Analytics
 
-## Analytics layout (2026-10-15, Boss release ca36662)
+## Boss Analytics screen (production)
 
-The stream is a one-line-per-event table in distinct columns (ALL #, DAY #,
-date/time, IP, IP visits, source, event, actor, agent, country/city, page,
-referrer, device, browser/OS, Details) defined once in
-`workers/boss/src/pages/analytics-event.mjs` and shared with IP activity; the
-shell is 1480px. Earlier notes below describe the 38096fa layout.
+- **Live view:** `/analytics` always shows the newest records first and keeps
+  its clean URL; Refresh reloads with the same range and filters. Filter changes
+  stay live.
+- **Fixed lists for paging:** First/Previous/Next/Last/Page links carry an upper
+  ALL # (`snapshot`) so pages never shift while records arrive; such a list says
+  "Fixed list up to ALL # N", how many newer records matched since, and offers
+  Show latest. Back/Forward restore exactly the URL they left.
+- **Columns** (one line per event, shared with IP activity,
+  `workers/boss/src/pages/analytics-event.mjs`): ALL #, DAY # (time-ordered per
+  Pacific-Time day), DATE / TIME (PT), IP ADDRESS, IP VISITS, SOURCE, EVENT,
+  ACTOR, AGENT, COUNTRY · CITY, PAGE, REFERRER, DEVICE, BROWSER · OS, Details
+  (every raw field). Narrow screens drop columns into Details, then use cards.
+- **IP VISITS** = retained page views from that exact address, all dates and
+  sources, **up to the same ALL # as the list shown** (rows and counts agree).
+  Events, not people or sessions. IP addresses link to `/analytics/ip`
+  (exact-address history, frozen at an upper ALL #, behind the same Access guard).
+- Summary, daily chart (all filtered days; quiet days are zero bars; 30/7-day
+  zoom is CSS only), breakdowns and CSV/NDJSON export use the same filters.
+  The export audit records filter names, never values.
 
-### Earlier layout (38096fa)
-
-Boss pages share one 1320px shell. Analytics reads top to bottom: a summary
-panel (page views, human/automated split, secondary counts) beside a stacked
-daily chart that shows every PT day between the first and last record (quiet
-days are zero bars); a compact filter bar whose secondary filters sit under
-"More filters" (open when one is active); the event stream as a two-line grid
-whose Details open as a full-width drawer under the row; breakdowns; data
-operations. Region ids, live filtering, links, pagination, snapshots, exports
-and retention are unchanged. The IP activity page uses the same stream.
-
-## Responsive log and exact-address activity (2026-10-15)
-
-Analytics uses a wider workspace, seven fixed-layout columns and stacked
-event cards below 1000px. Full raw values remain in native Details controls
-and exports. IP addresses and IP Visits are keyboard-accessible blue links
-to `/analytics/ip?address=...`, protected by the same owner Access/JWT guard.
-No public endpoint or asset contains visitor records.
-
-IP Visits still means all currently retained page-view events for that exact
-address, across filters; it is not a person/session count. The detail summary
-uses the same current-retained definition and shows first/last recorded time,
-active PT days, distinct pages and classifications. Its history and exports
-are frozen at an upper ALL ID. History is ordered by recorded timestamp
-descending, then durable ID, so a later import of old records cannot mislabel
-chronology. Back preserves the Analytics filters, page and upper ID. Current
-summary totals may grow while a frozen history remains unchanged.
-
-The detail uses three read-only D1 queries: IP-indexed page boundaries,
-an exact-address aggregate, and a bounded page fetch (25/50/100 records).
-It performs no per-row network queries and needs no migration/index change.
-Manual-only 90-day retention remains unchanged. Invalid IPv4/IPv6 or malformed
-pagination returns400 after authentication; unsafe Back targets fall back to
-Analytics. Empty addresses with no retained data return a useful empty view.
-
-Focused tests: `tests/boss-ip-activity.test.mjs`. Rendered browser regression:
-`node --disable-warning=ExperimentalWarning scripts/dev/check-responsive.mjs`
-after a static build. It needs Playwright (or PLAYWRIGHT_MODULE pointing to
-its entry file) and Chromium (optional CHROME_PATH). It uses isolated in-memory
-synthetic data, blocks remote browser requests and never uses owner cookies.
-`--baseline` compares the prior frozen DOM with the current CSS, including
-unchanged homepage spacing. Screenshots/geometry receipts stay in reports/.
-
-2026-10-15 yerel Boss güncellemesi: country name case-insensitive contains /
-stored code exact; ortak filtre ve sabit üst ID summary/table/daily/top/filtered
-CSV/NDJSON’da aynı. Günlük grafik varsayılanı tüm filtreli günlerdir. Canlı
-text350ms/select hemen, JS’siz GET fallback, p+snapshot ile First/Previous/
-page selector/Next/Last vardır. ALL #/TODAY #/IP VISITS, event/import/source ve
-manuel retention tanımları değişmedi. Global log/retention açıkça globaldir.
-134 yerel test, 18 sentetik workerd; henüz staging deploy yok. Kök neden,
-algoritma/maliyet/limitler: [BOSS-UX-ANALYTICS-SPRINT.md](BOSS-UX-ANALYTICS-SPRINT.md).
+Earlier layout and sprint notes: [archive/sprints/BOSS-UX-ANALYTICS-SPRINT.md](archive/sprints/BOSS-UX-ANALYTICS-SPRINT.md).
 
 Authoritative for the AmericaWhat analytics store, the Boss Analytics screen,
 the legacy import, DNDR reconciliation and retention. Status labels used here:
 **IMPLEMENTED**, **TESTED LOCALLY**, **STAGING**, **PRODUCTION**, **OWNER DECISION**.
+Production since 2026-10-16: native collection on `americawhat.com`, S1 legacy
+import applied (1,083 events), S2 pending ([POST-CUTOVER.md](POST-CUTOVER.md)).
 
-## 1. Today (production, Hostinger) — verified 2026-10-14
+## 1. Former Hostinger collection (historical, verified 2026-10-14)
 
 - `src/scripts/tracking.js` calls `/analytics/log_df.php` on every page view.
   That file exists **only on the server** (not in `main`; a reviewed copy is on
@@ -82,7 +48,7 @@ the legacy import, DNDR reconciliation and retention. Status labels used here:
   **unobserved interval of at most 13 h 30 min** (2026-10-03 07:34 → 21:04 UTC)
   between the snapshot it imported and the start of the relay.
 
-## 2. Target store (IMPLEMENTED, TESTED LOCALLY, STAGING)
+## 2. Store (PRODUCTION)
 
 One table, `visitor_events` (`migrations/analytics/0001_analytics_core.sql`),
 holds legacy and native page views:
@@ -125,7 +91,7 @@ CSV cells are quoted, quotes doubled, NUL removed, and a cell starting with
 `=`, `+`, `-`, `@`, tab or CR is prefixed with `'` (a lone `-` is kept). NDJSON
 keeps exact values. Exports stream in keyset chunks and are audited.
 
-## 4. Legacy import (IMPLEMENTED, TESTED LOCALLY, in workerd)
+## 4. Legacy import (PRODUCTION: S1 applied 2026-10-16)
 
 Code: `workers/shared/legacy-import.mjs`; local tool
 `scripts/analytics/legacy-import.mjs` (inventory / rehearse / daily); Boss page
@@ -253,7 +219,7 @@ implemented, an **OWNER DECISION**.
 | CSV / NDJSON exports | whatever was exported | no — files on the owner's machine |
 | Google Analytics | GA's own data | no — GA retention setting |
 
-### Inconsistencies to resolve before production (verified)
+### Inconsistencies found before production (open ones are tracked in CURRENT-STATE)
 
 1. **The public promise is already exceeded.** The Privacy page says visit logs
    are "kept for about 90 days, then deleted". The Hostinger log holds lines

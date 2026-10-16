@@ -13,7 +13,7 @@ production D1, DNS, Hostinger, `main` and other projects were not changed.
 | Boss `americawhat-boss-staging` | **17aa89e2-9ff9-45f5-a2d5-358974fcc1a5** at 100 % (tag `ae09988c1d8e`) |
 | Rollback targets | Web `1346af78-327b-434d-8cd1-294d0bf39dc3` (c08cdfc), Boss `855652dd-d155-42db-a719-9c363256ab42` (209aa9e) |
 
-Procedure: [STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT.md) — clean HEAD →
+Procedure: [STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT-2026-10-15.md) — clean HEAD →
 `build:rc` (124 approved OG images, none generated) → `verify:static` →
 frozen package → verify → `versions upload --no-bundle` (secrets inherited;
 names checked: Web `REACTION_GUARD_SECRET`, `STAGING_TEST_KEY`; Boss

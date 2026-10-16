@@ -1,7 +1,7 @@
 # AmericaWhat staging — Boss tablo düzeni ve hazırlık incelemesi
 
 > **2026-10-15 (evening):** The production gaps listed at the end of this
-> document are tracked in [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md).
+> document are tracked in [PRODUCTION-MIGRATION-PLAN.md](../migration/PRODUCTION-MIGRATION-PLAN.md).
 > Resolved since: Workers plan (Paid), Hostinger baseline backup, `log_df.php`
 > POST compatibility, CI production job (prepared locally), source branch
 > backed up on GitHub.
@@ -10,7 +10,7 @@
 > Sonraki Boss sürümü 209aa9e (version 855652dd-d155-42db-a719-9c363256ab42):
 > COUNTRY · CITY iki satır (kod + şehir / ülke · bölge), sütun dengesi; 1920/
 > 1440/1280/1024 px ve uzun ülke/şehir adlarıyla yatay kaydırmasız doğrulandı.
-> Kaynak yedeği ve göç planı: [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md).
+> Kaynak yedeği ve göç planı: [PRODUCTION-MIGRATION-PLAN.md](../migration/PRODUCTION-MIGRATION-PLAN.md).
 
 15 Ekim 2026. Yalnız Boss staging Worker'ı güncellendi; Web staging kodu
 değişmediği için c08cdfc'de kaldı. Production, DNS, Hostinger, D1 verisi/

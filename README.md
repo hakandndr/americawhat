@@ -1,6 +1,6 @@
 # americawhat
 
-A curated feed of absurd, only-in-America news — each item hand-picked, categorized, and given a one-line reaction. Built as a fast, static Jamstack site with a lightweight Git-based content workflow.
+A curated feed of absurd, only-in-America news — each item hand-picked, categorized, and given a one-line reaction. A static Astro site on Cloudflare Workers with a Git-based editorial workflow.
 
 🌐 **Live:** [americawhat.com](https://americawhat.com)
 
@@ -10,98 +10,64 @@ A curated feed of absurd, only-in-America news — each item hand-picked, catego
 
 ## Documentation
 
-Full handoff documentation lives in [`docs/`](docs/):
-
-- **[docs/HANDOFF.md](docs/HANDOFF.md)** — start here: architecture, repo map, item schema
-- **[docs/EDITORIAL-GUIDE.md](docs/EDITORIAL-GUIDE.md)** — the concept, categories, voice, and rejection rules
-- **[docs/OPERATIONS.md](docs/OPERATIONS.md)** — the curate → push → approve → deploy loop and known failure modes
-- **[docs/CURRENT-STATE.md](docs/CURRENT-STATE.md)** — live counts, known gaps, backlog
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the Cloudflare-native target (Workers Static Assets, Boss, D1)
-- **[docs/PRODUCTION-MIGRATION-PLAN.md](docs/PRODUCTION-MIGRATION-PLAN.md)** — cutover and rollback; **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** — gated GitHub Actions → Cloudflare deploys
-- **[docs/ANALYTICS.md](docs/ANALYTICS.md)**, **[docs/SECURITY.md](docs/SECURITY.md)**, **[docs/DECISIONS.md](docs/DECISIONS.md)**
+Start with the index: **[docs/README.md](docs/README.md)** — then
+[docs/HANDOFF.md](docs/HANDOFF.md) (the project in five minutes) and
+[docs/CURRENT-STATE.md](docs/CURRENT-STATE.md) (what is live now).
+Editorial rules: [docs/EDITORIAL-GUIDE.md](docs/EDITORIAL-GUIDE.md).
 
 ## Why this project is interesting
 
-The content pipeline is **GitOps, end to end**: a small PHP admin panel reads and writes the content JSON **through the GitHub API**. When an item is approved, the panel commits it to `published.json` on the `main` branch — which triggers a **GitHub Actions** workflow that builds the Astro site and deploys it over FTP. No database, no server-side rendering, no CMS service: the Git repository *is* the content store, and every content change is a versioned commit with an automatic deploy.
+The content pipeline is **GitOps, end to end**: the owner's admin app (Boss, behind Cloudflare Access) reads and writes the content JSON **through the GitHub API**, so approving a story is one atomic commit to `main`. That commit triggers a gated **GitHub Actions** release that builds the Astro site and ships new **Cloudflare Worker** versions — after the owner approves it, with an automatic rollback if the smoke test fails. The Git repository *is* the content store; reactions and first-party page views live in **Cloudflare D1**.
 
 ## Tech stack
 
 | Layer | Choice |
 |-------|--------|
-| Site | **Astro 4** (static output), Jamstack |
-| Styling | Hand-written CSS (Anton / Archivo type system) |
-| Admin / CMS | Lightweight **PHP** panel that commits content via the GitHub Contents API |
-| Reactions & analytics | PHP endpoints (`vote.php`, `get_votes.php`) + JSON storage |
-| Build tooling | **Python** (Pillow) generates per-item Open Graph images at build time |
-| CI/CD | **GitHub Actions** → build → FTP deploy (Hostinger) |
+| Site | **Astro 7** (static output) on **Cloudflare Workers Static Assets** |
+| Styling | Hand-written CSS (Anton / Archivo, self-hosted) |
+| Admin / CMS | **Boss** Worker on `boss.americawhat.com`, Cloudflare Access + JWT + CSRF; commits via the GitHub Git Data API |
+| Reactions & analytics | Web Worker endpoints + **D1** (first-party page views, no third-party tracking) |
+| Build tooling | Pinned **Python / Pillow** renderer for per-item Open Graph images |
+| CI/CD | **GitHub Actions** → approval-gated Worker version deploys, schema gate, auto-rollback |
 | SEO | Sitemap, RSS feed, Article JSON-LD, per-page meta |
 
 ## Architecture
 
 ```
-                 approve item
-  Admin panel  ──────────────►  GitHub API commit to published.json
-  (PHP, /studio)                        │
-                                        ▼
-                              GitHub Actions (deploy.yml)
-                                 │  npm ci
-                                 │  python scripts/gen-og.py   (OG images)
-                                 │  astro build  → dist/
-                                 ▼
-                            FTP deploy → americawhat.com
+fetch.yml (cron) ──► src/data/pending.json (main)
+Boss (Access) ── approve ──► one commit: published.json + pending.json (main)
+deploy-cloudflare.yml ── build ── owner approval ──► Worker versions
+americawhat.com ─► americawhat-web (static site + API) ─► D1
+boss.americawhat.com ─► americawhat-boss (Access) ─► D1 + GitHub
 ```
 
-Content lives in `src/data/` as JSON (`published.json`, `pending.json`, `categories.js`). The reaction system (WAT / LOL / SAME / DEAD) and page-view beacon post to the PHP endpoints under `/analytics/`.
-
-## Features
-
-- ⚡ Static, CDN-friendly site — no runtime backend for the public pages
-- 🗂️ Client-side category filtering (Florida Man, Bureaucracy, HOA & Housing, …)
-- 🖼️ Auto-generated Open Graph image per item (Python/Pillow at build)
-- 📰 RSS feed + XML sitemap + JSON-LD for SEO
-- 🔁 Reaction system with lightweight PHP + JSON storage
-- 🔒 Admin panel behind a server-side password (constant-time check); secrets never touch the repo
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md), [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Project structure
 
 ```
-src/
-  components/   Astro components (Card, Subscribe)
-  data/         Content + config (published.json, categories.js, sources.json)
-  layouts/      Base layout
-  pages/        Home, item/[slug], about, contact, legal pages, rss.xml
-  lib/          Helpers (items, slug)
-public/
-  studio/       PHP admin panel (config.php is server-only, git-ignored)
-  analytics/    PHP reaction + view endpoints
-scripts/        Python OG-image generator
-.github/        GitHub Actions deploy workflow
+src/        Astro site; src/data/ holds published.json, pending.json, categories, sources
+workers/    web/ (public Worker), boss/ (admin Worker), shared/
+migrations/ D1 schemas
+scripts/    release tooling, OG renderer, importers, editorial helpers
+tests/      npm test
+docs/       documentation (index in docs/README.md; history in docs/archive/)
 ```
 
 ## Local development
 
 ```bash
 npm ci
-npm run dev      # http://localhost:4321
-npm test         # automated tests
-npm run build    # generates dist/
+npm run dev                # http://localhost:4321
+npm test
+npm run preview:boss       # the real Boss locally with synthetic data
 ```
 
-## Migration to Cloudflare (in preparation)
-
-A Cloudflare-native replacement — the same static site on Workers Static Assets,
-Worker endpoints instead of PHP, and an Access-protected Boss on
-`boss.americawhat.com` — is being prepared on a development branch and in
-isolated staging. Production still runs on Hostinger until the owner-approved
-cutover described in `docs/CLOUDFLARE-MIGRATION.md`.
-
-## Deployment
-
-`.github/workflows/deploy-cloudflare.yml` builds the site and Workers once and, behind a GitHub Environment with a required reviewer, uploads new Worker versions to Cloudflare, smoke-tests them and rolls back automatically on failure. Production deploys run only from `main` and only once the owner enables them at cutover; see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The former FTP deploy to Hostinger (`deploy.yml`) is retired. Credentials live only in GitHub Environment secrets — never in the repo.
+More: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 ## Security & configuration
 
-The admin panel and analytics endpoints read secrets (GitHub token, panel credentials) from a `config.php` that is **git-ignored** and uploaded only to the server. Copy `public/studio/config.sample.php` to `config.php`, fill in the values, and keep it off the repo. If you reuse this project, rename the `public/studio/` folder to a path of your own.
+Secrets live only in Cloudflare Worker secrets and GitHub Environment secrets — never in the repository. Commit hooks in `.githooks/` refuse private files. See [docs/SECURITY.md](docs/SECURITY.md).
 
 ---
 

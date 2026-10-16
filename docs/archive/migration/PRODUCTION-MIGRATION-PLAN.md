@@ -5,9 +5,9 @@ rollback parts of [CLOUDFLARE-MIGRATION.md](CLOUDFLARE-MIGRATION.md). Each
 numbered step needs its own owner approval. Nothing below has been executed
 in production.
 
-Companion documents: [DEPLOYMENT.md](DEPLOYMENT.md) (CI/CD),
-[PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) (exact commands),
-[OG-IMAGES.md](OG-IMAGES.md), [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md).
+Companion documents: [DEPLOYMENT.md](DEPLOYMENT-2026-10-16.md) (CI/CD),
+[PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING-2026-10-16.md) (exact commands),
+[OG-IMAGES.md](../../OG-IMAGES.md), [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md).
 
 ## Source of truth
 
@@ -34,9 +34,9 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P6 | OG strategy | **Done in code** (frozen archive + pinned renderer); not deployed |
 | P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
 | P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
-| P9 | DNS on Cloudflare with the site still on the Hostinger origin | **Done 2026-10-16** (owner): CDN disabled, zone active (`courtney/porter.ns.cloudflare.com`), records verified 15/15 DNS-only. Owner e-mail test pending — [DNS-READINESS.md](DNS-READINESS.md) |
+| P9 | DNS on Cloudflare with the site still on the Hostinger origin | **Done 2026-10-16** (owner): CDN disabled, zone active (`courtney/porter.ns.cloudflare.com`), records verified 15/15 DNS-only. Owner e-mail test pending — [DNS-READINESS.md](DNS-READINESS-2026-10-16.md) |
 | P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Done 2026-10-16:** D1 ×2 + migrations, Workers without exposure, secrets incl. Boss `GITHUB_TOKEN`, GitHub Environments with per-Worker Editor tokens, Access app + AUD. CI needs no D1 permission (schema gate) |
-| P10b | Schema-aware release on staging | **Done 2026-10-16**: Web 754be640…, Boss 17aa89e2… (release ae09988); schema gate ok on the real staging Worker — [STAGING-SCHEMA-RELEASE.md](STAGING-SCHEMA-RELEASE.md). Open: owner-authenticated Boss check; read-only token scope test by the owner |
+| P10b | Schema-aware release on staging | **Done 2026-10-16**: Web 754be640…, Boss 17aa89e2… (release ae09988); schema gate ok on the real staging Worker — [STAGING-SCHEMA-RELEASE.md](../staging/STAGING-SCHEMA-RELEASE.md). Open: owner-authenticated Boss check; read-only token scope test by the owner |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
 | P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
 
@@ -129,7 +129,7 @@ baseline backup hashes re-verified. Continued 2026-10-16 after the owner supplie
 | Situation | Action | Data effect |
 |---|---|---|
 | Bad release (code) | "Roll back Cloudflare Worker" workflow, or automatic rollback in the deploy job | none |
-| Site must return to Hostinger (before step 12) | Remove the Workers' custom domains (Workers → Domains & Routes), recreate the DNS-only **origin records** `@ A 45.89.205.38`, `@ AAAA 2a02:4780:1:2242:0:145e:6975:6`, `www CNAME americawhat.com` ([DNS-READINESS.md](DNS-READINESS.md#rollback-after-the-worker-cutover); no nameserver change, Hostinger CDN stays off); Boss → Reactions → export `aw_votes.json` and upload to Hostinger `analytics/`; if stories were published on Cloudflare, republish Hostinger with "Deploy to Hostinger" on a branch made from `hostinger-final` plus the current `src/data/*.json` | native analytics stay in D1; the PHP log continues; no double count |
+| Site must return to Hostinger (before step 12) | Remove the Workers' custom domains (Workers → Domains & Routes), recreate the DNS-only **origin records** `@ A 45.89.205.38`, `@ AAAA 2a02:4780:1:2242:0:145e:6975:6`, `www CNAME americawhat.com` ([DNS-READINESS.md](DNS-READINESS-2026-10-16.md#rollback-after-the-worker-cutover); no nameserver change, Hostinger CDN stays off); Boss → Reactions → export `aw_votes.json` and upload to Hostinger `analytics/`; if stories were published on Cloudflare, republish Hostinger with "Deploy to Hostinger" on a branch made from `hostinger-final` plus the current `src/data/*.json` | native analytics stay in D1; the PHP log continues; no double count |
 | D1 data damage | Forward fix; Time Travel restore only as last resort (rewinds ALL # numbering) | — |
 | CI misbehaves | Unset `CF_PRODUCTION_DEPLOY_ENABLED`; deploys stop, live version keeps serving | none |
 

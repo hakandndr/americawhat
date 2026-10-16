@@ -5,8 +5,9 @@
 - **Hostname:** `boss.americawhat.com` only (never `americawhat.com/boss/*` on
   Cloudflare). Production config: `workers/boss/wrangler.jsonc` → `env.production`.
 - **Edge:** a Cloudflare Access application for `boss.americawhat.com` allowing
-  only `hakan@dndr.net` (team `dndrnet.cloudflareaccess.com`, as used by OC-CA).
-  It does not exist yet; creating it is part of the production checklist.
+  only `hakan@dndr.net` (team `dndrnet.cloudflareaccess.com`). Live since
+  2026-10-16 ("AmericaWhat Boss Production"; AUD in `env.production`); anonymous
+  requests are redirected to the Access login.
 - **Worker-side verification** (`workers/boss/src/auth.mjs`), independent of the
   edge: the `Cf-Access-Jwt-Assertion` must be RS256, signed by a key from the
   team's JWKS, with the expected issuer and audience, unexpired and already
@@ -16,21 +17,19 @@
 - **CSRF** (`csrf.mjs`): every POST needs `Origin` = `BOSS_ORIGIN`, a
   `Sec-Fetch-Site` of `same-origin` when present, and a form token bound to the
   verified identity and a 12-hour window (HMAC under `BOSS_CSRF_SECRET`).
-- **Responses:** `Content-Security-Policy` without scripts,
-  `frame-ancestors 'none'`, `X-Frame-Options: DENY`, `no-store`, `noindex`.
-  No client JavaScript; every value is HTML-escaped.
+- **Responses:** `Content-Security-Policy` without scripts (Analytics alone
+  allows its own `script-src 'self'`), `frame-ancestors 'none'`,
+  `X-Frame-Options: DENY`, `no-store`, `noindex`, `Referrer-Policy: same-origin`
+  (not `no-referrer`: under that policy browsers send `Origin: null` on
+  same-origin form POSTs, which the CSRF check rightly refuses). Every value is
+  HTML-escaped.
 - **Destructive actions** need a typed confirmation (item id, date, or the
   SHA-256 prefix of an uploaded file) and are written to the append-only audit.
-- **Staging Boss** has no route and no workers.dev URL (verified: Cloudflare
-  answers error 1042). It is exercised locally with `npm run preview:boss`,
-  whose loopback-only identity seam is ignored outside `ENVIRONMENT=local`
-  (tested); every non-production page carries an environment banner. The
-  owner-run path to an Access-protected staging Boss without DNS is in
-  `CLOUDFLARE-MIGRATION.md` §3a.
-- **Assumption to verify on activation:** the issuer of a `workers.dev` Access
-  application is the team domain `https://dndrnet.cloudflareaccess.com`
-  (same Zero Trust organisation as OC-CA). If the AUD or issuer differs, Boss
-  answers 401 — fail closed, never open.
+- **Staging Boss** is reachable only through its own Access application
+  (`dndr-staging-owner-only`) on its workers.dev URL, and may write only the
+  staging content repository. Local review uses `npm run preview:boss`, whose
+  loopback-only identity seam is ignored outside `ENVIRONMENT=local` (tested);
+  every non-production page carries an environment banner.
 
 ## 2. Secrets
 
@@ -64,9 +63,10 @@ by an `app[bot]` account, which would appear among the repository contributors.
   secret marker appears; the Worker answers 404 for anything else under
   `/analytics/`. Verified on staging (smoke test).
 
-## 4. Findings in the current production (Hostinger)
+## 4. Findings in the former Hostinger implementation
 
-Real defects (fixed in the new implementation, still present on Hostinger):
+Real defects of the PHP site (all fixed by the Cloudflare implementation; the
+Hostinger files stay dormant until retirement — do not use the old `/boss/`):
 
 1. `vote.php` reads without a lock and writes with truncation: a concurrent
    read of a half-written file decodes to `[]` and the next write keeps only one
@@ -100,7 +100,7 @@ Hypothetical or low risk: the PHP session cookie flags depend on `php.ini`;
 6. Analytics export audit rows contained the raw query string (which can hold
    an IP filter). Now only the filter names are recorded.
 
-Open risk: Workers CPU time on the Free plan (CLOUDFLARE-MIGRATION.md §3 step 0).
+Resolved: the account is on Workers Paid; production sets explicit CPU limits.
 
 ## 5. Repository hygiene
 
