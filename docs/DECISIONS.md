@@ -83,8 +83,11 @@ rebasing over a Boss commit.
 
 ## D-16 Documentation set
 `RELEASE-RUNBOOK.md` and `PROCESS.md` were not created: the release procedure
-lives in `CLOUDFLARE-MIGRATION.md`, the editorial process in
-`EDITORIAL-GUIDE.md`, the engineering process in `OPERATIONS.md`.
+lives in `DEPLOYMENT.md`, the editorial process in `EDITORIAL-GUIDE.md`, the
+engineering process in `OPERATIONS.md`. After the cutover (2026-10-16) the set
+was reduced to the current documents listed in `docs/README.md`; status lives
+only in `CURRENT-STATE.md` (updated in place), and sprint, staging and
+migration reports moved to `docs/archive/`.
 
 ## D-17 Staging never stores real visitors
 Outside production, page views are stored only with the staging test key.
@@ -120,7 +123,7 @@ böylece henüz yüklenmeyen haberler filtre dışında kalmaz. Parçalar JS’s
 sayfadır, noindex taşır ve sitemap’e eklenmez; kategori/arşiv sayfaları indekslenir.
 
 Tüm çalışma yereldir; push/merge/deploy onayı yoktur. Deneysel dal ve Boss
-iyileştirmeleri korunur. Ayrıntı/testler: DESIGN-REDESIGN.md. Yeni öneriler
+iyileştirmeleri korunur. Ayrıntı/testler: archive/sprints/DESIGN-REDESIGN.md. Yeni öneriler
 (bağımlılık güvenlik bakımı, gerçek cihaz kontrolü, ileride ayrı Boss entegrasyonu)
 onaylı UI kapsamından ayrıdır.
 
@@ -134,9 +137,9 @@ kategori/arşiv işlevi veya görsel tasarım değişikliği gerekmedi.
 ## D-23 Güvenlik audit’i ve Boss hazırlığı uygulama izni değildir
 
 Güncel 21 paket / 45 advisory; dev hariç 19. Audit’in paket etiketleri gerçek
-runtime kapsamından ayrılır; ayrıntı DEPENDENCY-AUDIT.md’dedir. Bu aşamada paket/
+runtime kapsamından ayrılır; ayrıntı archive/sprints/DEPENDENCY-AUDIT.md’dedir. Bu aşamada paket/
 lockfile değişmez. Ayrı onaylı güvenlik bakımı merge öncesi önceliklidir.
-Boss için BOSS-INTEGRATION-PLAN.md’deki seçici dosya/test stratejisi önerilir;
+Boss için archive/sprints/BOSS-INTEGRATION-PLAN.md’deki seçici dosya/test stratejisi önerilir;
 entegrasyon, Access veya D1 işlemi bu oturumda uygulanmaz.
 
 ## D-24 Legacy geçmiş ve manuel retention kararı kesinleştirildi
@@ -164,7 +167,7 @@ temizleyen preview koruması vardır. Auth/CSRF/atomik yayınlama/import/manuel
 retention ve Hostinger mail kararı korunur. 115 test, 18 sentetik workerd kontrolü
 başarılıdır. Gerçek staging Access/CPU/credential testleri ayrı onaylı sonraki adımdır.
 Yeni uzak main içerikleri için sıradan merge planı hazırlanır; bu sprintte
-merge/push/deploy veya gerçek veri işlemi yapılmaz. Ayrıntı INTEGRATION-SPRINT.md.
+merge/push/deploy veya gerçek veri işlemi yapılmaz. Ayrıntı archive/sprints/INTEGRATION-SPRINT.md.
 
 ## D-27 Boss renk uyumu, public kaynağı değiştirmeden
 
@@ -172,7 +175,7 @@ Sahibi mevcut layout’u beğendi; yalnızca renk uyumu istedi. `0f3fe02` public
 night/card/ink/dim/red/red-hot/line değerlerini ayrı Boss CSS token’larına
 eşler. İnce ayraçlar aynı; küçük metin ve form/focus sınırlarında erişilebilir
 public ton seçimi, kırmızı butonda kontrast için siyah metin istisnası vardır.
-Layout/typography/spacing/backend aynı; 117 test/18 workerd. Ayrıntı BOSS-THEME.md.
+Layout/typography/spacing/backend aynı; 117 test/18 workerd. Ayrıntı archive/sprints/BOSS-THEME.md.
 
 ## D-28 Staging preflight dağıtım izni değildir; Git credential izolasyonu
 
@@ -182,7 +185,7 @@ URL kapalı kalır. Content merge/config tamamlandıktan sonra tam SHA pinlenere
 ayrı onayla staging rollout/test/rollback provası yapılır. Fine-grained PAT’in
 branch scope’u yoktur; ayrı staging içerik reposu önerisi veya production
 ref’lerine etkili server-side engel sahibi onayı bekler. Uzak kaynak/kimlik/
-workflow/tarihçe bu sprintte değiştirilmez. STAGING-PREFLIGHT.md geçerli plandır.
+workflow/tarihçe bu sprintte değiştirilmez. archive/staging/STAGING-PREFLIGHT.md o tarihte geçerli plandı.
 
 ## D-29 Filled Boss aksiyonlarında beyaz metin
 
@@ -208,7 +211,7 @@ kalıcı table/cache/migration yok. Kriter değişimi yeni snapshot/sayfa1 açar
 ilk history kaydı dahil sabit üst ID append kaymasını önler. 10.000 kayıt/
 200 sayfa test edildi. Metadata taraması/substring maliyeti doğrusal olabilir;
 gerçek staging CPU/rows_read ayrıca ölçülür. Snapshot MVCC kopyası değildir,
-manuel silme sonrası yenileme gerekir. Ayrıntı BOSS-UX-ANALYTICS-SPRINT.md.
+manuel silme sonrası yenileme gerekir. Ayrıntı archive/sprints/BOSS-UX-ANALYTICS-SPRINT.md.
 
 ## D-32 Yerel RC merge'i ve kapalı staging hazırlığı (2026-10-15)
 
@@ -229,7 +232,7 @@ Mevcut renderer farklı metin pikselleri ürettiği için yeni PNG'ler reddedild
 orijinaller geri yüklendi ve rc-approved-og.zip olarak hash'lenip korundu.
 Reproduction kaynak+lock+onaylı OG arşivini gerektirir. Yeni published/OG,
 yeni renderer ve herhangi artifact farkı ayrı review ister. Tarihsel gen-og
-reçetesi bu RC'ye doğrudan uygulanmaz. Ayrıntılar STAGING-PREFLIGHT/OPERATIONS.
+reçetesi bu RC'ye doğrudan uygulanmaz. Ayrıntılar archive/staging/STAGING-PREFLIGHT.md ve archive/status/OPERATIONS-2026-10-15.md.
 
 ## Open questions (owner, previous decisions unchanged)
 

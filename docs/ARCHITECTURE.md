@@ -1,10 +1,9 @@
 # americawhat — Architecture
 
-Target architecture: Cloudflare Workers Static Assets with two AmericaWhat-owned
-Workers and two AmericaWhat-owned D1 databases. GitHub stays the publication
-source of truth. Production still runs on Hostinger until the owner-approved
-cutover in `CLOUDFLARE-MIGRATION.md`; the state of every part is tracked in
-`CURRENT-STATE.md`.
+Production architecture (live since 2026-10-16): Cloudflare Workers Static
+Assets with two AmericaWhat-owned Workers and two AmericaWhat-owned D1
+databases. GitHub stays the publication source of truth. Versions and open
+items: [CURRENT-STATE.md](CURRENT-STATE.md).
 
 ## 1. Components
 
@@ -65,7 +64,7 @@ Boss weekly review: owner chooses approve / reject(reason) / skip per story
 Git Data API: read main → compute published.json + pending.json → ONE commit → fast-forward ref
    (if main moved meanwhile, recompute on the new head; nothing partial is ever written)
                  │
-deploy-cloudflare.yml (gated; on Hostinger main until cutover: FTP)
+deploy-cloudflare.yml (main only, owner approval, schema gate, auto-rollback)
 ```
 
 Invariants enforced in `workers/boss/src/editorial.mjs` and tested:

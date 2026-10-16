@@ -4,7 +4,7 @@
 
 Access dashboard'da owner tarafından doğrulandı; aşağıdaki eski API izni
 bekleme kapısı artık geçerli değildir. Aynı403 isteği tekrarlanmaz, app/policy
-yeniden oluşturulmaz. **[STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT.md)** güncel
+yeniden oluşturulmaz. **[STAGING-DEPLOYMENT.md](STAGING-DEPLOYMENT-2026-10-15.md)** güncel
 config/secret/immutable artifact/versions upload/activation/rollback prosedürüdür.
 Staging Git allowlist'i yanlış repo/ref'te ağ isteği göndermeden reddeder;
 runtime PAT ayrıca sandbox-only olmalıdır. JWT kontrolleri zayıflatılmadı.
@@ -293,7 +293,7 @@ fetch varsa sessizce değiştirmek yerine yeniden reconciliation/review gerekir.
 Tam legacy log/oy final dosyaları şimdi istenmez; cutover'a yakın. Manuel-only
 retention90gün, Hostinger EMAIL/MX/SPF/DKIM/DMARC ve DNDR çift saymama aynı.
 
-2026-10-15 takip notu: [Boss UX/Analytics sprinti](BOSS-UX-ANALYTICS-SPRINT.md)
+2026-10-15 takip notu: [Boss UX/Analytics sprinti](../sprints/BOSS-UX-ANALYTICS-SPRINT.md)
 beyaz metinli buton, country contains, authenticated canlı filtreleme ve
 doğrudan snapshot sayfalaması ekledi; kaynak uç `71879c8`, 134 test/18 workerd.
 Bu değişiklikler henüz dağıtılmadı. Aynı schema/config korunur; Analytics’e
@@ -315,7 +315,7 @@ Onaylı public tasarım dondurulmuştur; `git diff 3730297 -- src` ve
 `git diff 16b10a4 -- src` boştur. Reddedilmiş V1/V2/V3 kaynakları alınmadı.
 Boss yerleşim/font/spacing/tablo/form/navigation davranışı aynı; yalnızca
 `workers/boss/src/html.mjs` renkleri ve theme-color değişti. Exact eşleme,
-kontrast istisnaları ve kanıt [BOSS-THEME.md](BOSS-THEME.md) içinde.
+kontrast istisnaları ve kanıt [BOSS-THEME.md](../sprints/BOSS-THEME.md) içinde.
 
 | Son çalıştırılan kontrol | Sonuç |
 |---|---|
@@ -424,7 +424,7 @@ commit’i `b1312bf` fetch güncellemesi. Ortak ata `302549b`.
 | fetch-status | Eski durum, 5 üst anahtar | Yeni fetch durumu, 5 üst anahtar |
 
 Blob hash’leri Git dışı `reports/theme-content-reconciliation.json` içinde.
-[INTEGRATION-SPRINT.md](INTEGRATION-SPRINT.md) C bölümündeki kesin PowerShell
+[INTEGRATION-SPRINT.md](../sprints/INTEGRATION-SPRINT.md) C bölümündeki kesin PowerShell
 reçetesi bu dalın yeni ucundan da geçerlidir: temiz ağaç, yeniden fetch,
 gelen SHA kontrolü, yeni `codex/reconcile-main` dalı, **ordinary
 `merge --no-ff --no-commit`**, dört veri dosyasının incoming snapshot ile

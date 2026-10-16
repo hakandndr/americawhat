@@ -2,8 +2,8 @@
 
 > **HISTORICAL RUNBOOK — do not execute from this file.** As of 2026-10-15
 > the authoritative documents are [PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md)
-> (cutover and rollback), [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md)
-> and [DEPLOYMENT.md](DEPLOYMENT.md). Dangerous outdated parts: merging
+> (cutover and rollback), [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING-2026-10-16.md)
+> and [DEPLOYMENT.md](DEPLOYMENT-2026-10-16.md). Dangerous outdated parts: merging
 > `dev/cloudflare-native` into `main` (§0, §1 pre-merge checks), keeping the
 > FTP deploy active after cutover (§4.5), "Workers plan unknown" (now Workers
 > Paid), Boss Access "missing" (exists on staging). §1 (Hostinger inventory)
@@ -19,7 +19,7 @@
 yerel merge4a28f69 ile uzlaştırıldı (published124/pending134/seen11404).
 136 test/18 local workerd, public162 sayfa/parity ve audit0 başarılı.
 En güncel kapılar/config/OG arşiv bağımlılığı ve staging-only sıra
-[STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) en üstündedir. Web uzakta hâlâ
+[STAGING-PREFLIGHT.md](../staging/STAGING-PREFLIGHT.md) en üstündedir. Web uzakta hâlâ
 636936f; Boss Access/AUD/secret/sandbox kapıları eksik, URL kapalıdır.
 Bu hazırlıkta uzak yazım/deploy yoktur; aşağıdaki eski uzlaştırılmadı/sürüm
 notları tarihsel kayıttır. Gerçek rollout ve rollback provası ayrıca onay ister.
@@ -37,14 +37,14 @@ approval. Nothing in this document has been executed in production.
 En son preflight: Boss renk commit’i `0f3fe02`, 117/18 yerel kontroller başarılı;
 web staging hâlâ `636936f`, aktif version UUID ve D1 uyumu gerçek API/SELECT
 ile doğrulandı. Boss Access app 0/AUD boş/secret eksik ve URL kapalıdır.
-[STAGING-PREFLIGHT.md](STAGING-PREFLIGHT.md) bu durumun kanıtı ve sonraki
+[STAGING-PREFLIGHT.md](../staging/STAGING-PREFLIGHT.md) bu durumun kanıtı ve sonraki
 ayrı onaylı staging-only rollout/rollback reçetesidir. Migration gerekmiyor;
 üretim/DNS/Hostinger/mail/final dosyalar bu adımın kapsamında değildir.
 
 2026-10-14 güvenlik/Boss sprinti: araç zinciri ve navy/kırmızı Boss yalnızca
 `codex/security-boss` üzerinde entegre/test edildi. Canlı staging hâlâ
 `636936f`; production dağıtımı yapılmadı. Güncel salt okunur kanıt/bilinmeyenler
-ve sonraki onay kapıları [INTEGRATION-SPRINT.md](INTEGRATION-SPRINT.md) içindedir;
+ve sonraki onay kapıları [INTEGRATION-SPRINT.md](../sprints/INTEGRATION-SPRINT.md) içindedir;
 aşağıdaki eski kaynak envanteri yeniden hesap düzeyinde doğrulanmış sayılmaz.
 
 2026-10-14 güncel karar notu: Hostinger web/PHP ileride emekli olur, EMAIL
@@ -130,7 +130,7 @@ records (read 2026-10-14):
 > **Superseded 2026-10-16:** this table is incomplete (it lacks the Google
 > verification CNAME and uses wrong TTLs) and its "keep the Hostinger CDN
 > records on Cloudflare DNS" plan is unsupported by Hostinger. Use
-> [DNS-READINESS.md](DNS-READINESS.md).
+> [DNS-READINESS.md](DNS-READINESS-2026-10-16.md).
 
 | Record | Value | On Cloudflare |
 |---|---|---|
