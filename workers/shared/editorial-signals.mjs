@@ -95,7 +95,7 @@ export function clusterCandidates(items, { threshold = 0.5, windowDays = 7 } = {
 }
 
 // Outlets that should not be the chosen source when a newsroom covered it.
-const AGGREGATORS = ['news.google.com', 'msn.com', 'yahoo.com', 'aol.com', 'newsbreak.com', 'flipboard.com', 'ground.news',
+export const AGGREGATORS = ['news.google.com', 'msn.com', 'yahoo.com', 'aol.com', 'newsbreak.com', 'flipboard.com', 'ground.news',
   'twistedsifter.com', 'boredpanda.com', 'newsweek.com', 'dailymail.co.uk', 'the-sun.com', 'nypost.com', 'inkl.com', 'headtopics.com'];
 
 export function isAggregator(domain) {
@@ -257,4 +257,21 @@ export function buildReview(pending, published, options = {}) {
     alreadyPublished: entries.filter((e) => e.publishedMatch).length,
     entries,
   };
+}
+
+/**
+ * A prepared draft carries every field an approval needs and passes the same
+ * checks without an override: two-sentence comment, valid category, REAL
+ * status, a date, a source name and an original (non-aggregator) article URL.
+ * Only these are picked by "Select prepared drafts".
+ */
+export function isPreparedDraft(rep) {
+  let host = '';
+  try { host = new URL(String(rep.source_url || '')).hostname; } catch { return false; }
+  return Boolean(String(rep.title || '').trim() && String(rep.source_name || '').trim())
+    && countSentences(rep.comment || '') === 2
+    && CATEGORIES.includes(rep.category)
+    && rep.status === 'REAL'
+    && /^\d{4}-\d{2}-\d{2}$/.test(String(rep.date || ''))
+    && isOriginalSourceUrl(rep.source_url) && !isAggregator(host);
 }

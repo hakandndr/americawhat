@@ -16,19 +16,25 @@ export function overridesFromForm(form) {
 }
 
 function itemForm(item, csrf, action, submitLabel) {
-  return `<form method="post" action="${h(action)}" class="card">
+  return `<form method="post" action="${h(action)}" class="card published-editor">
   ${hidden('csrf', csrf)}${item.id ? hidden('id', item.id) : ''}
-  <div class="grid">
-    <div><label for="p-title">Title</label><input id="p-title" name="title" value="${h(item.title || '')}"></div>
-    <div><label for="p-category">Category</label>${select('category', CATEGORIES.map((c) => [c, c]), item.category || 'bureaucracy', ' id="p-category"')}</div>
-    <div><label for="p-source_url">Original source URL</label><input id="p-source_url" name="source_url" value="${h(item.source_url || '')}" placeholder="https://"></div>
-    <div><label for="p-source_name">Source name</label><input id="p-source_name" name="source_name" value="${h(item.source_name || '')}"></div>
-    <div><label for="p-date">Date</label><input id="p-date" name="date" value="${h(item.date || new Date().toISOString().slice(0, 10))}"></div>
-    <div><label for="p-status">Status</label>${select('status', STATUSES.map((s) => [s, s]), item.status || 'REAL', ' id="p-status"')}</div>
-    <div><label for="p-city">City</label><input id="p-city" name="city" value="${h(item.city || '')}"></div>
-    <div><label for="p-state">State</label><input id="p-state" name="state" value="${h(item.state || '')}"></div>
+  <div class="editor-fields">
+  <div class="editor-main"><section class="editor-section" aria-label="Story"><h3>Story</h3>
+    <div class="field"><label for="p-title">Title</label><textarea class="headline-input" rows="2" id="p-title" name="title">${h(item.title || '')}</textarea></div>
+    <div class="field"><label for="p-comment">Comment — exactly two sentences</label><textarea class="comment-input" rows="4" id="p-comment" name="comment">${h(item.comment || '')}</textarea></div>
+  </section></div>
+  <div class="editor-side"><section class="editor-section" aria-label="Source"><h3>Source</h3>
+    <div class="field"><label for="p-source_url">Original source URL</label><input id="p-source_url" name="source_url" value="${h(item.source_url || '')}" placeholder="https://" inputmode="url"></div>
+    <div class="pair"><div class="field"><label for="p-source_name">Source name</label><input id="p-source_name" name="source_name" value="${h(item.source_name || '')}"></div>
+    <div class="field"><label for="p-date">Date</label><input id="p-date" name="date" value="${h(item.date || new Date().toISOString().slice(0, 10))}"></div></div>
+  </section>
+  <section class="editor-section" aria-label="Classification and place"><h3>Classification &amp; place</h3>
+    <div class="pair"><div class="field"><label for="p-category">Category</label>${select('category', CATEGORIES.map((c) => [c, c]), item.category || 'bureaucracy', ' id="p-category"')}</div>
+    <div class="field"><label for="p-status">Status</label>${select('status', STATUSES.map((s) => [s, s]), item.status || 'REAL', ' id="p-status"')}</div></div>
+    <div class="pair"><div class="field"><label for="p-city">City</label><input id="p-city" name="city" value="${h(item.city || '')}"></div>
+    <div class="field"><label for="p-state">State</label><input id="p-state" name="state" value="${h(item.state || '')}"></div></div>
+  </section></div>
   </div>
-  <label for="p-comment" style="margin-top:12px">Comment — exactly two sentences</label><textarea id="p-comment" name="comment">${h(item.comment || '')}</textarea>
   <div class="form-foot">
     <div class="opts"><label><input type="checkbox" name="ovs" value="1"> allow ≠ 2 sentences</label>
     <label><input type="checkbox" name="ova" value="1"> allow aggregator link</label></div>
@@ -73,8 +79,8 @@ export function renderPublishedList({ identity, flash, items, query, cat = '', p
   ${select('cat', [['', 'All categories'], ...CATEGORIES.map((c) => [c, c])], category, ' aria-label="Category" style="width:auto"')}
   <button class="secondary">Search</button>${q || category ? '<a class="btn ghost" href="/published">Clear</a>' : ''}
 </form>
-<div class="table-card"><div class="scroll"><table><thead><tr><th scope="col">ID</th><th scope="col">Date</th><th scope="col">Category</th><th scope="col">Title</th><th scope="col">Place</th><th scope="col">Status</th><th scope="col">Live URL</th><th scope="col"><span class="faint">Edit</span></th></tr></thead><tbody>
-${slice.map(({ it, slug }) => `<tr><td class="mono">${h(it.id)}</td><td>${h(it.date)}</td><td><span class="tag">${h(it.category)}</span></td><td class="wrap">${h(it.title)}</td><td>${h([it.city, it.state].filter(Boolean).join(', ')) || '<span class="faint">—</span>'}</td><td>${statusCell(it.status)}</td><td class="mono"><span class="clip" title="/item/${h(slug)}/">/item/${h(slug)}/</span></td><td><a href="/published/edit?id=${encodeURIComponent(it.id)}">edit</a></td></tr>`).join('') || '<tr><td colspan="8" class="empty">No published story matches this search.</td></tr>'}
+<div class="table-card"><div class="scroll" tabindex="0" role="region" aria-label="Published stories"><table class="published-table"><thead><tr><th scope="col">ID</th><th scope="col">Date</th><th scope="col">Category</th><th scope="col">Story · live URL</th><th scope="col">Place</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Edit</span></th></tr></thead><tbody>
+${slice.map(({ it, slug }) => `<tr><td class="mono id-cell" data-label="ID">${h(it.id)}</td><td data-label="Date">${h(it.date)}</td><td data-label="Category"><span class="tag">${h(it.category)}</span></td><td class="wrap" data-label="Story"><a class="headline" href="https://americawhat.com/item/${h(slug)}/" target="_blank" rel="noopener noreferrer">${h(it.title)}</a><span class="sub live-path mono"><a class="clip" href="https://americawhat.com/item/${h(slug)}/" title="https://americawhat.com/item/${h(slug)}/" target="_blank" rel="noopener noreferrer" aria-label="Live URL /item/${h(slug)}/">/item/${h(slug)}/</a></span></td><td data-label="Place">${h([it.city, it.state].filter(Boolean).join(', ')) || '<span class="faint">—</span>'}</td><td data-label="Status">${statusCell(it.status)}</td><td data-label="Manage"><a class="btn secondary" href="/published/edit?id=${encodeURIComponent(it.id)}" aria-label="Edit ${h(it.id)}">Edit</a></td></tr>`).join('') || '<tr><td colspan="7" class="empty">No published story matches this search.</td></tr>'}
 </tbody></table></div>
 <div class="table-foot"><span class="faint small">${rows.length ? `${(current - 1) * PER_PAGE + 1}–${Math.min(current * PER_PAGE, rows.length)} of ` : ''}${rows.length} matching · ${items.length} published in total</span>${pager(current, pages, link)}</div></div>`;
   return page({
@@ -92,9 +98,9 @@ export function renderEdit({ identity, flash, item, csrf }) {
   <p>Removes the story from the site; its URL will stop working. Type the id <b class="mono">${h(item.id)}</b> to confirm.</p>
   <div class="actions"><label for="del-confirm" class="muted">Story id</label><input id="del-confirm" name="confirm" placeholder="${h(item.id)}" style="max-width:200px" autocomplete="off"><button class="danger" type="submit">Delete</button></div>
 </form>`;
-  return page({ title: `Edit ${item.id}`, active: '/published', identity, flash, body, lede: 'Saving creates one commit. The live URL stays the same even if the title changes.' });
+  return page({ title: `Edit ${item.id}`, active: '/published', identity, flash, body, layout: 'form-workspace', lede: 'Saving creates one commit. The live URL stays the same even if the title changes.' });
 }
 
 export function renderNew({ identity, flash, csrf }) {
-  return page({ title: 'Add a story', active: '/published', identity, flash, body: itemForm({}, csrf, '/published/new', 'Publish (one commit)'), lede: 'A manually added story is published with one commit, after the same checks as the weekly review.' });
+  return page({ title: 'Add a story', active: '/published', identity, flash, layout: 'form-workspace', body: itemForm({}, csrf, '/published/new', 'Publish (one commit)'), lede: 'A manually added story is published with one commit, after the same checks as the weekly review.' });
 }

@@ -113,4 +113,7 @@ test('event table: PAGE wraps long paths onto more lines; REFERRER gets a wider 
   assert.ok(min(cols.referrer) >= 120 && min(cols.page) >= 150);
   assert.match(html, /<td role="cell" class="c-page wide wrap"/);
   assert.match(html, /\.events-table td\.wrap\{white-space:normal;overflow-wrap:anywhere/);
+  assert.match(html, /class="event-scroll" tabindex="0" role="region"/);
+  assert.match(html, /\.event-scroll\{[^}]*overflow:auto;container-type:inline-size/);
+  assert.match(html, /\.event-fields\{position:sticky;left:20px;width:calc\(100cqw - 40px\)/, 'open details must follow the visible table viewport after horizontal scrolling');
 });

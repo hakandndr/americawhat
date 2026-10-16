@@ -35,6 +35,27 @@ verification CNAME and `ftp` — all DNS-only and unchanged (checked with
 
 ## CI/CD
 
+Prepared in PR #12 (not live): one compact Boss design system (14px text,
+36px controls); fixed grouped sidebar/mobile drawer with counts and quick links.
+Weekly review is a viewport-fitted desk: a batch bar (counts + Review & Apply),
+a dense searchable queue whose numbers show each decision, and a one-screen
+editor (draft beside source/classification, live two-sentence check,
+Approve/Reject/Skip segmented control, keys A/R/S and J/K). Session edits,
+hidden selections, duplicates and the confirmation preview are unchanged.
+Published has canonical title/URL links in one story column and the same
+editor layout for edits; Reactions has linked titles, search and sorting.
+Analytics retains every event column in a contained scroll viewport. Reporting
+pages use readable desktop tables and labelled phone layouts. The isolated local
+preview uses only synthetic stories, votes, audit and visitor data.
+Separate signed Boss content deployment of Web only through
+`production-content`, with fail-closed full-history checks and rollback.
+Owner-reviewed application deployment remains in `production`. One-time
+Environment/token/proof-key setup and the initial approved code release are
+still required; exact steps and live acceptance checks are in
+[DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup).
+No production deployment or credential/Environment changes were made by this
+feature work. The live tables above continue to describe the existing release.
+
 - `ci.yml`: tests and builds every push except `main` and every PR; no secrets.
 - `deploy-cloudflare.yml`: on push to `main` (site/Worker paths) or manual;
   `CF_PRODUCTION_DEPLOY_ENABLED=true`; deploy job runs in the `production`

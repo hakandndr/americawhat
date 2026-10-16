@@ -2,17 +2,31 @@
 // works without it (plain POST, one commit); the script only helps choose and
 // shows a confirmation preview first. No inline handlers, framework or eval;
 // every value is written with textContent.
-export const REVIEW_SCRIPT = String.raw`(() => {
+import { AGGREGATORS, CATEGORIES, countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPreparedDraft } from '../../shared/editorial-signals.mjs';
+
+// Embed the same pure validators used on the server; no duplicate readiness rules.
+export const REVIEW_SCRIPT = `(() => {
+const AGGREGATORS = ${JSON.stringify(AGGREGATORS)}, CATEGORIES = ${JSON.stringify(CATEGORIES)};
+${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPreparedDraft].map((fn) => fn.toString()).join('\n')}
+` + String.raw`
   'use strict';
   const form = document.getElementById('review-form');
   const tools = document.getElementById('review-tools');
   const dialog = document.getElementById('review-preview');
   if (!form || !tools || !dialog) return;
   const cards = Array.from(form.querySelectorAll('article.story'));
+  const workbench = document.getElementById('review-workbench');
+  const pickers = Array.from(form.querySelectorAll('[data-story]'));
+  const navigation = document.getElementById('review-detail-navigation');
+  const position = document.getElementById('review-position');
+  let current = cards.length ? 0 : -1;
+  let visible = cards.map((_, i) => i);
   const counts = document.getElementById('review-counts');
   const preparedButton = tools.querySelector('[data-review="prepared"]');
   const preparedStatus = document.getElementById('review-prepared-status');
-  const prepared = cards.filter((card) => card.getAttribute('data-prepared') === '1');
+  let prepared = cards.filter((card) => card.getAttribute('data-prepared') === '1');
+  const search = document.getElementById('review-search');
+  const filter = document.getElementById('review-filter');
   const choice = (card) => (card.querySelector('input[type=radio]:checked') || {}).value || 'skip';
   const setChoice = (card, value) => {
     const radio = card.querySelector('input[type=radio][value="' + value + '"]');
@@ -24,14 +38,51 @@ export const REVIEW_SCRIPT = String.raw`(() => {
     return (input && input.value) || card.querySelector('.story-title').textContent;
   };
 
-  function update() {
+  function update(event) {
     const n = { approve: 0, reject: 0, skip: 0 };
-    for (const card of cards) {
+    for (const [index, card] of cards.entries()) {
+      const fields = Object.fromEntries(['title', 'comment', 'category', 'source_url', 'source_name', 'date', 'status'].map((name) => [name, field(card, name).value]));
+      const ready = isPreparedDraft(fields);
+      card.toggleAttribute('data-prepared', ready);
+      if (ready) card.setAttribute('data-prepared', '1');
+      const badge = card.querySelector('[data-readiness]');
+      badge.textContent = ready ? 'Prepared' : 'Incomplete';
+      badge.className = 'tag ' + (ready ? 'ok' : 'warn');
+      card.querySelector('[data-draft-preview]').textContent = fields.comment;
+      const sentences = card.querySelector('[data-sentences]');
+      if (sentences) {
+        const count = countSentences(fields.comment);
+        sentences.textContent = count === 2 ? '2 sentences ✓' : count + ' sentence' + (count === 1 ? '' : 's') + ' · two required';
+        sentences.className = 'sentence-count ' + (count === 2 ? 'ok' : 'warn');
+      }
+      card.querySelector('.story-title').textContent = fields.title;
       const value = choice(card);
       n[value] = (n[value] || 0) + 1;
       card.setAttribute('data-choice', value);
+      card.querySelector('[data-decision]').textContent = value === 'skip' ? '' : 'Selected: ' + value;
+      const picker = pickers[index];
+      picker.querySelector('.queue-title').textContent = fields.title || 'Untitled story';
+      picker.querySelector('.queue-source').textContent = fields.date;
+      picker.title = fields.source_name;
+      picker.querySelector('[data-queue-category]').textContent = fields.category;
+      picker.querySelector('[data-queue-status]').textContent = fields.status === 'REAL' ? '' : fields.status;
+      picker.querySelector('[data-queue-ready]').textContent = ready ? 'Prepared' : 'Incomplete';
+      picker.querySelector('[data-queue-ready]').className = ready ? 'ok' : 'muted';
+      picker.querySelector('[data-queue-decision]').textContent = value === 'skip' ? '' : value === 'approve' ? '✓ Approve' : '✕ Reject';
+      picker.setAttribute('data-choice', value);
     }
-    counts.textContent = 'Story cards: Approve ' + n.approve + ' · Reject ' + n.reject + ' · Skip ' + n.skip;
+    prepared = cards.filter((card) => card.getAttribute('data-prepared') === '1');
+    document.getElementById('review-ready-count').textContent = String(prepared.length);
+    preparedButton.disabled = prepared.length === 0;
+    preparedButton.textContent = 'Select prepared drafts (' + prepared.length + ')';
+    counts.textContent = '';
+    for (const [i, [key, label]] of [['approve', 'Approve'], ['reject', 'Reject'], ['skip', 'Skip']].entries()) {
+      if (i) counts.appendChild(document.createTextNode(' · '));
+      const chip = document.createElement('span');
+      chip.className = 'count-' + key + (n[key] ? ' has' : '');
+      chip.textContent = label + ' ' + n[key];
+      counts.appendChild(chip);
+    }
     // Reflects the current choices, manual changes included.
     const selected = prepared.filter((card) => choice(card) === 'approve').length;
     const label = selected + ' of ' + prepared.length;
@@ -40,6 +91,58 @@ export const REVIEW_SCRIPT = String.raw`(() => {
       : label + ' drafts selected';
     preparedButton.classList.toggle('is-selected', selected > 0 && selected === prepared.length);
     preparedButton.setAttribute('aria-pressed', String(selected > 0 && selected === prepared.length));
+    filterStories();
+  }
+
+  function filterStories() {
+    const q = search.value.trim().toLowerCase();
+    const mode = filter.value;
+    visible = [];
+    for (const [index, card] of cards.entries()) {
+      const ready = card.getAttribute('data-prepared') === '1';
+      const matches = !q || ['title', 'comment', 'source_name', 'source_url'].some((name) => field(card, name).value.toLowerCase().includes(q)) || card.querySelector('.story-meta').textContent.toLowerCase().includes(q);
+      const shown = matches && (mode === 'all' || mode === 'prepared' && ready || mode === 'incomplete' && !ready || mode === 'selected' && choice(card) !== 'skip');
+      pickers[index].closest('li').hidden = !shown;
+      if (shown) visible.push(index);
+    }
+    document.getElementById('review-visible').textContent = visible.length + ' of ' + cards.length + ' stories';
+    document.getElementById('review-no-match').hidden = visible.length > 0 || cards.length === 0;
+    updateNavigation();
+  }
+
+  function updateNavigation() {
+    const index = visible.indexOf(current);
+    position.textContent = current < 0 ? 'No stories' : 'Story ' + (current + 1) + ' of ' + cards.length;
+    document.getElementById('review-outside-filter').hidden = current < 0 || index >= 0;
+    navigation.querySelector('[data-review="previous"]').disabled = index <= 0;
+    navigation.querySelector('[data-review="next"]').disabled = !visible.length || index === visible.length - 1;
+  }
+
+  function showStory(index, openDetail = true) {
+    if (!cards[index]) return;
+    current = index;
+    for (const [i, card] of cards.entries()) {
+      card.hidden = i !== current;
+      pickers[i].setAttribute('aria-pressed', String(i === current));
+    }
+    // The form fields remain mounted and enabled: switching/filtering never
+    // copies, resets or drops any edit, duplicate option or selected decision.
+    const narrow = window.matchMedia('(max-width:960px)').matches;
+    if (!narrow) {
+      const scroller = form.querySelector('.review-editor-scroll');
+      if (scroller) scroller.scrollTop = 0;
+      // Scroll the queue only. scrollIntoView would also move the document
+      // when the owner selects a story near the bottom of a long editor.
+      const queue = form.querySelector('.story-queue-list');
+      const row = pickers[index];
+      const top = row.offsetTop - queue.offsetTop;
+      if (top < queue.scrollTop || top + row.offsetHeight > queue.scrollTop + queue.clientHeight) queue.scrollTop = top;
+    }
+    if (openDetail) {
+      workbench.setAttribute('data-mobile-view', 'detail');
+      if (narrow) navigation.scrollIntoView?.({ block: 'start' });
+    }
+    updateNavigation();
   }
 
   function item(text, sub) {
@@ -75,7 +178,8 @@ export const REVIEW_SCRIPT = String.raw`(() => {
       const dupes = card.querySelector('input[name$="_dupes"]');
       const extra = dupes && dupes.checked ? Number(card.getAttribute('data-copies') || 1) - 1 : 0;
       copies += extra;
-      const more = extra ? ' · +' + extra + ' duplicate cop' + (extra === 1 ? 'y' : 'ies') + ' removed' : '';
+      const kept = Number(card.getAttribute('data-copies') || 1) - 1 - extra;
+      const more = extra ? ' · +' + extra + ' duplicate cop' + (extra === 1 ? 'y' : 'ies') + ' removed' : kept ? ' · ' + kept + ' other source record' + (kept === 1 ? '' : 's') + ' left pending' : '';
       if (value === 'approve') {
         const category = field(card, 'category');
         approve.push(item(title(card), 'publish as ' + (category ? category.value : '?') + more));
@@ -91,7 +195,9 @@ export const REVIEW_SCRIPT = String.raw`(() => {
     } else {
       const p = document.createElement('p');
       p.className = 'small muted';
-      p.textContent = 'One commit: ' + approve.length + ' to publish, ' + reject.length + ' to reject' + (copies ? ', plus ' + copies + ' duplicate copies' : '') + '. Every other story stays pending.';
+      const remainingStories = cards.length - approve.length - reject.length;
+      const remainingRecords = cards.reduce((n, card) => n + Number(card.getAttribute('data-copies') || 1), 0) - approve.length - reject.length - copies;
+      p.textContent = 'One commit: ' + approve.length + ' to publish, ' + reject.length + ' to reject' + (copies ? ', plus ' + copies + ' duplicate cop' + (copies === 1 ? 'y' : 'ies') : '') + '. ' + remainingRecords + (remainingRecords === 1 ? ' record stays pending; ' : ' records stay pending; ') + remainingStories + ' story group' + (remainingStories === 1 ? '' : 's') + ' skipped.';
       body.appendChild(p);
       if (approve.length) section(body, 'Will be published', approve);
       if (reject.length) section(body, 'Will be rejected', reject);
@@ -106,15 +212,28 @@ export const REVIEW_SCRIPT = String.raw`(() => {
     event.preventDefault();
     preview();
   });
-  form.addEventListener('change', update);
+  const onEdit = (event) => { if (event.target === form || event.target.closest('article.story')) update(event); };
+  form.addEventListener('change', onEdit);
+  form.addEventListener('input', onEdit);
+  search.addEventListener('input', filterStories);
+  filter.addEventListener('change', filterStories);
   document.addEventListener('click', (event) => {
+    const picker = event.target.closest('[data-story]');
+    if (picker) { showStory(Number(picker.getAttribute('data-story'))); return; }
     const target = event.target.closest('[data-review]');
     if (!target) return;
     const action = target.getAttribute('data-review');
-    if (action === 'expand' || action === 'collapse') {
-      for (const details of form.querySelectorAll('details.editor')) details.open = action === 'expand';
+    if (action === 'previous' || action === 'next') {
+      const at = visible.indexOf(current);
+      showStory(visible[at + (action === 'next' ? 1 : -1)]);
+    } else if (action === 'list') {
+      workbench.setAttribute('data-mobile-view', 'list');
+      pickers[current]?.focus();
     } else if (action === 'prepared') {
-      for (const card of cards) setChoice(card, card.getAttribute('data-prepared') === '1' ? 'approve' : 'skip');
+      for (const card of prepared) if (choice(card) === 'skip') setChoice(card, 'approve');
+      update();
+    } else if (action === 'reset') {
+      for (const card of cards) setChoice(card, 'skip');
       update();
     } else if (action === 'back') {
       dialog.close();
@@ -124,6 +243,35 @@ export const REVIEW_SCRIPT = String.raw`(() => {
       if (form.requestSubmit) form.requestSubmit(); else form.submit();
     }
   });
+  // Keyboard decisions and paging, never while typing in a field.
+  const KEYS = { a: 'approve', r: 'reject', s: 'skip' };
+  document.addEventListener('keydown', (event) => {
+    if (event.ctrlKey || event.metaKey || event.altKey || dialog.open || current < 0) return;
+    const target = event.target;
+    if (target.closest && target.closest('textarea,select,[contenteditable],input:not([type=radio]):not([type=checkbox])')) return;
+    const key = event.key.toLowerCase();
+    if (KEYS[key]) {
+      event.preventDefault();
+      setChoice(cards[current], KEYS[key]);
+      update();
+      const reason = field(cards[current], 'reason');
+      if (key === 'r' && reason && !reason.value) reason.focus();
+    } else if (key === 'j' || key === 'k') {
+      event.preventDefault();
+      const at = visible.indexOf(current);
+      const next = visible[at < 0 ? 0 : at + (key === 'j' ? 1 : -1)];
+      if (next !== undefined) showStory(next, false);
+    }
+  });
+  // On wide screens the workbench fills the rest of the viewport, so the
+  // queue and the editor scroll on their own and the batch bar stays in view.
+  const fit = () => workbench.style.setProperty('--workbench-top', Math.max(0, workbench.getBoundingClientRect().top + window.scrollY) + 'px');
+  window.addEventListener('resize', fit);
+  workbench.classList.add('is-enhanced');
+  form.querySelector('.review-queue').hidden = false;
+  navigation.hidden = !cards.length;
   tools.hidden = false;
   update();
+  fit();
+  if (cards.length) showStory(0, false);
 })();`;

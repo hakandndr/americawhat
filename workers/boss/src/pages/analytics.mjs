@@ -155,11 +155,11 @@ ${overview(v, rangeLabel, days)}
 </form></section>
 
 <section id="analytics-events" class="section" aria-labelledby="h-events">
-<div class="stream-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · <span class="warn">*</span> approximate time · hover a header for its meaning; Details shows every raw field</p></div>
+<div class="stream-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · <span class="warn">*</span> approximate time · hover a header for its meaning; scroll sideways for every column; Details shows every raw field</p></div>
 ${freshness(f, streamPage, pinned, newer)}
-<div class="table-card"><table class="events-table" role="table" style="${columnStyle(cols)}">${eventHead(cols)}
+<div class="table-card"><div class="event-scroll" tabindex="0" role="region" aria-label="Visitor event table — scroll for all columns"><table class="events-table" role="table" style="${columnStyle(cols)}">${eventHead(cols)}
 <tbody role="rowgroup">${rows || '<tr role="row"><td role="cell" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table>
-${paginationControls(f, streamPage)}</div>
+</div>${paginationControls(f, streamPage)}</div>
 </section>
 
 <section id="analytics-breakdowns" class="section minor" aria-labelledby="h-breakdowns">

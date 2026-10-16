@@ -313,13 +313,15 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
            FROM reaction_counts GROUP BY item_id ORDER BY total DESC, item_id`,
       ).all();
       const imports = (await env.APP_DB.prepare('SELECT * FROM reaction_imports ORDER BY imported_at DESC').all()).results;
-      let titles = new Map();
+      let items = [];
+      let catalogAvailable = true;
       try {
         const snap = await gh.snapshot([CONTENT_PATHS.published]);
-        titles = new Map(publishedItems(JSON.parse(snap.files[CONTENT_PATHS.published])).map((it) => [it.id, it.title]));
-      } catch { /* titles are optional */ }
+        items = publishedItems(JSON.parse(snap.files[CONTENT_PATHS.published]));
+      } catch { catalogAvailable = false; }
       const rows = results.map((r) => ({ item_id: r.item_id, wat: Number(r.wat), lol: Number(r.lol), same: Number(r.same), dead: Number(r.dead), total: Number(r.total) }));
-      return htmlResponse(renderReactions({ identity, flash: pageFlash, rows, imports, csrf, plan, titles }));
+      return htmlResponse(renderReactions({ identity, flash: pageFlash, rows, imports, csrf, plan, items, catalogAvailable,
+        query: url.searchParams.get('q') || '', sort: url.searchParams.get('sort') || 'total', direction: url.searchParams.get('dir') || 'desc' }));
     }
 
     // ---- Audit and health ------------------------------------------------

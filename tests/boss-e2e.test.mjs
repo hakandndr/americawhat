@@ -119,7 +119,7 @@ test('review page clusters copies and shows flags; HTML is escaped and locked do
   assert.match(res.headers.get('Content-Security-Policy'), /frame-ancestors 'none'/);
   const html = await res.text();
   assert.match(html, /2 copies/);
-  assert.match(html, /distinct stories/);
+  assert.match(html, /unique stories/);
 });
 
 test('apply: approve one story and drop its copy in ONE commit; audit and decisions recorded', async () => {

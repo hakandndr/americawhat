@@ -69,7 +69,7 @@ export async function syntheticAnalyticsSql({ pages, now }) {
     const device = legacyDeviceString(ua);
     const { deviceClass, browser } = splitDevice(device);
     const uid = `aw:00000000-0000-4000-8000-${String(i).padStart(12, '0')}`;
-    const v = [uid, 'native', t, laDay(t), t, ip(r), country, code, '', city.split(',')[0], path, normalizePage(path), referrerRaw ? new URL(referrerRaw).hostname : 'Direct', referrerRaw, ua, sourceLabel, device, deviceClass, browser, osFamily(ua), agent, automation]
+    const v = [uid, 'native', t, laDay(t), t, i == 159 ? '2001:db8:abcd:1234:5678:90ab:cdef:1234' : ip(r), country, code, '', city.split(',')[0], path, normalizePage(path), referrerRaw ? new URL(referrerRaw).hostname : 'Direct', referrerRaw, ua, sourceLabel, device, deviceClass, browser, osFamily(ua), agent, automation]
       .map((x) => (typeof x === 'number' ? String(x) : `'${String(x).replace(/'/g, "''")}'`));
     rows.push(`INSERT OR IGNORE INTO visitor_events (event_uid, origin, occurred_at, la_day, received_at, ip, country, country_code, region, city, path, page, referrer, referrer_raw, user_agent, source_label, device, device_class, browser, os, agent, automation) VALUES (${v.join(', ')});`);
   }
@@ -78,7 +78,7 @@ export async function syntheticAnalyticsSql({ pages, now }) {
   return { sql, log, sha256: plan.sha256 };
 }
 
-/** SQL for the app database: synthetic reaction counts on real published ids. */
+/** SQL for the app database: synthetic reaction counts on preview ids. */
 export function syntheticAppSql({ ids, now }) {
   const r = rng(3);
   const out = [];
@@ -88,5 +88,62 @@ export function syntheticAppSql({ ids, now }) {
       if (n) out.push(`INSERT OR IGNORE INTO reaction_counts (item_id, reaction, count, updated_at) VALUES ('${id}', '${reaction}', ${n}, ${now});`);
     }
   }
+  for (const [i, outcome] of ['ok', 'refused', 'partial'].entries()) {
+    out.push(`INSERT INTO boss_audit (at, actor, action, target, outcome, commit_sha, detail) VALUES (${now - (2 - i) * 3600}, 'owner@example.com', 'review.apply', 'preview batch', '${outcome}', '1234567890abcdef', 'Synthetic example: ${outcome === 'ok' ? '3 published, 1 rejected, 2 duplicate copies' : outcome === 'refused' ? 'Source validation failed; no content changed' : 'Some stories require another source check'}');`);
+    out.push(`INSERT INTO editorial_decisions (decided_at, actor, decision, reason_code, pending_id, published_id, title, source_domain, commit_sha) VALUES (${now - (2 - i) * 3600}, 'owner@example.com', '${i === 1 ? 'rejected' : 'approved'}', '${i === 1 ? 'ROUTINE' : ''}', 'preview-${i}', '${i === 1 ? '' : ids[i + 1]}', 'Town council postpones its meeting about punctuality', 'example.com', '1234567890abcdef');`);
+  }
   return `${out.join('\n')}\n`;
+}
+
+/** Entirely fictional catalogue, including pinned and colliding public paths. */
+export function syntheticPublishedItems(count = 240) {
+  const headlines = ['Town council appoints a duck as temporary parking inspector', 'Library adds a quiet room for people with loud snacks', 'Neighborhood votes to name its only pothole', 'Florida resident builds a porch for the local raccoon', 'County fair introduces a queue for the queue', 'Homeowners association debates the official shade of beige'];
+  const categories = ['bureaucracy', 'only-in-america', 'crime-weird', 'florida-man', 'fine-print', 'hoa-housing'];
+  return Array.from({ length: count }, (_, i) => ({
+    id: `aw-${String(i + 1).padStart(4, '0')}`,
+    title: `${headlines[i < 2 ? 0 : i % headlines.length]}${i < 2 ? '' : ` — district ${i + 1}`}`,
+    comment: 'The committee has recorded the decision in its official minutes. A second committee will now decide whether those minutes were long enough.',
+    category: categories[i % categories.length], source_name: 'Example County Journal', source_url: `https://example.com/published/${i + 1}`,
+    date: new Date(Date.UTC(2026, 9, 16 - i)).toISOString().slice(0, 10), status: i % 11 === 0 ? 'UNVERIFIED' : i % 17 === 0 ? 'SUBMITTED' : 'REAL',
+    city: i % 2 ? 'Tampa' : 'Austin', state: i % 2 ? 'FL' : 'TX', ...(i === 2 ? { slug: 'preview-pinned-headline' } : {}),
+  }));
+}
+
+/** Local editorial queue with prepared/incomplete drafts and duplicate groups. */
+export function syntheticReviewCandidates(count = 80) {
+  const headlines = [
+    'Library accidentally lends its own doorbell to a reader',
+    'Raccoon delays the opening of a town hall meeting',
+    'Parking meter issues a receipt longer than the car',
+    'Florida resident returns a shopping cart by canoe',
+    'HOA sends a warning letter to a plastic flamingo',
+    'Bakery labels a pothole as its newest pastry',
+    'County printer produces permits with upside down maps',
+    'Lost garden gnome found supervising a construction site',
+    'School bus driver wins a dispute with a talking mailbox',
+    'Restaurant introduces a reservation system for squirrels',
+    'Volunteer fire crew rescues a ladder from a tree',
+    'City installs a sign explaining the previous sign',
+  ];
+  const categories = ['only-in-america', 'crime-weird', 'bureaucracy', 'florida-man', 'hoa-housing', 'food-crime'];
+  const rows = [];
+  for (let i = 0; i < Math.min(250, Math.max(1, Number(count) || 80)); i++) {
+    const date = new Date(Date.UTC(2026, 9, 16) - i * 86400000).toISOString().slice(0, 10);
+    const row = {
+      id: `aw-preview-${i + 1}`, seen_id: `preview-${i + 1}`, title: `${headlines[i % headlines.length]} — case ${i + 1}`,
+      category: categories[i % categories.length], date, source_name: 'Preview Desk', source_domain: 'example.com',
+      external_url: `https://example.com/preview/${i + 1}`, source_url: i % 5 === 0 ? '' : `https://example.com/preview/${i + 1}`,
+      comment: i % 3 === 0 ? '' : 'A local office documented an unexpected interruption. The paperwork has requested a second opinion.',
+      excerpt: 'Synthetic candidate for testing the local review workflow. No real editorial decision is made here.',
+      status: 'REAL', city: i % 2 ? 'Austin' : 'Tampa', state: i % 2 ? 'TX' : 'FL', score: 8,
+      ...(i % 13 === 12 ? { draft_reason: 'ROUTINE', draft_note: 'Synthetic proposed rejection' } : {}),
+    };
+    if (i === 70) Object.assign(row, { title: 'Preview: town appoints a deputy inspector for ceremonial umbrellas', source_url: '', external_url: 'https://news.google.com/rss/articles/preview-unresolved' });
+    if (i === 71) Object.assign(row, { title: 'Preview: Toronto council opens a queue for its queue', city: 'Toronto', state: '', source_domain: 'example.ca' });
+    if (i === 72) row.excerpt = 'Synthetic risk example: a threat is mentioned in the fetched excerpt and requires source review.';
+    if (i === 73) row.title = 'Town council appoints a duck as temporary parking inspector';
+    rows.push(row);
+    if (i % 16 === 0) rows.push({ ...row, id: `${row.id}-copy`, seen_id: `${row.seen_id}-copy`, source_name: 'Preview Wire', source_domain: 'wire.example.com', external_url: `https://wire.example.com/preview/${i + 1}` });
+  }
+  return rows;
 }
