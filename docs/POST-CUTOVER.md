@@ -84,7 +84,7 @@ autoconfig/autodiscover).
 ## DNDR
 
 Hostinger's `log_df.php` copied page views to DNDR; that stopped at cutover.
-The Web Worker supports forwarding through a `DNDR_COLLECTOR` service binding
-(`workers/web/src/dndr-forward.mjs`), which needs a DNDR-side producer
-registration. Until then AmericaWhat's native analytics are complete on their
-own; DNDR has a gap from 2026-10-16.
+Forwarding as `prd_americawhat_native` is implemented (ANALYTICS.md §5) and
+waits for the DNDR-side producer registration and an owner-approved release.
+Until then AmericaWhat's native analytics are complete on their own; DNDR has a
+gap from 2026-10-16 (native rows only).

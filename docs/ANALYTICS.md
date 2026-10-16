@@ -164,12 +164,22 @@ the staging databases, or keep them.
   which DNDR's own importer can fill with `--native-start
   2026-10-03T21:04:44.968Z --producer prd_americawhat_relay` (a DNDR change,
   separate approval).
-- Forwarding native rows to DNDR needs a new DNDR producer (for example
-  `prd_americawhat_native`) and a Service Binding — **blocked until approved on
-  the DNDR side**. Until then the binding is absent and nothing is sent.
-- Reconciliation after cutover: per LA day, AmericaWhat `visitor_events` =
-  DNDR `site_americawhat` (imported + relay + native), once the gap import and
-  forwarding are in place.
+- Forwarding native rows: implemented (production-only binding
+  `DNDR_COLLECTOR` → `dndr-collector#ProducerApi`, producer
+  `prd_americawhat_native`, outbox + 15-minute recovery cron; ARCHITECTURE §5).
+  **Not live until** the producer row and its `site_americawhat` link exist in
+  DNDR's production registry (DNDR change, separate approval) and the Web
+  Worker is released through the owner-approved deploy. Order: DNDR registry →
+  AmericaWhat deploy → one controlled visit read back on both sides.
+- Cutover gap (native rows stored before forwarding is live): DNDR stamps PAGE
+  events on receipt, so these are not replayed through `recordPage`. They are
+  an owner-approved DNDR history import keyed on `event_uid`, limited to
+  native rows without a `sent` outbox entry. The Hostinger relay kept
+  delivering stale-DNS visits to DNDR until 2026-10-16T07:27Z; those are
+  different page views from the native rows, so neither side double counts.
+- Reconciliation after cutover: per LA day, AmericaWhat native
+  `visitor_events` = DNDR `site_americawhat` events from
+  `prd_americawhat_native` + the gap import.
 
 ## 6. Retention (OWNER DECISION: 90-day target, manual only)
 

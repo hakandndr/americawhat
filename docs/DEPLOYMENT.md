@@ -172,3 +172,9 @@ Production and staging tokens, the Boss GitHub PAT and Worker secrets are
 listed (names only) with rotation steps in
 [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md). Store a new token
 without echoing it: `gh secret set CLOUDFLARE_API_TOKEN --env production --repo hakandndr/americawhat`.
+
+Cron triggers are not part of a Worker version. After activation the
+owner-approved deploy sets only the Web Worker's schedules from
+`env.production.triggers` (`cf-release.mjs schedules production`, Cloudflare
+`PUT …/workers/scripts/<web>/schedules`); it never touches routes or domains,
+and a failure there only warns.
