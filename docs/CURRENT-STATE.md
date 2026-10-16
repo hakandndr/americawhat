@@ -11,8 +11,8 @@
 | Analytics | 1,083 legacy events (S1, ledger 1,084, idempotent) + native page views recorded (first at 04:03:05 UTC, PT day 2026-10-15) |
 | Votes | **not imported yet** — owner: Boss → Reactions → import `D:\PrivateBackups\AmericaWhat\2026-10-16-S1\aw_votes.json` (14 ids, 19 votes) |
 | DNS | Cloudflare (courtney/porter); MX, SPF, DMARC, 3 DKIM, autoconfig/autodiscover, Google verification and ftp unchanged; apex/www/boss now Worker custom domains |
-| CI | `CF_PRODUCTION_DEPLOY_ENABLED=true` (set 04:03 UTC). Production run 38848646685: plan + build green with the restricted setup; **deploy waits for the owner's approval** in the `production` Environment |
-| Follow-ups | vote import; approve or reject run 38848646685; S2 snapshots after 72 h (scheduled reminder 2026-10-19 04:05 UTC); HTTP→HTTPS redirect (`http://` answers 200; enable "Always Use HTTPS" for the zone); DNDR forwarding gap (no producer); merge the post-cutover docs commits into main |
+| CI | `CF_PRODUCTION_DEPLOY_ENABLED=true` (set 04:03 UTC). Production run 38848646685, approved by the owner in the `production` Environment: schema gate ok, versions uploaded and activated with the **restricted per-Worker Editor token** (proven), smoke 21/21, Boss anonymous 302. Serving now: Web `bc4b861b-b625-4e09-bb9d-dbec5c0ab926`, Boss `7478bfd0-15df-477f-9829-33e467966daf` (same release d7e252a); their rollback targets are `2fc888da…` / `39b48810…` |
+| Follow-ups | vote import; S2 snapshots after 72 h (scheduled reminder 2026-10-19 04:05 UTC); HTTP→HTTPS redirect (`http://` answers 200; enable "Always Use HTTPS" for the zone); DNDR forwarding gap (no producer); merge the post-cutover docs commits into main |
 | Rollback | Workers: previous versions Web `7dfff6ea…`, Boss `14998af5…` (rollback workflow or `versions deploy`). Site to Hostinger: remove the Web custom domains, re-add `@ A 45.89.205.38`, `@ AAAA 2a02:4780:1:2242:0:145e:6975:6`, `www CNAME americawhat.com` (DNS-only); Hostinger web files, the `hostinger-final` tag and the FTP secrets are kept for the observation window |
 
 ## Authoritative status — production migration preparation (2026-10-15, evening)

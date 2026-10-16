@@ -78,7 +78,7 @@ baseline backup hashes re-verified. Continued 2026-10-16 after the owner supplie
   certificates, health/schema ok, schema gate ok, smoke 21/21, approved OG bytes
   served, a real page view stored as native (PT day correct). E-mail and other
   records unchanged. `CF_PRODUCTION_DEPLOY_ENABLED=true`; production CI run
-  38848646685 built green and waits for the owner's Environment approval.
+  38848646685 (owner-approved) deployed Web bc4b861b / Boss 7478bfd0 with the restricted token; smoke 21/21.
   Open: vote baseline import via Boss, S2 after 72 h (reminder scheduled).
 
 1. **Freeze editorial.** No Boss approvals on Hostinger from here on. The
