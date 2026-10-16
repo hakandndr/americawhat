@@ -4,3 +4,4 @@
 *.woff2 binary
 *.ttf binary
 *.zone text eol=lf
+docs/dns/*.txt text eol=lf

@@ -19,7 +19,11 @@ test('exact matches pass; missing, changed or proxied records fail', () => {
   assert.equal(compareRecord(rec('@', 'TXT'), { TXT: ['v=spf1 include:_spf.mail.hostinger.com -all'] }).ok, false);
   assert.equal(compareRecord(rec('ftp', 'A'), { A: ['104.21.3.4'] }).ok, false);
   assert.match(compareRecord(rec('ftp', 'A'), { A: ['172.67.1.1'] }).detail, /proxy OFF/);
-  const alias = rec('@', 'ALIAS');
+  assert.equal(compareRecord(rec('@', 'A'), { A: ['45.89.205.38'] }).ok, true);
+  assert.match(compareRecord(rec('@', 'A'), { A: ['104.21.3.4'] }).detail, /proxy OFF/);
+  assert.equal(compareRecord(rec('zzwor4l5qvov', 'CNAME'), { CNAME: [] }).ok, false, 'a flattened verification CNAME fails');
+  // An apex alias (as Hostinger CDN used) is still checked for answers and for proxying.
+  const alias = { name: '@', type: 'ALIAS', values: ['example.cdn.test'], ttl: 300 };
   assert.equal(compareRecord(alias, { A: ['147.79.120.184'], AAAA: ['2a02:4780:51::1'] }).ok, true);
   assert.equal(compareRecord(alias, { A: [], AAAA: [] }).ok, false);
   assert.match(compareRecord(alias, { A: ['104.16.1.1'], AAAA: [] }).detail, /proxy OFF/);

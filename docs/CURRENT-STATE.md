@@ -34,9 +34,12 @@ where it disagrees with this section, this section wins.
   reconciled (13 records incl. the Google verification CNAME; apex ALIAS TTL
   300) and equals the live answers of both Hostinger nameservers. **Hostinger
   CDN does not work with external nameservers**, so the earlier "keep the CDN
-  targets" plan is withdrawn: recommended order is disable the CDN (site served
-  from the origin 45.89.205.38, verified with a valid certificate) → pending
-  Cloudflare zone → nameserver change → later Worker cutover. The CLI cannot
+  targets" plan is withdrawn: order: disable the CDN → pending Cloudflare zone → nameserver change →
+  later Worker cutover. **CDN disabled by the owner 2026-10-16**: apex A
+  45.89.205.38 / AAAA 2a02:4780:1:2242:0:145e:6975:6, `www` CNAME to the apex;
+  live answers equal the new export (15/15) and the origin serves both names
+  with a valid certificate. Cloudflare import file ready:
+  `docs/dns/cloudflare-import-2026-10-16.txt`. The CLI cannot
   create zones (HTTP 403, nothing created) — see [DNS-READINESS.md](DNS-READINESS.md). Details: [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md),
   DNS/email checklist: [DNS-READINESS.md](DNS-READINESS.md).
 

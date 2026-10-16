@@ -1,7 +1,7 @@
 {
   "zone": "americawhat.com",
-  "source": "Owner export of the Hostinger zone (docs/dns/hostinger-export-2026-10-16.zone, generated 2026-10-16 01:28 UTC), reconciled with direct queries to hermes/artemis.dns-parking.com. Regenerate with: node scripts/release/dns-zone.mjs spec <export>",
-  "exportSha256": "aa00d64be3a9817e2d18a1c825549dd8386ff872b100d64de4f21f5e390ce837",
+  "source": "Owner export of the Hostinger zone after Hostinger CDN was disabled (docs/dns/hostinger-export-2026-10-16-no-cdn.zone, generated 2026-10-16 01:58 UTC), equal to direct queries to hermes/artemis.dns-parking.com. Regenerate with: node scripts/release/dns-zone.mjs spec <export>",
+  "exportSha256": "69041c1dbc481c15c9e0f4977577f536cd8ae0d0228e45c38f1e6edae88f05d4",
   "records": [
     {
       "name": "@",
@@ -96,21 +96,30 @@
     },
     {
       "name": "@",
-      "type": "ALIAS",
+      "type": "A",
       "values": [
-        "americawhat.com.cdn.hstgr.net"
+        "45.89.205.38"
       ],
-      "ttl": 300,
-      "role": "web until cutover: Hostinger CDN alias, valid only while Hostinger is authoritative (DNS-READINESS.md); replaced before the nameserver change"
+      "ttl": 1800,
+      "role": "web until cutover: Hostinger origin server (LiteSpeed), replaced by the Worker custom domain at cutover; restored on rollback"
+    },
+    {
+      "name": "@",
+      "type": "AAAA",
+      "values": [
+        "2a02:4780:1:2242:0:145e:6975:6"
+      ],
+      "ttl": 1800,
+      "role": "web until cutover: Hostinger origin server (LiteSpeed), replaced by the Worker custom domain at cutover; restored on rollback"
     },
     {
       "name": "www",
       "type": "CNAME",
       "values": [
-        "www.americawhat.com.cdn.hstgr.net"
+        "americawhat.com"
       ],
       "ttl": 300,
-      "role": "web until cutover: Hostinger CDN target, valid only while Hostinger is authoritative; replaced before the nameserver change"
+      "role": "web until cutover: CNAME to the apex (origin), replaced by the Worker custom domain at cutover; restored on rollback"
     }
   ]
 }
