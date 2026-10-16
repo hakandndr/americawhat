@@ -90,3 +90,38 @@ export function syntheticAppSql({ ids, now }) {
   }
   return `${out.join('\n')}\n`;
 }
+
+/** Local editorial queue with prepared/incomplete drafts and duplicate groups. */
+export function syntheticReviewCandidates(count = 80) {
+  const headlines = [
+    'Library accidentally lends its own doorbell to a reader',
+    'Raccoon delays the opening of a town hall meeting',
+    'Parking meter issues a receipt longer than the car',
+    'Florida resident returns a shopping cart by canoe',
+    'HOA sends a warning letter to a plastic flamingo',
+    'Bakery labels a pothole as its newest pastry',
+    'County printer produces permits with upside down maps',
+    'Lost garden gnome found supervising a construction site',
+    'School bus driver wins a dispute with a talking mailbox',
+    'Restaurant introduces a reservation system for squirrels',
+    'Volunteer fire crew rescues a ladder from a tree',
+    'City installs a sign explaining the previous sign',
+  ];
+  const categories = ['only-in-america', 'crime-weird', 'bureaucracy', 'florida-man', 'hoa-housing', 'food-crime'];
+  const rows = [];
+  for (let i = 0; i < Math.min(250, Math.max(1, Number(count) || 80)); i++) {
+    const date = new Date(Date.UTC(2026, 9, 16) - i * 86400000).toISOString().slice(0, 10);
+    const row = {
+      id: `aw-preview-${i + 1}`, seen_id: `preview-${i + 1}`, title: `${headlines[i % headlines.length]} — case ${i + 1}`,
+      category: categories[i % categories.length], date, source_name: 'Preview Desk', source_domain: 'example.com',
+      external_url: `https://example.com/preview/${i + 1}`, source_url: i % 5 === 0 ? '' : `https://example.com/preview/${i + 1}`,
+      comment: i % 3 === 0 ? '' : 'A local office documented an unexpected interruption. The paperwork has requested a second opinion.',
+      excerpt: 'Synthetic candidate for testing the local review workflow. No real editorial decision is made here.',
+      status: 'REAL', city: i % 2 ? 'Austin' : 'Tampa', state: i % 2 ? 'TX' : 'FL', score: 8,
+      ...(i % 13 === 12 ? { draft_reason: 'ROUTINE', draft_note: 'Synthetic proposed rejection' } : {}),
+    };
+    rows.push(row);
+    if (i % 16 === 0) rows.push({ ...row, id: `${row.id}-copy`, seen_id: `${row.seen_id}-copy`, source_name: 'Preview Wire', source_domain: 'wire.example.com', external_url: `https://wire.example.com/preview/${i + 1}` });
+  }
+  return rows;
+}

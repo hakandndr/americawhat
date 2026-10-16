@@ -15,6 +15,12 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
   const dialog = document.getElementById('review-preview');
   if (!form || !tools || !dialog) return;
   const cards = Array.from(form.querySelectorAll('article.story'));
+  const workbench = document.getElementById('review-workbench');
+  const pickers = Array.from(form.querySelectorAll('[data-story]'));
+  const navigation = document.getElementById('review-detail-navigation');
+  const position = document.getElementById('review-position');
+  let current = cards.length ? 0 : -1;
+  let visible = cards.map((_, i) => i);
   const counts = document.getElementById('review-counts');
   const preparedButton = tools.querySelector('[data-review="prepared"]');
   const preparedStatus = document.getElementById('review-prepared-status');
@@ -34,7 +40,7 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
 
   function update(event) {
     const n = { approve: 0, reject: 0, skip: 0 };
-    for (const card of cards) {
+    for (const [index, card] of cards.entries()) {
       const fields = Object.fromEntries(['title', 'comment', 'category', 'source_url', 'source_name', 'date', 'status'].map((name) => [name, field(card, name).value]));
       const ready = isPreparedDraft(fields);
       card.toggleAttribute('data-prepared', ready);
@@ -48,6 +54,13 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       n[value] = (n[value] || 0) + 1;
       card.setAttribute('data-choice', value);
       card.querySelector('[data-decision]').textContent = value === 'skip' ? '' : 'Selected: ' + value;
+      const picker = pickers[index];
+      picker.querySelector('.queue-title').textContent = fields.title || 'Untitled story';
+      picker.querySelector('.queue-source').textContent = fields.source_name + ' · ' + fields.date;
+      picker.querySelector('[data-queue-ready]').textContent = ready ? 'Prepared' : 'Incomplete';
+      picker.querySelector('[data-queue-ready]').className = ready ? 'ok' : 'muted';
+      picker.querySelector('[data-queue-decision]').textContent = value === 'skip' ? '' : value === 'approve' ? '✓ Approve' : '× Reject';
+      picker.setAttribute('data-choice', value);
     }
     prepared = cards.filter((card) => card.getAttribute('data-prepared') === '1');
     document.getElementById('review-ready-count').textContent = String(prepared.length);
@@ -62,23 +75,49 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       : label + ' drafts selected';
     preparedButton.classList.toggle('is-selected', selected > 0 && selected === prepared.length);
     preparedButton.setAttribute('aria-pressed', String(selected > 0 && selected === prepared.length));
-    // Finishing a draft should not make the form vanish mid-edit under the
-    // Incomplete filter. Closing the editor applies the updated filter.
-    if (!event || !event.target.closest('details.editor')) filterStories();
+    filterStories();
   }
 
   function filterStories() {
     const q = search.value.trim().toLowerCase();
     const mode = filter.value;
-    let visible = 0;
-    for (const card of cards) {
+    visible = [];
+    for (const [index, card] of cards.entries()) {
       const ready = card.getAttribute('data-prepared') === '1';
       const matches = !q || ['title', 'comment', 'source_name', 'source_url'].some((name) => field(card, name).value.toLowerCase().includes(q)) || card.querySelector('.story-meta').textContent.toLowerCase().includes(q);
-      card.hidden = !(matches && (mode === 'all' || mode === 'prepared' && ready || mode === 'incomplete' && !ready || mode === 'selected' && choice(card) !== 'skip'));
-      if (!card.hidden) visible++;
+      const shown = matches && (mode === 'all' || mode === 'prepared' && ready || mode === 'incomplete' && !ready || mode === 'selected' && choice(card) !== 'skip');
+      pickers[index].closest('li').hidden = !shown;
+      if (shown) visible.push(index);
     }
-    document.getElementById('review-visible').textContent = visible + ' of ' + cards.length + ' stories';
-    document.getElementById('review-no-match').hidden = visible > 0 || cards.length === 0;
+    document.getElementById('review-visible').textContent = visible.length + ' of ' + cards.length + ' stories';
+    document.getElementById('review-no-match').hidden = visible.length > 0 || cards.length === 0;
+    updateNavigation();
+  }
+
+  function updateNavigation() {
+    const index = visible.indexOf(current);
+    position.textContent = current < 0 ? 'No stories' : 'Story ' + (current + 1) + ' of ' + cards.length;
+    document.getElementById('review-outside-filter').hidden = current < 0 || index >= 0;
+    navigation.querySelector('[data-review="previous"]').disabled = index <= 0;
+    navigation.querySelector('[data-review="next"]').disabled = !visible.length || index === visible.length - 1;
+  }
+
+  function showStory(index, openDetail = true) {
+    if (!cards[index]) return;
+    current = index;
+    for (const [i, card] of cards.entries()) {
+      card.hidden = i !== current;
+      pickers[i].setAttribute('aria-pressed', String(i === current));
+    }
+    // The form fields remain mounted and enabled: switching/filtering never
+    // copies, resets or drops any edit, duplicate option or selected decision.
+    document.querySelector('.review-editor-scroll').scrollTop = 0;
+    if (!window.matchMedia('(max-width:960px)').matches) pickers[index].scrollIntoView?.({ block: 'nearest' });
+    if (openDetail) {
+      workbench.setAttribute('data-mobile-view', 'detail');
+      if (window.matchMedia('(max-width:960px)').matches) navigation.scrollIntoView({ block: 'start' });
+    }
+    updateNavigation();
   }
 
   function item(text, sub) {
@@ -145,17 +184,23 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
     event.preventDefault();
     preview();
   });
-  form.addEventListener('change', update);
-  form.addEventListener('input', update);
+  const onEdit = (event) => { if (event.target === form || event.target.closest('article.story')) update(event); };
+  form.addEventListener('change', onEdit);
+  form.addEventListener('input', onEdit);
   search.addEventListener('input', filterStories);
   filter.addEventListener('change', filterStories);
-  for (const editor of form.querySelectorAll('details.editor')) editor.addEventListener('toggle', () => { if (!editor.open) filterStories(); });
   document.addEventListener('click', (event) => {
+    const picker = event.target.closest('[data-story]');
+    if (picker) { showStory(Number(picker.getAttribute('data-story'))); return; }
     const target = event.target.closest('[data-review]');
     if (!target) return;
     const action = target.getAttribute('data-review');
-    if (action === 'expand' || action === 'collapse') {
-      for (const details of form.querySelectorAll('details.editor')) details.open = action === 'expand';
+    if (action === 'previous' || action === 'next') {
+      const at = visible.indexOf(current);
+      showStory(visible[at + (action === 'next' ? 1 : -1)]);
+    } else if (action === 'list') {
+      workbench.setAttribute('data-mobile-view', 'list');
+      pickers[current]?.focus();
     } else if (action === 'prepared') {
       for (const card of prepared) if (choice(card) === 'skip') setChoice(card, 'approve');
       update();
@@ -170,6 +215,10 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       if (form.requestSubmit) form.requestSubmit(); else form.submit();
     }
   });
+  workbench.classList.add('is-enhanced');
+  form.querySelector('.review-queue').hidden = false;
+  navigation.hidden = !cards.length;
   tools.hidden = false;
   update();
+  if (cards.length) showStory(0, false);
 })();`;

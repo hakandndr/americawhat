@@ -11,9 +11,8 @@ import { D1Sqlite } from './helpers/d1-sqlite.mjs';
 import { FakeGitHub } from './helpers/fake-github.mjs';
 import { AUD, TEAM, makeSigner } from './helpers/access-jwt.mjs';
 
-// Weekly review batch UX: prepared drafts open and selectable, live counts, a
-// confirmation preview before the one-commit submit, and a clear distinction
-// between pending records and story cards. Nothing is preselected to Approve.
+// Master-detail review: edits stay mounted across navigation and filters;
+// confirmation includes every selected decision, not just visible stories.
 
 const ready = { comment: 'A fact here. A dry twist.', category: 'only-in-america', status: 'REAL', date: '2026-10-08', source_name: 'KCTV5', source_url: 'https://www.kctv5.com/2026/10/08/iguana/' };
 const cand = (id, title, extra = {}) => ({ id, seen_id: `s-${id}`, title, category: 'crime-weird', source_url: '', external_url: `https://news.google.com/rss/articles/${id}`, source_domain: 'example.com', source_name: 'Example', date: '2026-10-10', score: 3, ...extra });
@@ -44,7 +43,7 @@ test('only complete, override-free drafts count as prepared', () => {
   assert.equal(isPreparedDraft({ ...pending[0], date: '' }), false);
 });
 
-test('records and unique stories are distinguished; editors start compact; nothing is preselected to Approve', () => {
+test('records and stories are distinct; every full editor is available without disclosures or preselected approvals', () => {
   const { html, document } = render();
   assert.match(html, /<b>7<\/b> pending records/);
   assert.match(html, /<b>6<\/b> unique stories/);
@@ -53,10 +52,11 @@ test('records and unique stories are distinguished; editors start compact; nothi
   assert.match(document.querySelector('[data-review="prepared"]').textContent, /Select prepared drafts \(1\)/);
   assert.equal(card(document, 'ready').getAttribute('data-prepared'), '1');
   assert.equal(card(document, 'agg').hasAttribute('data-prepared'), false);
-  assert.equal(card(document, 'ready').querySelector('details.editor').hasAttribute('open'), false);
-  assert.equal(card(document, 'one').querySelector('details.editor').hasAttribute('open'), false, 'draft text is readable in the row without opening the form');
+  assert.equal(document.querySelectorAll('article details').length, 0);
+  assert.equal(document.querySelectorAll('[data-story]').length, 6);
+  assert.ok(card(document, 'one').querySelector('.editor-fields textarea'));
   assert.equal(card(document, 'ready').querySelector('[data-draft-preview]').textContent, ready.comment);
-  assert.equal(card(document, 'plain').querySelector('details.editor').hasAttribute('open'), false);
+  assert.equal(document.querySelectorAll('article [disabled]').length, 0);
   assert.equal(document.querySelectorAll('input[type=radio][value=approve][checked]').length, 0);
   assert.equal(card(document, 'rej').querySelector('input[type=radio]:checked').value, 'reject');
   assert.match(html, /<script src="\/assets\/review.js" defer><\/script>/);
@@ -64,6 +64,7 @@ test('records and unique stories are distinguished; editors start compact; nothi
 
 function runClient() {
   const { document, window } = render();
+  window.matchMedia = () => ({ matches: false });
   // Browser semantics linkedom lacks: checking a radio unchecks its group.
   Object.defineProperty(window.HTMLInputElement.prototype, 'checked', { configurable: true,
     get() { return this.hasAttribute('checked'); },
@@ -83,15 +84,17 @@ function runClient() {
   return { document, window, dialog, form, click, submitted: () => submitted };
 }
 
-test('client: expand/collapse all, select prepared drafts, live counts', () => {
+test('client: one active editor, Previous/Next navigation, prepared selection and live counts', () => {
   const { document, click } = runClient();
   assert.equal(document.getElementById('review-tools').hasAttribute('hidden'), false);
   const counts = () => document.getElementById('review-counts').textContent;
   assert.equal(counts(), 'Stories: Approve 0 · Reject 1 · Skip 5');
-  click('[data-review="expand"]');
-  assert.ok([...document.querySelectorAll('details.editor')].every((d) => d.open));
-  click('[data-review="collapse"]');
-  assert.ok([...document.querySelectorAll('details.editor')].every((d) => !d.open));
+  assert.equal(document.querySelectorAll('article:not([hidden])').length, 1);
+  assert.equal(document.querySelector('[data-story="0"]').getAttribute('aria-pressed'), 'true');
+  click('[data-review="next"]');
+  assert.equal(document.querySelector('[data-story="1"]').getAttribute('aria-pressed'), 'true');
+  click('[data-review="previous"]');
+  assert.equal(document.querySelector('[data-story="0"]').getAttribute('aria-pressed'), 'true');
   click('[data-review="prepared"]');
   const chosen = (id) => card(document, id).querySelector('input[type=radio]:checked').value;
   assert.equal(chosen('ready'), 'approve');
@@ -111,13 +114,41 @@ test('client: edits revalidate preparedness, search preserves selections, reset 
   search.value = 'no matching title';
   search.dispatchEvent(new window.Event('input'));
   assert.equal(document.getElementById('review-no-match').hidden, false);
-  assert.equal(card(document, 'ready').hidden, true);
+  const index = card(document, 'ready').getAttribute('data-story-index');
+  assert.equal(document.querySelector(`[data-story="${index}"]`).closest('li').hidden, true);
   form.dispatchEvent(new window.Event('submit', { cancelable: true }));
   assert.match(document.getElementById('review-preview-body').textContent, /1 to publish, 1 to reject/);
   assert.equal(dialog.hasAttribute('open'), true);
   click('[data-review="back"]');
   click('[data-review="reset"]');
   assert.match(document.getElementById('review-counts').textContent, /Approve 0 · Reject 0 · Skip 6/);
+});
+
+test('client: edits and overrides survive switching, search and filters without disabling submitted fields', () => {
+  const { document, window, form, click } = runClient();
+  const first = card(document, 'ready');
+  const index = first.getAttribute('data-story-index');
+  click(`[data-story="${index}"]`);
+  first.querySelector('[name$="_title"]').value = 'An edited headline';
+  first.querySelector('[name$="_city"]').value = 'Austin';
+  first.querySelector('[name$="_ovs"]').checked = true;
+  first.querySelector('[name$="_action"][value=approve]').checked = true;
+  form.dispatchEvent(new window.Event('input', { bubbles: true }));
+  click('[data-review="next"]');
+  const filter = document.getElementById('review-filter');
+  // linkedom selects native options through attributes.
+  for (const option of filter.querySelectorAll('option')) option.toggleAttribute('selected', option.value === 'incomplete');
+  filter.dispatchEvent(new window.Event('change'));
+  assert.equal(document.querySelector(`[data-story="${index}"]`).closest('li').hidden, true);
+  for (const option of filter.querySelectorAll('option')) option.toggleAttribute('selected', option.value === 'all');
+  filter.dispatchEvent(new window.Event('change'));
+  click(`[data-story="${index}"]`);
+  assert.equal(first.hidden, false);
+  assert.equal(first.querySelector('[name$="_title"]').value, 'An edited headline');
+  assert.equal(first.querySelector('[name$="_city"]').value, 'Austin');
+  assert.equal(first.querySelector('[name$="_ovs"]').checked, true);
+  assert.equal(first.querySelector('input[type=radio]:checked').value, 'approve');
+  assert.equal(document.querySelectorAll('article [disabled]').length, 0);
 });
 
 test('client: bulk preparation preserves a deliberate rejection of a prepared story', () => {
@@ -136,7 +167,8 @@ test('a long review renders every editor once, with unique field names and no ne
   });
   const { document } = parseHTML(renderReview({ identity: {}, review: { ...base, entries, candidates: 250, stories: 250 }, csrf: 't' }));
   assert.equal(document.querySelectorAll('article.story').length, 250);
-  assert.equal(document.querySelectorAll('details.editor').length, 250);
+  assert.equal(document.querySelectorAll('.editor-fields').length, 250);
+  assert.equal(document.querySelectorAll('[data-story]').length, 250);
   assert.equal(document.querySelectorAll('details details').length, 0);
   assert.equal(document.querySelectorAll('details[open]').length, 0);
   const fields = [...document.querySelectorAll('input:not([type=radio]),select,textarea')].map((el) => el.name).filter(Boolean);

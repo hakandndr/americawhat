@@ -2,10 +2,28 @@
 
 import { formatLa } from '../../../shared/time.mjs';
 import { h, hidden, page } from '../html.mjs';
+import { computeSlugs } from '../editorial.mjs';
 
 const none = (cols, text = 'Nothing recorded yet.') => `<tr><td colspan="${cols}" class="empty">${h(text)}</td></tr>`;
 
-export function renderReactions({ identity, flash, rows, imports, csrf, plan, titles }) {
+export function renderReactions({ identity, flash, rows, imports, csrf, plan, items = [], catalogAvailable = true, query = '', sort = 'total', direction = 'desc' }) {
+  const columns = ['wat', 'lol', 'same', 'dead', 'total'];
+  const key = columns.includes(sort) ? sort : 'total';
+  const dir = direction === 'asc' ? 'asc' : 'desc';
+  const q = String(query || '').trim().toLowerCase();
+  // Compute canonical slugs on the complete published list before filtering,
+  // preserving pinned paths and collision suffixes just like Published.
+  const slugs = computeSlugs(items);
+  const articles = new Map(items.map((item, i) => [item.id, { title: item.title, slug: slugs[i] }]));
+  const shown = rows.filter((r) => !q || `${r.item_id} ${articles.get(r.item_id)?.title || ''}`.toLowerCase().includes(q))
+    .sort((a, b) => (dir === 'asc' ? 1 : -1) * (a[key] - b[key]) || a.item_id.localeCompare(b.item_id));
+  const sortLink = (column) => {
+    const p = new URLSearchParams();
+    if (query) p.set('q', query);
+    p.set('sort', column);
+    p.set('dir', column === key && dir === 'desc' ? 'asc' : 'desc');
+    return `/reactions?${h(p.toString())}`;
+  };
   const total = rows.reduce((s, r) => s + r.total, 0);
   const sum = (k) => rows.reduce((s, r) => s + Number(r[k] || 0), 0);
   const planBox = plan ? `<div class="card"><h2>Uploaded snapshot</h2>
@@ -22,8 +40,10 @@ ${plan.ok ? `<p>${h(plan.kind)} · ${plan.keys} items · snapshot total ${plan.s
   <div class="stat"><b>${sum('dead')}</b>DEAD</div>
 </div>
 <section class="section" aria-labelledby="h-counts"><div class="section-head"><h2 id="h-counts">Counts per story</h2></div>
-<div class="table-card"><div class="scroll"><table><thead><tr><th scope="col">Item</th><th scope="col">Title</th><th class="num" scope="col">WAT</th><th class="num" scope="col">LOL</th><th class="num" scope="col">SAME</th><th class="num" scope="col">DEAD</th><th class="num" scope="col">Total</th></tr></thead><tbody>
-${rows.map((r) => `<tr><td class="mono">${h(r.item_id)}</td><td class="wrap">${titles.has(r.item_id) ? h(titles.get(r.item_id)) : '<span class="faint">(not published)</span>'}</td><td class="num">${r.wat}</td><td class="num">${r.lol}</td><td class="num">${r.same}</td><td class="num">${r.dead}</td><td class="num"><b>${r.total}</b></td></tr>`).join('') || none(7, 'No reactions yet.')}</tbody></table></div></div></section>
+<form method="get" action="/reactions" class="toolbar" role="search"><input name="q" value="${h(query)}" placeholder="Search story title or item ID" aria-label="Search reactions">${hidden('sort', key)}${hidden('dir', dir)}<button class="secondary">Search</button>${q ? '<a class="btn ghost" href="/reactions">Clear</a>' : ''}</form>
+${!catalogAvailable ? '<p class="notice warn">Article details are temporarily unavailable. Counts, searching by ID, imports and exports are still available.</p>' : ''}
+<div class="table-card"><div class="scroll"><table aria-label="Reaction counts"><thead><tr><th scope="col">Item</th><th scope="col">Title</th>${columns.map((col) => `<th class="num" scope="col"${col === key ? ` aria-sort="${dir === 'asc' ? 'ascending' : 'descending'}"` : ''}><a href="${sortLink(col)}" aria-label="Sort by ${col.toUpperCase()} ${col === key && dir === 'desc' ? 'ascending' : 'descending'}">${col.toUpperCase()}${col === key ? dir === 'asc' ? ' ↑' : ' ↓' : ' ↕'}</a></th>`).join('')}</tr></thead><tbody>
+${shown.map((r) => { const article = articles.get(r.item_id); return `<tr><td class="mono">${article ? `<a href="/published/edit?id=${encodeURIComponent(r.item_id)}">${h(r.item_id)}</a>` : h(r.item_id)}</td><td class="wrap">${article ? `<a href="https://americawhat.com/item/${h(article.slug)}/" target="_blank" rel="noopener noreferrer">${h(article.title)}</a>` : `<span class="faint">${catalogAvailable ? 'Not published' : 'Article unavailable'}</span>`}</td><td class="num">${r.wat}</td><td class="num">${r.lol}</td><td class="num">${r.same}</td><td class="num">${r.dead}</td><td class="num"><b>${r.total}</b></td></tr>`; }).join('') || none(7, q ? 'No stories match this search.' : 'No reactions yet.')}</tbody></table></div><div class="table-foot"><span class="small muted">${shown.length} of ${rows.length} items · ${shown.reduce((s, r) => s + r.total, 0)} matching reactions · totals above include every item</span></div></div></section>
 <section class="section minor" aria-labelledby="h-imports"><div class="section-head"><h2 id="h-imports">Imports</h2><p class="faint small">First import = baseline; later imports add only the difference since the previous snapshot.</p></div>
 ${planBox}
 <form method="post" action="/reactions/import" enctype="multipart/form-data" class="card">${hidden('csrf', csrf)}

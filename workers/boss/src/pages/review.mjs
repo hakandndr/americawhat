@@ -1,4 +1,4 @@
-// Weekly review: one card per story cluster, ranked; the owner chooses
+// Weekly review: a story queue and complete editors in one form. The owner chooses
 // approve / reject (with a reason code) / skip for each, and the whole batch
 // is one atomic commit. Nothing is approved or removed without that choice.
 
@@ -48,7 +48,7 @@ function entryCard(entry, i) {
   const search = `https://www.google.com/search?q=${encodeURIComponent(`${rep.title} ${rep.source_domain || ''}`)}`;
   const members = entry.members.map((m) => `<li>${h(m.source_name || m.source_domain)} <span class="muted">${h(m.source_domain)} · ${h(m.date)}</span> — <a href="${safeHref(m.external_url)}" rel="noreferrer noopener" target="_blank">link</a>${m.id === rep.id ? ' <b>(shown)</b>' : ''}</li>`).join('');
   const titleId = `${prefix}t`;
-  return `<article class="story${entry.flags.length || entry.publishedMatch ? ' has-flags' : ''}" aria-labelledby="${titleId}" data-copies="${h(entry.copies)}"${prepared ? ' data-prepared="1"' : ''}>
+  return `<article class="story${entry.flags.length || entry.publishedMatch ? ' has-flags' : ''}" id="review-story-${i}" data-story-index="${i}" tabindex="-1" aria-labelledby="${titleId}" data-copies="${h(entry.copies)}"${prepared ? ' data-prepared="1"' : ''}>
   ${hidden(`${prefix}id`, rep.id)}${hidden(`${prefix}others`, others.join(','))}
   <div class="story-head"><span class="rank" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><div>
   <h2 class="story-title" id="${titleId}">${h(rep.title)}</h2>
@@ -65,13 +65,10 @@ function entryCard(entry, i) {
     <div class="reject-fields">${select(`${prefix}reason`, [['', 'Rejection reason…'], ...REASON_OPTIONS], draftReason || entry.suggestions[0] || '', ` aria-label="Rejection reason (used only when Reject is chosen)"`)}
     <input name="${prefix}note" value="${h(drafted?.draft_note || '')}" placeholder="note (optional)" aria-label="Note" style="max-width:240px"></div>
   </div>
-  <details class="editor"><summary>Edit story &amp; source details (${h(entry.copies)} candidate${entry.copies === 1 ? '' : 's'})</summary>
-  ${rep.excerpt ? `<p class="story-excerpt">${h(rep.excerpt)}</p>` : ''}
-  <div class="signals"><span class="lbl">Signals</span>${signals}</div>
-  ${checks ? `<div class="signals"><span class="lbl warn">Check</span>${checks}</div>` : ''}
-  <p class="small muted"><a href="${safeHref(search)}" rel="noreferrer noopener" target="_blank">Find the original article ↗</a></p>
+  <div class="editor-fields">
   <div class="grid">
     <div class="editor-title"><label for="${prefix}title">Title</label><input id="${prefix}title" name="${prefix}title" value="${h(rep.title)}"></div>
+    <div class="editor-title"><label for="${prefix}comment">Editorial comment — exactly two sentences</label><textarea id="${prefix}comment" name="${prefix}comment">${h(rep.comment || '')}</textarea></div>
     <div><label for="${prefix}category">Category</label>${select(`${prefix}category`, CATEGORIES.map((c) => [c, c]), rep.category, ` id="${prefix}category"`)}</div>
     <div><label for="${prefix}source_url">Original source URL (not a Google News link)</label><input id="${prefix}source_url" name="${prefix}source_url" value="${h(sourceUrl)}" placeholder="https://"></div>
     <div><label for="${prefix}source_name">Source name</label><input id="${prefix}source_name" name="${prefix}source_name" value="${h(rep.source_name)}"></div>
@@ -80,15 +77,26 @@ function entryCard(entry, i) {
     <div><label for="${prefix}city">City</label><input id="${prefix}city" name="${prefix}city" value="${h(rep.city || '')}"></div>
     <div><label for="${prefix}state">State</label><input id="${prefix}state" name="${prefix}state" value="${h(rep.state || '')}"></div>
   </div>
-  <label for="${prefix}comment" style="margin-top:12px">Comment — exactly two sentences</label><textarea id="${prefix}comment" name="${prefix}comment">${h(rep.comment || '')}</textarea>
+  <p class="small muted" style="margin-top:12px"><a href="${safeHref(search)}" rel="noreferrer noopener" target="_blank">Find the original article ↗</a></p>
+  ${rep.excerpt ? `<p class="story-excerpt">${h(rep.excerpt)}</p>` : ''}
+  <div class="signals"><span class="lbl">Signals (advisory)</span>${signals}</div>
+  ${checks ? `<div class="signals"><span class="lbl warn">Check</span>${checks}</div>` : ''}
   <h3 style="margin-top:12px">Candidates in this cluster</h3><ul class="small">${members}</ul>
     <div class="opts">
     ${others.length ? `<label><input type="checkbox" name="${prefix}dupes" value="1" checked> also remove the ${others.length} other cop${others.length === 1 ? 'y' : 'ies'} as DUPLICATE</label>` : ''}
     <label><input type="checkbox" name="${prefix}ovs" value="1"> allow ≠ 2 sentences</label>
     <label><input type="checkbox" name="${prefix}ova" value="1"> allow aggregator link</label>
     </div>
-  </details>
+  </div>
 </article>`;
+}
+
+function storyPicker(entry, i) {
+  const rep = entry.representative;
+  return `<li class="queue-item"><button type="button" class="story-picker" data-story="${i}" aria-controls="review-story-${i}" aria-pressed="false">
+    <span class="queue-rank">${String(i + 1).padStart(2, '0')}</span><span class="queue-copy">
+    <span class="queue-title">${h(rep.title)}</span><span class="queue-source">${h(rep.source_name || rep.source_domain)} · ${h(rep.date)}</span>
+    <span class="queue-status"><span data-queue-ready>${isPreparedDraft(rep) ? 'Prepared' : 'Incomplete'}</span><span data-queue-decision></span>${entry.copies > 1 ? `<span>${entry.copies} records</span>` : ''}</span></span></button></li>`;
 }
 
 export function renderReview({ identity, flash, review, fetchStatus, csrf, error }) {
@@ -102,25 +110,36 @@ export function renderReview({ identity, flash, review, fetchStatus, csrf, error
   <span><b id="review-ready-count">${prepared}</b> prepared</span>
   <span><b>${review.flagged}</b> flagged · <b>${review.foreign}</b> likely not US · <b>${review.alreadyPublished}</b> published matches</span>
 </div>
-<p class="small muted" id="review-scope">${copies > 0 ? `${copies} extra duplicate record${copies === 1 ? '' : 's'} grouped with their story. ` : ''}Read sources before approving. Flags are advisory; changes require confirmation.</p>
-<div class="review-tools" id="review-tools" hidden>
-  <div class="review-filter"><input id="review-search" type="search" aria-label="Search candidates" placeholder="Search title, source or draft"><select id="review-filter" aria-label="Filter review stories"><option value="all">All stories</option><option value="prepared">Prepared</option><option value="incomplete">Incomplete</option><option value="selected">Selected decisions</option></select><span class="small muted" id="review-visible" role="status"></span></div>
-  <button type="button" class="secondary" data-review="expand">Expand all</button>
-  <button type="button" class="secondary" data-review="collapse">Collapse all</button>
-  <button type="button" class="secondary" data-review="prepared" aria-pressed="false"${prepared ? '' : ' disabled'}>Select prepared drafts (${prepared})</button>
-  <button type="button" class="secondary" data-review="reset">Reset all to Skip</button>
-  <span class="review-selected" id="review-prepared-status" role="status" aria-live="polite"></span>
-</div>
+<p class="small muted" id="review-scope">${copies > 0 ? `${copies} extra duplicate record${copies === 1 ? '' : 's'} grouped with their story. ` : ''}Edits stay in this review until you apply. Nothing is published until you confirm.</p>
 <form method="post" action="/review/apply" id="review-form">
   ${hidden('csrf', csrf)}${hidden('count', review.entries.length)}
-  <div class="review-list">${review.entries.map(entryCard).join('') || '<div class="empty">No pending candidates. The next fetch will add more.</div>'}</div>
-  <p class="empty" id="review-no-match" hidden>No matching stories. Change the search or filter.</p>
-  <div class="sticky-submit"><div class="review-foot"><span class="review-counts" id="review-counts" role="status" aria-live="polite"></span><span class="small muted">One commit after confirmation. Hidden selections are included.</span></div><button type="submit">Apply selected decisions (one commit)</button></div>
+  <div class="review-workbench" id="review-workbench" data-mobile-view="list">
+    <aside class="review-queue" aria-label="Story queue" hidden>
+      <div class="review-tools" id="review-tools" hidden>
+        <label for="review-search">Find a story</label><input id="review-search" type="search" aria-label="Search candidates" placeholder="Search title, source or draft">
+        <select id="review-filter" aria-label="Filter review stories"><option value="all" selected>All stories</option><option value="prepared">Prepared</option><option value="incomplete">Incomplete</option><option value="selected">Selected decisions</option></select>
+        <div class="queue-bulk"><button type="button" class="secondary" data-review="prepared" aria-pressed="false"${prepared ? '' : ' disabled'}>Select prepared drafts (${prepared})</button><button type="button" class="btn ghost" data-review="reset">Reset to Skip</button></div>
+        <span class="review-selected" id="review-prepared-status" role="status" aria-live="polite"></span>
+        <span class="small muted" id="review-visible" role="status"></span>
+      </div>
+      <ul class="story-queue-list">${review.entries.map(storyPicker).join('')}</ul>
+      <p class="empty" id="review-no-match" hidden>No matching stories. Change the search or filter. Your edits and decisions are kept.</p>
+    </aside>
+    <section class="review-detail" aria-label="Story editor">
+      <div class="detail-navigation" id="review-detail-navigation" hidden>
+        <button type="button" class="secondary back-to-stories" data-review="list">← Story list</button><span id="review-position" role="status" aria-live="polite"></span>
+        <div class="detail-paging"><button type="button" class="secondary" data-review="previous" aria-label="Previous story">← Previous</button><button type="button" class="secondary" data-review="next" aria-label="Next story">Next →</button></div>
+      </div>
+      <p class="filter-notice small" id="review-outside-filter" hidden>This story is outside your current filter. Its edits and decision are kept.</p>
+      <div class="review-editor-scroll">${review.entries.map(entryCard).join('') || '<div class="empty">No pending candidates. The next fetch will add more.</div>'}</div>
+    </section>
+  </div>
+  <div class="review-apply-bar"><div><span class="review-counts" id="review-counts" role="status" aria-live="polite"></span><p class="small muted">All selected decisions are included, even when hidden by a filter.</p></div><button type="submit">Review &amp; Apply</button></div>
 </form>
 <dialog id="review-preview" aria-labelledby="review-preview-title"><h2 id="review-preview-title">Confirm this batch</h2><div id="review-preview-body"></div>
 <div class="dialog-actions"><button type="button" class="secondary" data-review="back">Back to the review</button><button type="button" data-review="confirm">Confirm and apply (one commit)</button></div></dialog>
 <script src="/assets/review.js" defer></script>`;
-  return page({ title: 'Weekly review', active: '/review', identity, flash, body, lede: fetchStatusLine(fetchStatus) });
+  return page({ title: 'Weekly review', active: '/review', identity, flash, body, lede: fetchStatusLine(fetchStatus), layout: 'review-workspace' });
 }
 
 /** Parses the review form into approvals and rejections. */

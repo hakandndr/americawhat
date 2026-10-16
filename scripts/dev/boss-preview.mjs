@@ -18,7 +18,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { FakeGitHub } from '../../tests/helpers/fake-github.mjs';
 import { AUD, TEAM, makeSigner } from '../../tests/helpers/access-jwt.mjs';
 import { assignSlugs } from '../../src/lib/slug.js';
-import { syntheticAnalyticsSql, syntheticAppSql, syntheticPanelLog } from './synthetic-data.mjs';
+import { syntheticAnalyticsSql, syntheticAppSql, syntheticPanelLog, syntheticReviewCandidates } from './synthetic-data.mjs';
 
 // Ports: BOSS_PREVIEW_PORT (default 8788) for the browser, +1 for workerd, +2
 // for the in-memory GitHub, so a second checkout can run its own preview.
@@ -41,11 +41,11 @@ const signer = makeSigner('local-preview');
 const env = { ...process.env };
 delete env.CLOUDFLARE_API_TOKEN;
 
-const pending = JSON.parse(fs.readFileSync('src/data/pending.json', 'utf8')).slice(0, 25);
+const pending = syntheticReviewCandidates(process.env.BOSS_PREVIEW_STORIES);
 const gh = new FakeGitHub({
   'src/data/published.json': fs.readFileSync('src/data/published.json', 'utf8').replace(/\r\n/g, '\n'),
   'src/data/pending.json': `${JSON.stringify(pending, null, 2)}\n`,
-  'src/data/fetch-status.json': fs.readFileSync('src/data/fetch-status.json', 'utf8'),
+  'src/data/fetch-status.json': JSON.stringify({ finishedAt: '2026-10-16T12:00:00Z', sourcesChecked: 1, totals: { fetched: pending.length, added: pending.length, duplicate: 0, lowScore: 0, excluded: 0 } }),
 });
 
 const githubServer = http.createServer(async (req, res) => {
@@ -74,7 +74,7 @@ const seedNow = Math.floor(Date.now() / 1000);
 const analyticsSeed = await syntheticAnalyticsSql({ pages, now: seedNow });
 fs.mkdirSync('.wrangler', { recursive: true });
 fs.writeFileSync('.wrangler/preview-seed-analytics.sql', analyticsSeed.sql);
-fs.writeFileSync('.wrangler/preview-seed-app.sql', syntheticAppSql({ ids: published.map((it) => it.id), now: seedNow }));
+fs.writeFileSync('.wrangler/preview-seed-app.sql', syntheticAppSql({ ids: ['aw-preview-missing', ...published.map((it) => it.id)], now: seedNow }));
 for (const [db, file] of [['americawhat-analytics-staging', '.wrangler/preview-seed-analytics.sql'], ['americawhat-app-staging', '.wrangler/preview-seed-app.sql']]) {
   const r = spawnSync(npx, ['wrangler', 'd1', 'execute', db, '--local', '--persist-to', STATE, '--file', file, '--config', CONFIG, '-y'], { env, stdio: 'ignore', shell: process.platform === 'win32' });
   if (r.status !== 0) throw new Error(`seeding ${db} failed`);
@@ -144,7 +144,7 @@ if (process.argv.includes('--serve')) {
   await check('direct request without identity -> 401', async () => (await fetch(`http://127.0.0.1:${WORKER_PORT}/review`)).status === 401);
   await check('forged identity -> 401', async () => (await fetch(`http://127.0.0.1:${WORKER_PORT}/review`, { headers: { 'Cf-Access-Jwt-Assertion': makeSigner('local-preview').sign() } })).status === 401);
   let reviewHtml = '';
-  await check('review renders from GitHub content', async () => { const r = await fetch(`${ORIGIN}/review`); reviewHtml = await r.text(); return r.status === 200 && reviewHtml.includes('distinct stories'); });
+  await check('review renders from GitHub content', async () => { const r = await fetch(`${ORIGIN}/review`); reviewHtml = await r.text(); return r.status === 200 && reviewHtml.includes('unique stories'); });
   for (const p of ['/published', '/analytics', '/reactions', '/audit', '/health']) await check(`${p} renders`, async () => (await fetch(`${ORIGIN}${p}`)).status === 200);
   await check('IP activity in workerd: protected, validated and linked to retained history', async () => {
     if ((await fetch(`http://127.0.0.1:${WORKER_PORT}/analytics/ip?address=203.0.113.15`)).status !== 401) return false;

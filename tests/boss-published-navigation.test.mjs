@@ -120,5 +120,5 @@ test('Boss navy/red theme keeps a compact narrow-screen submit bar reachable', a
   assert.ok(css.includes('--bg:#0b1120'));
   assert.ok(css.includes('--accent:#e23b4e'));
   const mobile = css.slice(css.indexOf('@media (max-width:760px)'));
-  assert.ok(mobile.includes('.sticky-submit{position:fixed;bottom:0;left:14px;right:14px;padding:8px;gap:6px;'));
+  assert.ok(mobile.includes('.review-apply-bar{position:fixed;bottom:0;left:14px;right:14px;padding:8px;gap:6px;'));
 });
