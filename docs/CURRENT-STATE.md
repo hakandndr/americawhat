@@ -1,21 +1,21 @@
 # americawhat — current state
 
 Single source of truth for what is live. Verified 2026-10-16 (release
-032e88f). Update the tables in place when something changes.
+09c90da). Update the tables in place when something changes.
 
 ## Production (Cloudflare Workers, live since 2026-10-16 04:02 UTC)
 
 | Item | Value |
 |---|---|
-| Source | `main` @ **032e88f** (GitHub `hakandndr/americawhat`; later `main` commits are content/docs only) |
-| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `7fd196f8-6b23-4d0f-880d-f0f88844ca01` |
-| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `0553c2ea-6fcf-49ac-ab0e-2d95f87205af`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
-| Previous versions (rollback) | Web `b046f207-5735-4538-90da-9986855da37a`, Boss `af911624-9961-430d-b195-0c0f4f0f7e4d` (release 60c3c74); before that Web `5fa975eb…`, Boss `6b2782ab…` (a6ef6b2) |
-| Health | `/api/health`: status ok, environment production, release 032e88f, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
+| Source | `main` @ **09c90da** (GitHub `hakandndr/americawhat`; later `main` commits are content/docs only) |
+| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `55912dc3-44a8-49e6-ab6e-c1a083e4d002` |
+| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `187c1ab2-e207-49ae-9490-cbe129a924cb`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
+| Previous versions (rollback) | Web `7fd196f8-6b23-4d0f-880d-f0f88844ca01`, Boss `0553c2ea-6fcf-49ac-ab0e-2d95f87205af` (release 032e88f); before that Web `b046f207…`, Boss `af911624…` (60c3c74) |
+| Health | `/api/health`: status ok, environment production, release 09c90da, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
 | D1 | `americawhat-app-production` `3097933b-4feb-4e50-bb59-760fd06a640e`, `americawhat-analytics-production` `1012183d-96cd-4d7f-8e93-ca247ca43589` (WNAM, migration 0001 each) |
 | Analytics | 1,083 legacy events (Hostinger log S1, imported idempotently; ledger 1,084 incl. 1 line without a page) + native page views since cutover (26 at the time of writing) |
 | Reactions | S1 baseline **applied** through Boss: 1 import (`baseline`, 14 items, +19 votes); live votes are added on top (21 in total at the time of writing) |
-| Content | 124 published stories; 125 approved OG images (frozen); the RSS fetch keeps adding candidates three times a day |
+| Content | 128 published stories (Boss shows the live count beside Published); 125 approved OG images (frozen archive, 124 stories + default); stories approved later (aw-0136 onward) get their image from the pinned renderer at release (`gen-og.py --missing`); the RSS fetch keeps adding candidates three times a day |
 | HTTPS | Cloudflare certificates on all three hostnames; `http://` → 301 `https://` |
 
 Fixed after cutover (both live): Boss form POSTs were refused as
@@ -57,7 +57,7 @@ Access app, staging content repository `hakandndr/americawhat-staging-content`.
 
 | Priority | Item | When |
 |---|---|---|
-| 1 | Weekly review in Boss (live since 032e88f: red pending-count badge, records vs story cards, Expand/Collapse all, "Select prepared drafts", live Approve/Reject/Skip counts, confirmation preview before the one-commit apply). The 117 proposed rejections were applied by the owner; 30 candidates remain, 5 with prepared drafts (Pelham driveway tickets, Spring Hill iguana, Grand Junction guinea pig, Uber One class action, Washington HOA fences — the last needs "allow aggregator link" and is not picked by "Select prepared drafts") | owner |
+| 1 | Weekly review in Boss (live since 09c90da: red pending count and neutral published count in the navigation, records vs story cards, Expand/Collapse all, "Select prepared drafts" with a visible "N drafts selected ✓", live Approve/Reject/Skip counts, confirmation preview before the one-commit apply). 4 prepared drafts were published (aw-0136…aw-0139); 26 candidates remain, 1 with a drafted comment (Washington HOA fences — needs "allow aggregator link") | owner |
 | — | S2 reconciliation: **waived** by the owner 2026-10-15; reminder task disabled; S1 stays the last legacy import | closed |
 | — | Staging sync to the production code: deferred to a separate session (approval needed) | deferred |
 | 2 | 30-day observation; then retire Hostinger web files, delete the FTP secrets, revoke the old Hostinger Boss credential (e-mail stays) | until 2026-11-15, then separate approval |
