@@ -21,11 +21,11 @@ export function pendingBadge(count) { return navBadge(count, 'pending'); }
 export function publishedBadge(count) { return navBadge(count, 'published', 'neutral'); }
 
 const NAV = [
-  ['/review', 'Weekly review'],
+  ['/review', 'Weekly review', 'Editorial'],
   ['/published', 'Published'],
-  ['/analytics', 'Analytics'],
+  ['/analytics', 'Analytics', 'Audience'],
   ['/reactions', 'Reactions'],
-  ['/audit', 'Audit'],
+  ['/audit', 'Audit', 'System'],
   ['/health', 'Health'],
 ];
 
@@ -43,14 +43,14 @@ import { CSS } from './styles.mjs';
 export function page({ title, active, identity, body, flash, lede = '', headActions = '', wide = false, layout = '' }) {
   // The Weekly review link carries a marker that index.mjs replaces with the
   // live pending count (or removes when GitHub cannot be read).
-  const nav = NAV.map(([href, label], i) => `<a href="${href}"${active === href ? ' class="on" aria-current="page"' : ''}><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_ICONS[i]}</svg>${h(label)}${href === '/review' ? PENDING_MARKER : href === '/published' ? PUBLISHED_MARKER : ''}</a>`).join('');
+  const nav = NAV.map(([href, label, group], i) => `${group ? `<span class="nav-group">${h(group)}</span>` : ''}<a href="${href}"${active === href ? ' class="on" aria-current="page"' : ''}><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_ICONS[i]}</svg>${h(label)}${href === '/review' ? PENDING_MARKER : href === '/published' ? PUBLISHED_MARKER : ''}</a>`).join('');
   const flashHtml = flash ? `<div class="flash ${flash.type === 'err' ? 'err' : 'ok'}" role="${flash.type === 'err' ? 'alert' : 'status'}">${h(flash.message)}</div>` : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b1120"><title>${h(title)} · AmericaWhat Boss</title><style>${CSS}</style></head>
 <body><a class="skip-link" href="#main-content">Skip to content</a><input class="nav-toggle" type="checkbox" id="nav-toggle" aria-label="Navigation drawer" aria-controls="boss-sidebar">
 <header class="mobile-nav"><label class="menu-label" for="nav-toggle">☰ Menu</label><a class="brand" href="/review"><span>america<i>what</i></span><small>Boss</small></a></header>
 <label class="drawer-shade" for="nav-toggle" aria-label="Close navigation"></label>
-<aside class="sidebar" id="boss-sidebar"><label class="drawer-close" for="nav-toggle">Close menu ×</label><a class="brand" href="/review"><span>america<i>what</i></span><small>Boss</small></a><nav class="nav" aria-label="Boss sections">${nav}</nav><div class="sidebar-footer"><section class="quick-links" aria-labelledby="quick-links-title"><h2 id="quick-links-title">Quick Links</h2><a href="https://americawhat.com/" target="_blank" rel="noopener noreferrer">Live Site ↗</a><a href="https://github.com/hakandndr/americawhat/pulls" target="_blank" rel="noopener noreferrer">GitHub Pull Requests ↗</a><a href="https://github.com/hakandndr/americawhat/actions" target="_blank" rel="noopener noreferrer">GitHub Actions ↗</a><a href="https://github.com/hakandndr/americawhat" target="_blank" rel="noopener noreferrer">Repository ↗</a></section><span class="who">${h(identity?.email || '')}</span></div></aside>
+<aside class="sidebar" id="boss-sidebar"><label class="drawer-close" for="nav-toggle">Close menu ×</label><a class="brand" href="/review"><span>america<i>what</i></span><small>Boss</small></a><nav class="nav" aria-label="Boss sections">${nav}</nav><div class="sidebar-footer"><section class="quick-links" aria-labelledby="quick-links-title"><h2 id="quick-links-title">Quick links</h2><a href="https://americawhat.com/" target="_blank" rel="noopener noreferrer">Live site<span aria-hidden="true">↗</span></a><a href="https://github.com/hakandndr/americawhat/pulls" target="_blank" rel="noopener noreferrer">Pull requests<span aria-hidden="true">↗</span></a><a href="https://github.com/hakandndr/americawhat/actions" target="_blank" rel="noopener noreferrer">GitHub Actions<span aria-hidden="true">↗</span></a><a href="https://github.com/hakandndr/americawhat" target="_blank" rel="noopener noreferrer">Repository<span aria-hidden="true">↗</span></a></section><span class="who">${h(identity?.email || '')}</span></div></aside>
 <div class="workspace"><main id="main-content" tabindex="-1" class="${h([wide ? 'analytics-workspace' : '', layout].filter(Boolean).join(' '))}">${flashHtml}<div class="page-head"><h1>${h(title)}</h1>${headActions}${lede ? `<p class="lede">${lede}</p>` : ''}</div>${body}</main></div></body></html>`;
 }
 

@@ -111,7 +111,7 @@ test('client: one active editor, Previous/Next navigation, prepared selection an
   const { document, click } = runClient();
   assert.equal(document.getElementById('review-tools').hasAttribute('hidden'), false);
   const counts = () => document.getElementById('review-counts').textContent;
-  assert.equal(counts(), 'Stories: Approve 0 · Reject 1 · Skip 5');
+  assert.equal(counts(), 'Approve 0 · Reject 1 · Skip 5');
   assert.equal(document.querySelectorAll('article:not([hidden])').length, 1);
   assert.equal(document.querySelector('[data-story="0"]').getAttribute('aria-pressed'), 'true');
   click('[data-review="next"]');
@@ -123,7 +123,44 @@ test('client: one active editor, Previous/Next navigation, prepared selection an
   assert.equal(chosen('ready'), 'approve');
   for (const id of ['agg', 'one', 'plain', 'copy1']) assert.equal(chosen(id), 'skip', id);
   assert.equal(chosen('rej'), 'reject', 'bulk prepare preserves rejection decisions');
-  assert.equal(counts(), 'Stories: Approve 1 · Reject 1 · Skip 4');
+  assert.equal(counts(), 'Approve 1 · Reject 1 · Skip 4');
+  assert.ok(document.querySelector('#review-counts .count-approve.has'), 'a non-zero decision count is highlighted');
+});
+
+test('client: keyboard decides and pages the open story, but never while typing', () => {
+  const { document, window } = runClient();
+  const press = (key, target = document) => {
+    const event = new window.Event('keydown', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'key', { value: key });
+    target.dispatchEvent(event);
+  };
+  const open = () => [...document.querySelectorAll('article.story')].find((a) => !a.hidden);
+  const first = open();
+  press('a');
+  assert.equal(first.querySelector('input[type=radio]:checked').value, 'approve');
+  assert.match(document.getElementById('review-counts').textContent, /Approve 1/);
+  press('j');
+  assert.notEqual(open(), first);
+  press('k');
+  assert.equal(open(), first);
+  press('r', first.querySelector('[name$="_comment"]'));
+  assert.equal(first.querySelector('input[type=radio]:checked').value, 'approve', 'typing "r" in a field is text, not a decision');
+  press('s');
+  assert.equal(first.querySelector('input[type=radio]:checked').value, 'skip');
+});
+
+test('client: the comment shows a live two-sentence check', () => {
+  const { document, window, form } = runClient();
+  const story = card(document, 'one');
+  const input = story.querySelector('[name$="_comment"]');
+  const hint = story.querySelector('[data-sentences]');
+  input.value = 'Only one sentence here.';
+  form.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.equal(hint.textContent, '1 sentence · two required');
+  assert.match(hint.className, /warn/);
+  input.value = 'A new fact. A dry ending.';
+  form.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.equal(hint.textContent, '2 sentences ✓');
 });
 
 test('client: edits revalidate preparedness, search preserves selections, reset clears decisions', () => {

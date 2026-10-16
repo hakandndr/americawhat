@@ -49,6 +49,12 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       badge.textContent = ready ? 'Prepared' : 'Incomplete';
       badge.className = 'tag ' + (ready ? 'ok' : 'warn');
       card.querySelector('[data-draft-preview]').textContent = fields.comment;
+      const sentences = card.querySelector('[data-sentences]');
+      if (sentences) {
+        const count = countSentences(fields.comment);
+        sentences.textContent = count === 2 ? '2 sentences ✓' : count + ' sentence' + (count === 1 ? '' : 's') + ' · two required';
+        sentences.className = 'sentence-count ' + (count === 2 ? 'ok' : 'warn');
+      }
       card.querySelector('.story-title').textContent = fields.title;
       const value = choice(card);
       n[value] = (n[value] || 0) + 1;
@@ -56,19 +62,27 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       card.querySelector('[data-decision]').textContent = value === 'skip' ? '' : 'Selected: ' + value;
       const picker = pickers[index];
       picker.querySelector('.queue-title').textContent = fields.title || 'Untitled story';
-      picker.querySelector('.queue-source').textContent = fields.source_name + ' · ' + fields.date;
+      picker.querySelector('.queue-source').textContent = fields.date;
+      picker.title = fields.source_name;
       picker.querySelector('[data-queue-category]').textContent = fields.category;
-      picker.querySelector('[data-queue-status]').textContent = fields.status;
+      picker.querySelector('[data-queue-status]').textContent = fields.status === 'REAL' ? '' : fields.status;
       picker.querySelector('[data-queue-ready]').textContent = ready ? 'Prepared' : 'Incomplete';
       picker.querySelector('[data-queue-ready]').className = ready ? 'ok' : 'muted';
-      picker.querySelector('[data-queue-decision]').textContent = value === 'skip' ? '' : value === 'approve' ? '✓ Approve' : '× Reject';
+      picker.querySelector('[data-queue-decision]').textContent = value === 'skip' ? '' : value === 'approve' ? '✓ Approve' : '✕ Reject';
       picker.setAttribute('data-choice', value);
     }
     prepared = cards.filter((card) => card.getAttribute('data-prepared') === '1');
     document.getElementById('review-ready-count').textContent = String(prepared.length);
     preparedButton.disabled = prepared.length === 0;
     preparedButton.textContent = 'Select prepared drafts (' + prepared.length + ')';
-    counts.textContent = 'Stories: Approve ' + n.approve + ' · Reject ' + n.reject + ' · Skip ' + n.skip;
+    counts.textContent = '';
+    for (const [i, [key, label]] of [['approve', 'Approve'], ['reject', 'Reject'], ['skip', 'Skip']].entries()) {
+      if (i) counts.appendChild(document.createTextNode(' · '));
+      const chip = document.createElement('span');
+      chip.className = 'count-' + key + (n[key] ? ' has' : '');
+      chip.textContent = label + ' ' + n[key];
+      counts.appendChild(chip);
+    }
     // Reflects the current choices, manual changes included.
     const selected = prepared.filter((card) => choice(card) === 'approve').length;
     const label = selected + ' of ' + prepared.length;
@@ -113,7 +127,10 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
     }
     // The form fields remain mounted and enabled: switching/filtering never
     // copies, resets or drops any edit, duplicate option or selected decision.
-    if (!window.matchMedia('(max-width:960px)').matches) {
+    const narrow = window.matchMedia('(max-width:960px)').matches;
+    if (!narrow) {
+      const scroller = form.querySelector('.review-editor-scroll');
+      if (scroller) scroller.scrollTop = 0;
       // Scroll the queue only. scrollIntoView would also move the document
       // when the owner selects a story near the bottom of a long editor.
       const queue = form.querySelector('.story-queue-list');
@@ -123,7 +140,7 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
     }
     if (openDetail) {
       workbench.setAttribute('data-mobile-view', 'detail');
-      navigation.scrollIntoView?.({ block: 'start' });
+      if (narrow) navigation.scrollIntoView?.({ block: 'start' });
     }
     updateNavigation();
   }
@@ -226,10 +243,35 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       if (form.requestSubmit) form.requestSubmit(); else form.submit();
     }
   });
+  // Keyboard decisions and paging, never while typing in a field.
+  const KEYS = { a: 'approve', r: 'reject', s: 'skip' };
+  document.addEventListener('keydown', (event) => {
+    if (event.ctrlKey || event.metaKey || event.altKey || dialog.open || current < 0) return;
+    const target = event.target;
+    if (target.closest && target.closest('textarea,select,[contenteditable],input:not([type=radio]):not([type=checkbox])')) return;
+    const key = event.key.toLowerCase();
+    if (KEYS[key]) {
+      event.preventDefault();
+      setChoice(cards[current], KEYS[key]);
+      update();
+      const reason = field(cards[current], 'reason');
+      if (key === 'r' && reason && !reason.value) reason.focus();
+    } else if (key === 'j' || key === 'k') {
+      event.preventDefault();
+      const at = visible.indexOf(current);
+      const next = visible[at < 0 ? 0 : at + (key === 'j' ? 1 : -1)];
+      if (next !== undefined) showStory(next, false);
+    }
+  });
+  // On wide screens the workbench fills the rest of the viewport, so the
+  // queue and the editor scroll on their own and the batch bar stays in view.
+  const fit = () => workbench.style.setProperty('--workbench-top', Math.max(0, workbench.getBoundingClientRect().top + window.scrollY) + 'px');
+  window.addEventListener('resize', fit);
   workbench.classList.add('is-enhanced');
   form.querySelector('.review-queue').hidden = false;
   navigation.hidden = !cards.length;
   tools.hidden = false;
   update();
+  fit();
   if (cards.length) showStory(0, false);
 })();`;

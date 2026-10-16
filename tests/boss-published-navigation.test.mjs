@@ -42,7 +42,7 @@ function setup() {
 }
 const rows = (doc) => [...doc.querySelectorAll('tbody tr')].filter((row) => /^aw-/.test(row.firstElementChild?.textContent || ''));
 const ids = (doc) => rows(doc).map((row) => row.firstElementChild.textContent);
-const urls = (doc) => rows(doc).map((row) => [row.firstElementChild.textContent, row.querySelector('td:nth-child(7) .clip').textContent]);
+const urls = (doc) => rows(doc).map((row) => [row.firstElementChild.textContent, row.querySelector('.live-path .clip').textContent]);
 
 test('Published pagination reaches all records once and preserves pinned/colliding URLs through filtering', async () => {
   const ctx = setup();
@@ -65,8 +65,8 @@ test('Published pagination reaches all records once and preserves pinned/collidi
 test('Published headline and Live URL open the canonical public article, Edit stays separate', async () => {
   const { document } = await setup().get();
   for (const row of rows(document)) {
-    const title = row.querySelector('td:nth-child(4) a');
-    const live = row.querySelector('td:nth-child(7) a');
+    const title = row.querySelector('td:nth-child(4) a.headline');
+    const live = row.querySelector('td:nth-child(4) .live-path a');
     assert.equal(title.getAttribute('href'), 'https://americawhat.com' + live.textContent);
     assert.equal(live.getAttribute('href'), title.getAttribute('href'));
     for (const link of [title, live]) {
@@ -114,13 +114,14 @@ test('Published query and stored headlines stay escaped in the integrated UI', a
   assert.equal(query.document.querySelector('[autofocus]'), null);
 });
 
-test('Boss navy/red theme keeps a comfortable narrow-screen submit bar reachable', async () => {
+test('Boss navy/red theme keeps the review batch bar reachable on every width', async () => {
   const { document } = await setup().get();
   const css = document.querySelector('style').textContent;
   assert.ok(css.includes('--bg:#0b1120'));
   assert.ok(css.includes('--accent:#e23b4e'));
   const mobile = css.slice(css.indexOf('@media (max-width:960px)'));
-  assert.match(mobile, /\.review-apply-bar\{position:fixed;bottom:0;left:24px;right:24px/);
-  assert.match(mobile, /\.review-apply-bar button\{width:100%\}/);
-  assert.match(mobile, /\.review-workspace\{padding-bottom:155px\}/);
+  assert.match(mobile, /\.review-apply-bar\{position:fixed;bottom:0;left:20px;right:20px/);
+  assert.match(mobile, /\.review-workspace\{padding-bottom:120px\}/, 'content never hides under the fixed batch bar');
+  const desktop = css.slice(0, css.indexOf('@media (max-width:960px)'));
+  assert.match(desktop, /\.review-workbench\.is-enhanced\{[^}]*height:calc\(100dvh - var\(--workbench-top/, 'the desktop review desk fits the viewport');
 });

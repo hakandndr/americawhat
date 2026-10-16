@@ -35,11 +35,15 @@ verification CNAME and `ftp` — all DNS-only and unchanged (checked with
 
 ## CI/CD
 
-Prepared in PR #12 (not live): a shared, spacious Boss design system; fixed
-sidebar/mobile drawer with quick links; searchable master-detail review with
-grouped editing fields, preserved session edits, visible batch decisions and
-confirmation of hidden selections and remaining records. Published has canonical
-title/URL links; Reactions has linked titles, search and sorting on every screen.
+Prepared in PR #12 (not live): one compact Boss design system (14px text,
+36px controls); fixed grouped sidebar/mobile drawer with counts and quick links.
+Weekly review is a viewport-fitted desk: a batch bar (counts + Review & Apply),
+a dense searchable queue whose numbers show each decision, and a one-screen
+editor (draft beside source/classification, live two-sentence check,
+Approve/Reject/Skip segmented control, keys A/R/S and J/K). Session edits,
+hidden selections, duplicates and the confirmation preview are unchanged.
+Published has canonical title/URL links in one story column and the same
+editor layout for edits; Reactions has linked titles, search and sorting.
 Analytics retains every event column in a contained scroll viewport. Reporting
 pages use readable desktop tables and labelled phone layouts. The isolated local
 preview uses only synthetic stories, votes, audit and visitor data.
