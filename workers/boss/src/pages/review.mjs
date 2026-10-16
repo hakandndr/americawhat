@@ -66,28 +66,34 @@ function entryCard(entry, i) {
     <input name="${prefix}note" value="${h(drafted?.draft_note || '')}" placeholder="note (optional)" aria-label="Note" style="max-width:240px"></div>
   </div>
   <div class="editor-fields">
-  <div class="grid">
-    <div class="editor-title"><label for="${prefix}title">Title</label><input id="${prefix}title" name="${prefix}title" value="${h(rep.title)}"></div>
+  <section class="editor-section" aria-label="Editorial draft"><h3>Editorial draft</h3><div class="grid">
+    <div class="editor-title"><label for="${prefix}title">Title</label><textarea class="headline-input" rows="2" id="${prefix}title" name="${prefix}title">${h(rep.title)}</textarea></div>
     <div class="editor-title"><label for="${prefix}comment">Editorial comment — exactly two sentences</label><textarea id="${prefix}comment" name="${prefix}comment">${h(rep.comment || '')}</textarea></div>
-    <div><label for="${prefix}category">Category</label>${select(`${prefix}category`, CATEGORIES.map((c) => [c, c]), rep.category, ` id="${prefix}category"`)}</div>
-    <div><label for="${prefix}source_url">Original source URL (not a Google News link)</label><input id="${prefix}source_url" name="${prefix}source_url" value="${h(sourceUrl)}" placeholder="https://"></div>
+  </div><p class="field-help">Keep the comment to two sentences. Your edits stay here when you switch stories.</p></section>
+  <section class="editor-section" aria-label="Source verification"><h3>Source &amp; verification</h3><div class="grid">
+    <div class="field-full"><label for="${prefix}source_url">Original source URL (not a Google News link)</label><input id="${prefix}source_url" name="${prefix}source_url" value="${h(sourceUrl)}" placeholder="https://"></div>
     <div><label for="${prefix}source_name">Source name</label><input id="${prefix}source_name" name="${prefix}source_name" value="${h(rep.source_name)}"></div>
     <div><label for="${prefix}date">Date</label><input id="${prefix}date" name="${prefix}date" value="${h(rep.date)}"></div>
+  </div>
+  <p class="field-help"><a href="${safeHref(search)}" rel="noreferrer noopener" target="_blank">Find the original article ↗</a></p>
+  ${rep.excerpt ? `<p class="story-excerpt">${h(rep.excerpt)}</p>` : ''}
+  ${checks ? `<div class="signals"><span class="lbl warn">Source checks · advisory</span>${checks}</div>` : ''}
+  </section>
+  <section class="editor-section" aria-label="Classification and location"><h3>Classification &amp; location</h3><div class="grid">
+    <div><label for="${prefix}category">Category</label>${select(`${prefix}category`, CATEGORIES.map((c) => [c, c]), rep.category, ` id="${prefix}category"`)}</div>
     <div><label for="${prefix}status">Status</label>${select(`${prefix}status`, STATUSES.map((s) => [s, s]), rep.status || 'REAL', ` id="${prefix}status"`)}</div>
     <div><label for="${prefix}city">City</label><input id="${prefix}city" name="${prefix}city" value="${h(rep.city || '')}"></div>
     <div><label for="${prefix}state">State</label><input id="${prefix}state" name="${prefix}state" value="${h(rep.state || '')}"></div>
-  </div>
-  <p class="small muted" style="margin-top:12px"><a href="${safeHref(search)}" rel="noreferrer noopener" target="_blank">Find the original article ↗</a></p>
-  ${rep.excerpt ? `<p class="story-excerpt">${h(rep.excerpt)}</p>` : ''}
-  <div class="signals"><span class="lbl">Signals (advisory)</span>${signals}</div>
-  ${checks ? `<div class="signals"><span class="lbl warn">Check</span>${checks}</div>` : ''}
-  <h3 style="margin-top:12px">Candidates in this cluster</h3><ul class="small">${members}</ul>
+  </div></section>
+  <section class="editor-section" aria-label="Duplicates and editorial checks"><h3>Duplicates &amp; editorial checks</h3>
+  <div class="signals"><span class="lbl">Signals · advisory, never a decision</span>${signals}</div>
+  <p class="field-help">${entry.copies} source record${entry.copies === 1 ? '' : 's'} in this story group</p><ul class="cluster-list">${members}</ul>
     <div class="opts">
     ${others.length ? `<label><input type="checkbox" name="${prefix}dupes" value="1" checked> also remove the ${others.length} other cop${others.length === 1 ? 'y' : 'ies'} as DUPLICATE</label>` : ''}
     <label><input type="checkbox" name="${prefix}ovs" value="1"> allow ≠ 2 sentences</label>
     <label><input type="checkbox" name="${prefix}ova" value="1"> allow aggregator link</label>
     </div>
-  </div>
+  </section></div>
 </article>`;
 }
 
@@ -96,7 +102,7 @@ function storyPicker(entry, i) {
   return `<li class="queue-item"><button type="button" class="story-picker" data-story="${i}" aria-controls="review-story-${i}" aria-pressed="false">
     <span class="queue-rank">${String(i + 1).padStart(2, '0')}</span><span class="queue-copy">
     <span class="queue-title">${h(rep.title)}</span><span class="queue-source">${h(rep.source_name || rep.source_domain)} · ${h(rep.date)}</span>
-    <span class="queue-status"><span data-queue-ready>${isPreparedDraft(rep) ? 'Prepared' : 'Incomplete'}</span><span data-queue-decision></span>${entry.copies > 1 ? `<span>${entry.copies} records</span>` : ''}</span></span></button></li>`;
+    <span class="queue-status"><span data-queue-category>${h(rep.category)}</span><span data-queue-status>${h(rep.status || 'REAL')}</span><span data-queue-ready>${isPreparedDraft(rep) ? 'Prepared' : 'Incomplete'}</span><span data-queue-decision></span>${entry.flags.length || entry.publishedMatch || entry.sourceUnresolved ? '<span class="warn">Source check</span>' : ''}${entry.copies > 1 ? `<span>${entry.copies} records</span>` : ''}</span></span></button></li>`;
 }
 
 export function renderReview({ identity, flash, review, fetchStatus, csrf, error }) {
@@ -108,19 +114,19 @@ export function renderReview({ identity, flash, review, fetchStatus, csrf, error
   <span><b>${review.candidates}</b> pending records</span>
   <span><b>${review.stories}</b> unique stories</span>
   <span><b id="review-ready-count">${prepared}</b> prepared</span>
-  <span><b>${review.flagged}</b> flagged · <b>${review.foreign}</b> likely not US · <b>${review.alreadyPublished}</b> published matches</span>
+  ${review.flagged || review.foreign || review.alreadyPublished ? `<span class="summary-risk"><b>${review.flagged}</b> flagged · <b>${review.foreign}</b> likely not US · <b>${review.alreadyPublished}</b> published matches</span>` : ''}
 </div>
-<p class="small muted" id="review-scope">${copies > 0 ? `${copies} extra duplicate record${copies === 1 ? '' : 's'} grouped with their story. ` : ''}Edits stay in this review until you apply. Nothing is published until you confirm.</p>
+<p class="small muted" id="review-scope">${copies > 0 ? `${copies} duplicate record${copies === 1 ? '' : 's'} grouped. ` : ''}Edits and decisions stay here until confirmation.</p>
 <form method="post" action="/review/apply" id="review-form">
   ${hidden('csrf', csrf)}${hidden('count', review.entries.length)}
   <div class="review-workbench" id="review-workbench" data-mobile-view="list">
     <aside class="review-queue" aria-label="Story queue" hidden>
       <div class="review-tools" id="review-tools" hidden>
-        <label for="review-search">Find a story</label><input id="review-search" type="search" aria-label="Search candidates" placeholder="Search title, source or draft">
+        <div class="queue-heading"><h2>Story queue</h2><span class="small muted" id="review-visible" role="status"></span></div>
+        <label class="visually-hidden" for="review-search">Find a story</label><input id="review-search" type="search" aria-label="Search candidates" placeholder="Search title, source or draft">
         <select id="review-filter" aria-label="Filter review stories"><option value="all" selected>All stories</option><option value="prepared">Prepared</option><option value="incomplete">Incomplete</option><option value="selected">Selected decisions</option></select>
         <div class="queue-bulk"><button type="button" class="secondary" data-review="prepared" aria-pressed="false"${prepared ? '' : ' disabled'}>Select prepared drafts (${prepared})</button><button type="button" class="btn ghost" data-review="reset">Reset to Skip</button></div>
         <span class="review-selected" id="review-prepared-status" role="status" aria-live="polite"></span>
-        <span class="small muted" id="review-visible" role="status"></span>
       </div>
       <ul class="story-queue-list">${review.entries.map(storyPicker).join('')}</ul>
       <p class="empty" id="review-no-match" hidden>No matching stories. Change the search or filter. Your edits and decisions are kept.</p>
@@ -136,10 +142,11 @@ export function renderReview({ identity, flash, review, fetchStatus, csrf, error
   </div>
   <div class="review-apply-bar"><div><span class="review-counts" id="review-counts" role="status" aria-live="polite"></span><p class="small muted">All selected decisions are included, even when hidden by a filter.</p></div><button type="submit">Review &amp; Apply</button></div>
 </form>
+<details class="fetch-summary"><summary>Latest fetch details</summary><p class="small muted">${fetchStatusLine(fetchStatus)}</p></details>
 <dialog id="review-preview" aria-labelledby="review-preview-title"><h2 id="review-preview-title">Confirm this batch</h2><div id="review-preview-body"></div>
 <div class="dialog-actions"><button type="button" class="secondary" data-review="back">Back to the review</button><button type="button" data-review="confirm">Confirm and apply (one commit)</button></div></dialog>
 <script src="/assets/review.js" defer></script>`;
-  return page({ title: 'Weekly review', active: '/review', identity, flash, body, lede: fetchStatusLine(fetchStatus), layout: 'review-workspace' });
+  return page({ title: 'Weekly review', active: '/review', identity, flash, body, lede: 'Prepare each story, choose a decision, then review the batch before publishing.', layout: 'review-workspace' });
 }
 
 /** Parses the review form into approvals and rejections. */

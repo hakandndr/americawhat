@@ -75,9 +75,12 @@ test('IP detail escapes raw fields, preserves back/pagination/snapshot, and offe
   const db=seed(),get=router(db);const back='/analytics?country=ger&range=30d&p=3&snapshot=131';
   const url='/analytics/ip?'+new URLSearchParams({address:IP,p:'2',limit:'25',snapshot:'131',back});
   const response=await get(url);assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'no-store');
-  const html=await response.text();assert.doesNotMatch(html,/<script>|<svg/);assert.match(html,/&lt;script&gt;/);
+  const html=await response.text();assert.doesNotMatch(html,/<script>/);assert.match(html,/&lt;script&gt;/);
   assert.doesNotMatch(response.headers.get('Content-Security-Policy'),/script-src/);
-  const {document}=parseHTML(html);const link=[...document.querySelectorAll('a')].find(a=>a.textContent==='Back to Analytics');assert.equal(link.getAttribute('href'),back);
+  const {document}=parseHTML(html);
+  assert.equal(document.querySelectorAll('svg').length,6,'only the six static navigation icons may render');
+  assert.equal(document.querySelector('main svg, main script, [onload], [onerror]'),null,'raw event values never create active markup');
+  const link=[...document.querySelectorAll('a')].find(a=>a.textContent==='Back to Analytics');assert.equal(link.getAttribute('href'),back);
   for(const label of ['First','Previous','Next','Last']){const a=[...document.querySelectorAll('[aria-label="IP activity pages"] a')].find(a=>a.textContent===label);assert.ok(a,label);const u=new URL(a.getAttribute('href'),'https://boss.example');assert.equal(u.searchParams.get('back'),back);assert.equal(u.searchParams.get('snapshot'),'131');}
   const csv=document.querySelector('a[href^="/analytics/export"]');const params=new URL(csv.getAttribute('href'),'https://boss.example').searchParams;
   assert.equal(params.get('ip'),IP);assert.equal(params.get('snapshot'),'131');

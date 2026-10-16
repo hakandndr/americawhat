@@ -2,11 +2,10 @@ import {h} from '../html.mjs';
 import {formatLaSeconds,isoUtc} from '../../../shared/time.mjs';
 
 // The event stream (Analytics) and the exact-address history (IP activity)
-// share one column list: one compact row per event, full values in titles and
-// in Details. Each column's width feeds the row grid; columns marked `drop`
-// leave the row at narrower desktop widths (their values stay in Details) and
-// come back in the labelled cards used on small screens. `wrap` columns
-// (PAGE) break long values over several lines instead of truncating them.
+// share one column list. Each width feeds the row grid inside a contained
+// scroll viewport; every column stays available at every screen size. PAGE
+// and long addresses wrap instead of truncating meaningful values. Details
+// retains every raw field, independently of the summary presentation.
 
 export const ALL_TIP='ALL #: permanent database ID of this event. Never reset, reused or renumbered by filters; gaps are deleted records.';
 export const DAY_TIP='DAY #: position in time order among all retained events of the same Pacific Time day (1 = first event), shown with the day total. Filters never change it.';
@@ -35,25 +34,25 @@ function place(r) {
 /** Column list for one table. `ip` is { href(row), linkable(row) } on the Analytics stream, absent on IP activity. */
 export function eventColumns({ip}={}) {
   const cols=[
-    {key:'all',label:'ALL #',tip:ALL_TIP,w:'48px',num:true,cell:(r)=>`<span title="${h(ALL_TIP)}">${h(r.id)}</span>`},
+    {key:'all',label:'ALL #',tip:ALL_TIP,w:'52px',num:true,cell:(r)=>`<span title="${h(ALL_TIP)}">${h(r.id)}</span>`},
     {key:'day',label:'DAY #',tip:DAY_TIP,w:'52px',num:true,cell:(r)=>r.today_no>0?`<span title="Event ${h(r.today_no)} of ${h(r.day_total)} on ${h(r.la_day)} (PT), in time order over every retained event that day">${h(r.today_no)}<span class="of">/${h(r.day_total)}</span></span>`:dash},
-    {key:'time',label:'DATE / TIME (PT)',w:'118px',cell:when},
+    {key:'time',label:'DATE / TIME (PT)',w:'152px',cell:when},
   ];
   if (ip) cols.push(
-    {key:'ip',label:'IP ADDRESS',w:'108px',cell:(r)=>ip.linkable(r)?`<a class="ip-link mono" href="${h(ip.href(r))}" title="${h(r.ip)} — open activity">${h(r.ip)}</a>`:`<span class="mono" title="${h(r.ip||'')}">${h(r.ip||'—')}</span>`},
+    {key:'ip',label:'IP ADDRESS',w:'116px',cell:(r)=>ip.linkable(r)?`<a class="ip-link mono" href="${h(ip.href(r))}" title="${h(r.ip)} — open activity">${h(r.ip)}</a>`:`<span class="mono" title="${h(r.ip||'')}">${h(r.ip||'—')}</span>`},
     {key:'visits',label:'IP VISITS',tip:VISITS_TIP,w:'52px',num:true,cell:(r)=>ip.linkable(r)?`<a class="ip-link" href="${h(ip.href(r))}" title="${h(VISITS_TIP)}" aria-label="${h(r.ip_visits)} retained page views for ${h(r.ip)}">${h(r.ip_visits)}</a>`:h(r.ip_visits)},
   );
   cols.push(
-    {key:'source',label:'SOURCE',tip:'Which writer stored the row: native (this site) or legacy (imported Hostinger log).',w:'54px',cell:(r)=>`<span class="src ${r.origin==='legacy'?'legacy':'native'}">${h(r.origin)}</span>`},
-    {key:'event',label:'EVENT',w:'60px',drop:'lg',cell:(r)=>text(r.event)},
-    {key:'actor',label:'ACTOR',tip:'Class stored at ingestion: human or automated. Never rewritten.',w:'72px',cell:(r)=>`<span class="actor ${r.automation==='human'?'human':'auto'}">${h(r.automation)}</span>`},
+    {key:'source',label:'SOURCE',tip:'Which writer stored the row: native (this site) or legacy (imported Hostinger log).',w:'62px',cell:(r)=>`<span class="src ${r.origin==='legacy'?'legacy':'native'}">${h(r.origin)}</span>`},
+    {key:'event',label:'EVENT',w:'70px',drop:'lg',cell:(r)=>text(r.event)},
+    {key:'actor',label:'ACTOR',tip:'Class stored at ingestion: human or automated. Never rewritten.',w:'86px',cell:(r)=>`<span class="actor ${r.automation==='human'?'human':'auto'}">${h(r.automation)}</span>`},
     {key:'agent',label:'AGENT',tip:'Agent family from the user agent, or the legacy crawler label. Not verified.',w:'minmax(60px,.4fr)',drop:'md',cell:(r)=>text(r.agent||r.source_label)},
-    {key:'place',label:'COUNTRY · CITY',w:'minmax(130px,1fr)',cell:place},
-    {key:'page',label:'PAGE',w:'minmax(150px,2fr)',wide:true,wrap:true,cell:(r)=>text(r.page??r.path,r.path&&r.path!==r.page?`${r.page} (path ${r.path})`:r.page)},
-    {key:'referrer',label:'REFERRER',w:'minmax(120px,1.1fr)',drop:'md',cell:(r)=>text(r.referrer||'—',r.referrer_raw||r.referrer)},
-    {key:'device',label:'DEVICE',w:'56px',drop:'lg',cell:(r)=>text(r.device_class)},
-    {key:'browser',label:'BROWSER · OS',w:'minmax(96px,.7fr)',cell:(r)=>{const v=[r.browser,r.os].filter(Boolean).join(' · ');return v?`<span title="${h(r.user_agent||v)}">${h(v)}</span>`:dash;}},
-    {key:'more',label:'<span class="visually-hidden">DETAILS</span>',w:'60px',cell:eventDetails},
+    {key:'place',label:'COUNTRY · CITY',w:'minmax(158px,1fr)',cell:place},
+    {key:'page',label:'PAGE',w:'minmax(200px,2fr)',wide:true,wrap:true,cell:(r)=>text(r.page??r.path,r.path&&r.path!==r.page?`${r.page} (path ${r.path})`:r.page)},
+    {key:'referrer',label:'REFERRER',w:'minmax(165px,1.1fr)',drop:'md',cell:(r)=>text(r.referrer||'—',r.referrer_raw||r.referrer)},
+    {key:'device',label:'DEVICE',w:'64px',drop:'lg',cell:(r)=>text(r.device_class)},
+    {key:'browser',label:'BROWSER · OS',w:'minmax(125px,.7fr)',cell:(r)=>{const v=[r.browser,r.os].filter(Boolean).join(' · ');return v?`<span title="${h(r.user_agent||v)}">${h(v)}</span>`:dash;}},
+    {key:'more',label:'<span class="visually-hidden">DETAILS</span>',w:'70px',cell:eventDetails},
   );
   return cols;
 }

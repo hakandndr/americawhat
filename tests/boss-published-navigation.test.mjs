@@ -114,11 +114,13 @@ test('Published query and stored headlines stay escaped in the integrated UI', a
   assert.equal(query.document.querySelector('[autofocus]'), null);
 });
 
-test('Boss navy/red theme keeps a compact narrow-screen submit bar reachable', async () => {
+test('Boss navy/red theme keeps a comfortable narrow-screen submit bar reachable', async () => {
   const { document } = await setup().get();
   const css = document.querySelector('style').textContent;
   assert.ok(css.includes('--bg:#0b1120'));
   assert.ok(css.includes('--accent:#e23b4e'));
-  const mobile = css.slice(css.indexOf('@media (max-width:760px)'));
-  assert.ok(mobile.includes('.review-apply-bar{position:fixed;bottom:0;left:14px;right:14px;padding:8px;gap:6px;'));
+  const mobile = css.slice(css.indexOf('@media (max-width:960px)'));
+  assert.match(mobile, /\.review-apply-bar\{position:fixed;bottom:0;left:24px;right:24px/);
+  assert.match(mobile, /\.review-apply-bar button\{width:100%\}/);
+  assert.match(mobile, /\.review-workspace\{padding-bottom:155px\}/);
 });

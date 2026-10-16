@@ -35,10 +35,15 @@ verification CNAME and `ftp` — all DNS-only and unchanged (checked with
 
 ## CI/CD
 
-Prepared in the Boss UX/content publishing feature branch (not live): fixed
-desktop sidebar/mobile drawer; compact searchable review rows with one-level
-editors, live readiness and selection counts; canonical Published title/URL
-links. Separate signed Boss content deployment of Web only through
+Prepared in PR #12 (not live): a shared, spacious Boss design system; fixed
+sidebar/mobile drawer with quick links; searchable master-detail review with
+grouped editing fields, preserved session edits, visible batch decisions and
+confirmation of hidden selections and remaining records. Published has canonical
+title/URL links; Reactions has linked titles, search and sorting on every screen.
+Analytics retains every event column in a contained scroll viewport. Reporting
+pages use readable desktop tables and labelled phone layouts. The isolated local
+preview uses only synthetic stories, votes, audit and visitor data.
+Separate signed Boss content deployment of Web only through
 `production-content`, with fail-closed full-history checks and rollback.
 Owner-reviewed application deployment remains in `production`. One-time
 Environment/token/proof-key setup and the initial approved code release are

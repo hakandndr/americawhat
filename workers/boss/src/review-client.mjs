@@ -57,6 +57,8 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       const picker = pickers[index];
       picker.querySelector('.queue-title').textContent = fields.title || 'Untitled story';
       picker.querySelector('.queue-source').textContent = fields.source_name + ' · ' + fields.date;
+      picker.querySelector('[data-queue-category]').textContent = fields.category;
+      picker.querySelector('[data-queue-status]').textContent = fields.status;
       picker.querySelector('[data-queue-ready]').textContent = ready ? 'Prepared' : 'Incomplete';
       picker.querySelector('[data-queue-ready]').className = ready ? 'ok' : 'muted';
       picker.querySelector('[data-queue-decision]').textContent = value === 'skip' ? '' : value === 'approve' ? '✓ Approve' : '× Reject';
@@ -111,11 +113,17 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
     }
     // The form fields remain mounted and enabled: switching/filtering never
     // copies, resets or drops any edit, duplicate option or selected decision.
-    document.querySelector('.review-editor-scroll').scrollTop = 0;
-    if (!window.matchMedia('(max-width:960px)').matches) pickers[index].scrollIntoView?.({ block: 'nearest' });
+    if (!window.matchMedia('(max-width:960px)').matches) {
+      // Scroll the queue only. scrollIntoView would also move the document
+      // when the owner selects a story near the bottom of a long editor.
+      const queue = form.querySelector('.story-queue-list');
+      const row = pickers[index];
+      const top = row.offsetTop - queue.offsetTop;
+      if (top < queue.scrollTop || top + row.offsetHeight > queue.scrollTop + queue.clientHeight) queue.scrollTop = top;
+    }
     if (openDetail) {
       workbench.setAttribute('data-mobile-view', 'detail');
-      if (window.matchMedia('(max-width:960px)').matches) navigation.scrollIntoView({ block: 'start' });
+      navigation.scrollIntoView?.({ block: 'start' });
     }
     updateNavigation();
   }
@@ -153,7 +161,8 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       const dupes = card.querySelector('input[name$="_dupes"]');
       const extra = dupes && dupes.checked ? Number(card.getAttribute('data-copies') || 1) - 1 : 0;
       copies += extra;
-      const more = extra ? ' · +' + extra + ' duplicate cop' + (extra === 1 ? 'y' : 'ies') + ' removed' : '';
+      const kept = Number(card.getAttribute('data-copies') || 1) - 1 - extra;
+      const more = extra ? ' · +' + extra + ' duplicate cop' + (extra === 1 ? 'y' : 'ies') + ' removed' : kept ? ' · ' + kept + ' other source record' + (kept === 1 ? '' : 's') + ' left pending' : '';
       if (value === 'approve') {
         const category = field(card, 'category');
         approve.push(item(title(card), 'publish as ' + (category ? category.value : '?') + more));
@@ -169,7 +178,9 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
     } else {
       const p = document.createElement('p');
       p.className = 'small muted';
-      p.textContent = 'One commit: ' + approve.length + ' to publish, ' + reject.length + ' to reject' + (copies ? ', plus ' + copies + ' duplicate copies' : '') + '. Every other story stays pending.';
+      const remainingStories = cards.length - approve.length - reject.length;
+      const remainingRecords = cards.reduce((n, card) => n + Number(card.getAttribute('data-copies') || 1), 0) - approve.length - reject.length - copies;
+      p.textContent = 'One commit: ' + approve.length + ' to publish, ' + reject.length + ' to reject' + (copies ? ', plus ' + copies + ' duplicate copies' : '') + '. ' + remainingRecords + ' records stay pending; ' + remainingStories + ' story groups skipped.';
       body.appendChild(p);
       if (approve.length) section(body, 'Will be published', approve);
       if (reject.length) section(body, 'Will be rejected', reject);

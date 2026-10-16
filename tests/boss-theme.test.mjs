@@ -17,7 +17,7 @@ test('Boss neutral/brand/header tokens match the frozen public source without sh
     '--accent': '--red', '--accent-text': '--red-hot',
   })) assert.equal(value(target), pub[source], `${target} must follow public ${source}`);
   assert.equal(value('--header'), publicCss.match(/\.site-head\{[^}]*background:([^;]+)/)[1]);
-  assert.ok(css.includes('.sidebar{position:fixed;inset:0 auto 0 0;width:216px;'));
+  assert.ok(css.includes('.sidebar{position:fixed;inset:0 auto 0 0;width:232px;'));
   assert.ok(html.includes(`name="theme-color" content="${pub['--night']}"`));
   assert.equal(value('--focus'), pub['--red-hot']);
   assert.ok(css.includes('outline:2px solid var(--focus);outline-offset:2px'));

@@ -47,12 +47,14 @@ test('records and stories are distinct; every full editor is available without d
   const { html, document } = render();
   assert.match(html, /<b>7<\/b> pending records/);
   assert.match(html, /<b>6<\/b> unique stories/);
-  assert.match(document.getElementById('review-scope').textContent, /1 extra duplicate record grouped with their story/);
+  assert.match(document.getElementById('review-scope').textContent, /1 duplicate record grouped/);
   assert.equal(document.getElementById('review-tools').hasAttribute('hidden'), true, 'tools appear only when the script runs');
   assert.match(document.querySelector('[data-review="prepared"]').textContent, /Select prepared drafts \(1\)/);
   assert.equal(card(document, 'ready').getAttribute('data-prepared'), '1');
   assert.equal(card(document, 'agg').hasAttribute('data-prepared'), false);
   assert.equal(document.querySelectorAll('article details').length, 0);
+  assert.equal(card(document, 'ready').querySelectorAll('.editor-section').length, 4);
+  assert.equal(card(document, 'ready').querySelector('textarea[name$="_title"]').value, card(document, 'ready').querySelector('.story-title').textContent);
   assert.equal(document.querySelectorAll('[data-story]').length, 6);
   assert.ok(card(document, 'one').querySelector('.editor-fields textarea'));
   assert.equal(card(document, 'ready').querySelector('[data-draft-preview]').textContent, ready.comment);
@@ -60,6 +62,27 @@ test('records and stories are distinct; every full editor is available without d
   assert.equal(document.querySelectorAll('input[type=radio][value=approve][checked]').length, 0);
   assert.equal(card(document, 'rej').querySelector('input[type=radio]:checked').value, 'reject');
   assert.match(html, /<script src="\/assets\/review.js" defer><\/script>/);
+});
+
+test('client: confirmation counts pending records accurately when duplicate removal is toggled', () => {
+  const { document, window, form, click } = runClient();
+  const duplicate = card(document, 'copy1');
+  duplicate.querySelector('input[value=approve]').checked = true;
+  duplicate.querySelector('input[name$="_dupes"]').checked = false;
+  form.dispatchEvent(new window.Event('change', { bubbles: true }));
+  const search = document.getElementById('review-search');
+  search.value = 'nothing matches this';
+  search.dispatchEvent(new window.Event('input', { bubbles: true }));
+  form.dispatchEvent(new window.Event('submit', { cancelable: true }));
+  const body = document.getElementById('review-preview-body');
+  assert.match(body.textContent, /One commit: 1 to publish, 1 to reject/);
+  assert.match(body.textContent, /5 records stay pending; 4 story groups skipped/);
+  assert.match(body.textContent, /1 other source record left pending/);
+  click('[data-review="back"]');
+  duplicate.querySelector('input[name$="_dupes"]').checked = true;
+  form.dispatchEvent(new window.Event('submit', { cancelable: true }));
+  assert.match(body.textContent, /plus 1 duplicate copies/);
+  assert.match(body.textContent, /4 records stay pending/);
 });
 
 function runClient() {

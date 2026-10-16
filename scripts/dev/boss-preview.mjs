@@ -18,7 +18,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { FakeGitHub } from '../../tests/helpers/fake-github.mjs';
 import { AUD, TEAM, makeSigner } from '../../tests/helpers/access-jwt.mjs';
 import { assignSlugs } from '../../src/lib/slug.js';
-import { syntheticAnalyticsSql, syntheticAppSql, syntheticPanelLog, syntheticReviewCandidates } from './synthetic-data.mjs';
+import { syntheticAnalyticsSql, syntheticAppSql, syntheticPanelLog, syntheticReviewCandidates, syntheticPublishedItems } from './synthetic-data.mjs';
 
 // Ports: BOSS_PREVIEW_PORT (default 8788) for the browser, +1 for workerd, +2
 // for the in-memory GitHub, so a second checkout can run its own preview.
@@ -42,8 +42,9 @@ const env = { ...process.env };
 delete env.CLOUDFLARE_API_TOKEN;
 
 const pending = syntheticReviewCandidates(process.env.BOSS_PREVIEW_STORIES);
+const published = syntheticPublishedItems();
 const gh = new FakeGitHub({
-  'src/data/published.json': fs.readFileSync('src/data/published.json', 'utf8').replace(/\r\n/g, '\n'),
+  'src/data/published.json': `${JSON.stringify({ items: published }, null, 2)}\n`,
   'src/data/pending.json': `${JSON.stringify(pending, null, 2)}\n`,
   'src/data/fetch-status.json': JSON.stringify({ finishedAt: '2026-10-16T12:00:00Z', sourcesChecked: 1, totals: { fetched: pending.length, added: pending.length, duplicate: 0, lowScore: 0, excluded: 0 } }),
 });
@@ -68,7 +69,6 @@ for (const db of ['americawhat-app-staging', 'americawhat-analytics-staging']) {
 // Synthetic analytics (legacy corpus older than 90 days + 20 days of native
 // rows) and synthetic reaction counts, written to the LOCAL databases only.
 // Re-running adds nothing (deterministic identities, INSERT OR IGNORE).
-const published = JSON.parse(fs.readFileSync('src/data/published.json', 'utf8')).items;
 const pages = ['/', '/about/', ...assignSlugs(published).slice(0, 40).map((slug) => `/item/${slug}/`)];
 const seedNow = Math.floor(Date.now() / 1000);
 const analyticsSeed = await syntheticAnalyticsSql({ pages, now: seedNow });
