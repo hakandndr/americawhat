@@ -34,7 +34,7 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P6 | OG strategy | **Done in code** (frozen archive + pinned renderer); not deployed |
 | P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
 | P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
-| P9 | DNS zone on Cloudflare (records copied, NS changed, site still on Hostinger) | Pending — owner; checklist ready in [DNS-READINESS.md](DNS-READINESS.md); zone not in the account yet |
+| P9 | DNS zone on Cloudflare (records copied, NS changed, site still on Hostinger) | Pending — owner. Authoritative records verified, comparison tool `dns-compare.mjs` ready, procedure in [DNS-READINESS.md](DNS-READINESS.md). Zone not in the account; the CLI login cannot create zones (dashboard or a *Zone:Create* token). hPanel export still needed |
 | P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Partly done 2026-10-15:** D1 ×2 + migrations, Workers without any exposure, fresh secrets, GitHub Environments. Open: Access app + AUD (needs P9), Boss `GITHUB_TOKEN`, Cloudflare API tokens — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md#status-2026-10-15) |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
 | P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
