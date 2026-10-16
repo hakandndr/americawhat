@@ -1,21 +1,21 @@
 # americawhat — current state
 
-Single source of truth for what is live. Verified 2026-10-16 (release
-09c90da). Update the tables in place when something changes.
+Single source of truth for what is live. Verified 2026-10-16 20:50 UTC
+(release 8a9cf35). Update the tables in place when something changes.
 
 ## Production (Cloudflare Workers, live since 2026-10-16 04:02 UTC)
 
 | Item | Value |
 |---|---|
-| Source | `main` @ **09c90da** (GitHub `hakandndr/americawhat`; later `main` commits are content/docs only) |
-| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `55912dc3-44a8-49e6-ab6e-c1a083e4d002` |
-| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `187c1ab2-e207-49ae-9490-cbe129a924cb`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
-| Previous versions (rollback) | Web `7fd196f8-6b23-4d0f-880d-f0f88844ca01`, Boss `0553c2ea-6fcf-49ac-ab0e-2d95f87205af` (release 032e88f); before that Web `b046f207…`, Boss `af911624…` (60c3c74) |
-| Health | `/api/health`: status ok, environment production, release 09c90da, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
+| Source | `main` @ **8a9cf35** (GitHub `hakandndr/americawhat`, merge of PR #12; deploy run 38962431640, owner-approved) |
+| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `a1190c3c-bf76-45c4-ade3-ee67b9244158` |
+| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `92a81be7-9187-4dcc-9844-53c9b09205e0`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
+| Previous versions (rollback) | Web `55912dc3-44a8-49e6-ab6e-c1a083e4d002`, Boss `187c1ab2-e207-49ae-9490-cbe129a924cb` (release 09c90da); before that Web `7fd196f8…`, Boss `0553c2ea…` (032e88f) |
+| Health | `/api/health`: status ok, environment production, release 8a9cf35, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
 | D1 | `americawhat-app-production` `3097933b-4feb-4e50-bb59-760fd06a640e`, `americawhat-analytics-production` `1012183d-96cd-4d7f-8e93-ca247ca43589` (WNAM, migration 0001 each) |
-| Analytics | 1,083 legacy events (Hostinger log S1, imported idempotently; ledger 1,084 incl. 1 line without a page) + native page views since cutover (26 at the time of writing) |
+| Analytics | 1,083 legacy events (Hostinger log S1, imported idempotently; ledger 1,084 incl. 1 line without a page) + native page views since cutover (30 at 20:50 UTC; collection re-verified after the release) |
 | Reactions | S1 baseline **applied** through Boss: 1 import (`baseline`, 14 items, +19 votes); live votes are added on top (21 in total at the time of writing) |
-| Content | 128 published stories (Boss shows the live count beside Published); 125 approved OG images (frozen archive, 124 stories + default); stories approved later (aw-0136 onward) get their image from the pinned renderer at release (`gen-og.py --missing`); the RSS fetch keeps adding candidates three times a day |
+| Content | 129 published stories (all 129 item pages and 156 sitemap URLs answer 200 after the release), 30 pending candidates (Boss shows the live count beside Published); 125 approved OG images (frozen archive, 124 stories + default); stories approved later (aw-0136 onward) get their image from the pinned renderer at release (`gen-og.py --missing`); the RSS fetch keeps adding candidates three times a day |
 | HTTPS | Cloudflare certificates on all three hostnames; `http://` → 301 `https://` |
 
 Fixed after cutover (both live): Boss form POSTs were refused as
@@ -35,26 +35,16 @@ verification CNAME and `ftp` — all DNS-only and unchanged (checked with
 
 ## CI/CD
 
-Prepared in PR #12 (not live): one compact Boss design system (14px text,
-36px controls); fixed grouped sidebar/mobile drawer with counts and quick links.
-Weekly review is a viewport-fitted desk: a batch bar (counts + Review & Apply),
-a dense searchable queue whose numbers show each decision, and a one-screen
-editor (draft beside source/classification, live two-sentence check,
-Approve/Reject/Skip segmented control, keys A/R/S and J/K). Session edits,
-hidden selections, duplicates and the confirmation preview are unchanged.
-Published has canonical title/URL links in one story column and the same
-editor layout for edits; Reactions has linked titles, search and sorting.
-Analytics retains every event column in a contained scroll viewport. Reporting
-pages use readable desktop tables and labelled phone layouts. The isolated local
-preview uses only synthetic stories, votes, audit and visitor data.
-Separate signed Boss content deployment of Web only through
-`production-content`, with fail-closed full-history checks and rollback.
-Owner-reviewed application deployment remains in `production`. One-time
-Environment/token/proof-key setup and the initial approved code release are
-still required; exact steps and live acceptance checks are in
-[DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup).
-No production deployment or credential/Environment changes were made by this
-feature work. The live tables above continue to describe the existing release.
+Live since release 8a9cf35 (PR #12): the compact Boss workspace (grouped
+fixed sidebar with counts and quick links; viewport-fitted Weekly review with a
+batch bar, dense queue and one-screen editor, keys A/R/S and J/K; Published
+story column with live URLs; Reactions search/sort; full Analytics).
+
+| Feature | State |
+|---|---|
+| Boss redesign (PR #12) | **Live** — 8a9cf35 |
+| Automatic Web-only deploy of signed Boss content (`production-content`) | **Deployed, not enabled** — awaiting owner setup: Environment, Web-only token, Ed25519 key, `CF_CONTENT_DEPLOY_ENABLED` ([DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup)). Until then every release, news included, waits for `production` approval |
+| DNDR forwarding (`prd_americawhat_native`) | **Implemented, awaiting deployment** — draft PR #13; **blocked on DNDR-side approval** (producer registration). See Open items 4 |
 
 - `ci.yml`: tests and builds every push except `main` and every PR; no secrets.
 - `deploy-cloudflare.yml`: on push to `main` (site/Worker paths) or manual;
@@ -83,7 +73,7 @@ Access app, staging content repository `hakandndr/americawhat-staging-content`.
 | — | Staging sync to the production code: deferred to a separate session (approval needed) | deferred |
 | 2 | 30-day observation; then retire Hostinger web files, delete the FTP secrets, revoke the old Hostinger Boss credential (e-mail stays) | until 2026-11-15, then separate approval |
 | 3 | Credential expiry: note and rotate the Boss GitHub PAT (≤90 days) and both Cloudflare CI tokens | track dates in the owner's vault |
-| 4 | DNDR forwarding is off; `workers/web` `dndr-forward.mjs` needs a DNDR-side producer registration and a `DNDR_COLLECTOR` binding. Deferred to a separate DNDR session; native analytics work independently | deferred |
+| 4 | DNDR forwarding: AmericaWhat side ready in draft PR #13 (production-only binding as `prd_americawhat_native`, outbox recovery). Blocked on the DNDR-side registry rows (owner approval), then PR #13 release and a two-sided read-back. Native rows since cutover (30 at 20:50 UTC) need an owner-approved DNDR history import; not replayed through `recordPage` (DNDR dates PAGE events on receipt) | blocked on DNDR approval |
 | 5 | Privacy page "~90 days" wording vs. manual-only retention; 3 real visitor rows / 2 votes in staging (delete or keep) | owner decision |
 
 ## Backups and rollback anchors
