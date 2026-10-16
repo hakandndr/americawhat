@@ -11,13 +11,13 @@ provisioning authorization; nothing is attached to a domain or reachable.
 | D1 `americawhat-app-production` | **created** (WNAM), migration 0001_app_core applied, tables empty | `3097933b-4feb-4e50-bb59-760fd06a640e` |
 | D1 `americawhat-analytics-production` | **created** (WNAM), migration 0001_analytics_core applied, tables empty | `1012183d-96cd-4d7f-8e93-ca247ca43589` |
 | Worker `americawhat-web-production` | **created** without routes; workers.dev **disabled**, preview URLs **disabled**, custom domains **none** (API-verified); `*.workers.dev` answers 404 | script tag ff4ea0b048f2431d902f78befc44659e, version `7dfff6ea-19b7-46c1-99b9-1f6a94184b8c` (100 %) |
-| Worker `americawhat-boss-production` | **created** the same way; empty Access AUD → every request 503 | script tag aed1cf90d4214b98924c3706cd58edfa, version `f1d4b564-ed36-4355-b56d-a1ad6ed4459c` (100 %) |
+| Worker `americawhat-boss-production` | **created** the same way; since 2026-10-16 carries the production Access AUD (assertions for any other audience, issuer, key, time or email are refused — `tests/boss-production-access.test.mjs`); still no route, workers.dev or preview URL (API-verified) | script tag aed1cf90d4214b98924c3706cd58edfa, version `7346d271-5ba9-4491-ac56-5d0217e4cd80` (100 %; previous f1d4b564…) |
 | Secrets | web: `REACTION_GUARD_SECRET`; boss: `BOSS_CSRF_SECRET` — fresh random values, never shown; local files deleted after upload | — |
 | Boss `GITHUB_TOKEN` | **missing** (owner PAT, step 3) → Boss cannot write to any repository | — |
-| Access app `boss.americawhat.com` | **blocked**: zone not in the account; CLI has no Access permission ([DNS-READINESS.md](DNS-READINESS.md#boss-access-dependency)) | AUD pending |
+| Access app `boss.americawhat.com` | **created by the owner 2026-10-16**: "AmericaWhat Boss Production", team `dndrnet.cloudflareaccess.com`, allow `hakan@dndr.net` only (owner-reported; the CLI cannot read Access apps). Team JWKS reachable (2 RS256 keys). Hostname **not attached** to the Worker yet | AUD `6b54c07908a77fa116828586421b9c338e071caae971854849207bbf84a224fe` (committed in env.production) |
 | GitHub Environments | **created** with required reviewer, no admin bypass, branch rules ([DEPLOYMENT.md](DEPLOYMENT.md)) | — |
 | Cloudflare API tokens for CI | **missing** (owner; only the dashboard can create them) | — |
-| DNS zone | **not added** (read-only checklist in [DNS-READINESS.md](DNS-READINESS.md)) | — |
+| DNS zone | **active on Cloudflare** (observed 2026-10-16: nameservers `courtney.ns.cloudflare.com`, `porter.ns.cloudflare.com` at 1.1.1.1 and 8.8.8.8; all 13 records answer exactly as the export, DNS-only; site still on the Hostinger origin) — [DNS-READINESS.md](DNS-READINESS.md) | — |
 
 Release deployed into the hidden Workers: build of 1790f6d (static inventory
 identical to the staged release except `rss.xml`), `RELEASE_ID` = that SHA.
@@ -157,7 +157,57 @@ The Workers now exist, unreachable (no workers.dev, no preview URLs, no
 domain). Delete the generated `wrangler.no-routes.jsonc` files and the
 secrets files.
 
-## 5. CI credentials (GitHub)
+## 5. Remaining credentials (owner; values never in chat, commits or logs)
+
+### 5a. Boss GitHub PAT (production)
+
+1. GitHub → Settings → Developer settings → Personal access tokens →
+   **Fine-grained tokens** → Generate new token.
+2. Name `americawhat-boss-production`; resource owner `hakandndr`;
+   expiration ≤ 90 days (note the date for rotation).
+3. Repository access: **Only select repositories** → `hakandndr/americawhat`.
+4. Repository permissions: **Contents: Read and write** (Metadata: Read is
+   added automatically). Nothing else; no account permissions.
+5. Copy the token, then in PowerShell 7 in the worktree:
+   `pwsh -NoProfile -File scripts/release/prepare-production-secrets.ps1 -Part GitHubPat`
+   (type EVET; the clipboard is read, validated and cleared; the value is not shown).
+6. `npx wrangler secret bulk <printed path> --env production --config workers/boss/wrangler.jsonc`
+   (creates a new Boss version; the Boss is still unrouted), then delete the file.
+7. Check names only: `npx wrangler secret list --env production --config workers/boss/wrangler.jsonc`
+   → `BOSS_CSRF_SECRET`, `GITHUB_TOKEN`.
+
+Not the staging PAT, not the old Hostinger Boss credential.
+
+### 5b. Cloudflare API tokens for GitHub Actions
+
+Create **two** account-owned tokens (Cloudflare dashboard → Manage account →
+Account API tokens → Create token → Custom token):
+
+| | production | staging |
+|---|---|---|
+| Name | `americawhat-ci-production` | `americawhat-ci-staging` |
+| Workers | **Editor**, scoped to the individual Workers `americawhat-web-production` and `americawhat-boss-production` | **Editor**, scoped to `americawhat-web-staging` and `americawhat-boss-staging` |
+| D1 | **Read** (for `d1 migrations list`; if that command is refused, D1 Edit — not verified yet) | same |
+| Zone / DNS / Access / Routes | none | none |
+| Account resources | Hakan@dndr.net's Account only | same |
+| Expiry | date noted for rotation | same |
+
+Store each without echoing it (the command prompts for the value):
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN --env production --repo hakandndr/americawhat
+```
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN --env staging --repo hakandndr/americawhat
+```
+
+Check names only: `gh secret list --env production --repo hakandndr/americawhat`
+→ `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`. Leave
+`CF_PRODUCTION_DEPLOY_ENABLED` unset. The tokens cannot be exercised before
+the merge (the deploy workflow is not on `main` yet).
+
+## 5 (original). CI credentials (GitHub)
 
 Create the account-owned API token for production: Workers **Editor** on the
 two production Workers only, **D1 Read**; no zone/DNS/Access permissions. In

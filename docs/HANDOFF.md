@@ -1,6 +1,11 @@
 # americawhat — Handoff
 
-## Start here (2026-10-15, evening)
+## Start here (updated 2026-10-16)
+
+Current position: production D1/Workers exist without any route; the Boss is
+bound to its Access application; DNS is on Cloudflare (site still on the
+Hostinger origin). Open before cutover: Boss PAT, CI tokens, e-mail test,
+then the cutover window.
 
 A new operator needs only these, in order:
 1. [CURRENT-STATE.md](CURRENT-STATE.md) — first section: facts, what is

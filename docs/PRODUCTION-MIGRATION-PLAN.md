@@ -34,8 +34,8 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P6 | OG strategy | **Done in code** (frozen archive + pinned renderer); not deployed |
 | P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
 | P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
-| P9 | DNS: (A1) disable Hostinger CDN, (A2) pending Cloudflare zone from the import file, (A3) nameserver change — site still on the Hostinger origin | **A1 done 2026-10-16** (apex A 45.89.205.38 / AAAA 2a02:4780:1:2242:0:145e:6975:6, `www` → apex; live = export, 15/15). A2: import file `docs/dns/cloudflare-import-2026-10-16.txt` ready, owner adds the zone in the dashboard (CLI cannot create zones). A3 pending — [DNS-READINESS.md](DNS-READINESS.md) |
-| P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Partly done 2026-10-15:** D1 ×2 + migrations, Workers without any exposure, fresh secrets, GitHub Environments. Open: Access app + AUD (needs P9), Boss `GITHUB_TOKEN`, Cloudflare API tokens — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md#status-2026-10-15) |
+| P9 | DNS on Cloudflare with the site still on the Hostinger origin | **Done 2026-10-16** (owner): CDN disabled, zone active (`courtney/porter.ns.cloudflare.com`), records verified 15/15 DNS-only. Owner e-mail test pending — [DNS-READINESS.md](DNS-READINESS.md) |
+| P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Mostly done:** D1 ×2 + migrations, Workers without exposure, fresh secrets, GitHub Environments, Access app + AUD (Boss version 7346d271). Open: Boss `GITHUB_TOKEN`, Cloudflare CI tokens — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) §5 |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
 | P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
 

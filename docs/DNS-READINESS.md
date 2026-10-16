@@ -1,9 +1,15 @@
 # americawhat — DNS zone move readiness and email continuity
 
 Authoritative for the DNS part of the migration (verified 2026-10-16).
-**Step A1 is done:** the owner disabled Hostinger CDN on 2026-10-16; the site
-is now served directly by the Hostinger origin server. Nothing else changed:
-no nameserver, email or registrar setting, and no Cloudflare zone exists.
+**Steps A1–A3 are done (owner, 2026-10-16):** Hostinger CDN disabled, zone
+added to Cloudflare, nameservers changed. Observed afterwards: zone **active**,
+delegation `courtney.ns.cloudflare.com` / `porter.ns.cloudflare.com` (1.1.1.1
+and 8.8.8.8), `dns-compare.mjs --zone-file …-no-cdn.zone --servers courtney.ns.cloudflare.com,porter.ns.cloudflare.com`
+**15/15 OK** (no proxied answer, CNAMEs not flattened, no `boss`, no
+wildcard), and `https://americawhat.com/` still answers `server: LiteSpeed`
+from the origin. Remaining check for the owner: send and receive a test
+e-mail and confirm `spf=pass` / `dkim=pass`. The Hostinger DNS zone must stay
+untouched (it is the nameserver-rollback target).
 
 ## Sources of truth
 
@@ -121,7 +127,7 @@ Cloudflare. Run step 1 at a quiet hour.
    certificate; a test e-mail still arrives (MX untouched).
 5. Rollback: enable the CDN again.
 
-### A2 — pending Cloudflare zone (owner, dashboard; no effect on live DNS)
+### A2 — pending Cloudflare zone (owner, dashboard; no effect on live DNS) — **done**
 
 1. Import file ready: `docs/dns/cloudflare-import-2026-10-16.txt` (regenerate with
    `node scripts/release/dns-zone.mjs cloudflare <export>` if hPanel changes anything)
@@ -149,7 +155,7 @@ Cloudflare. Run step 1 at a quiet hour.
    (The CLI login used so far lacks `zone.create`; the one attempt returned
    HTTP 403 and created nothing.)
 
-### A3 — compare, then change nameservers (separate approval)
+### A3 — compare, then change nameservers (separate approval) — **done; verified 15/15**
 
 ```bash
 node scripts/release/dns-compare.mjs --zone-file docs/dns/hostinger-export-2026-10-16-no-cdn.zone --servers <assigned-ns-1>,<assigned-ns-2>

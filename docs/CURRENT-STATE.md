@@ -23,14 +23,20 @@ where it disagrees with this section, this section wins.
   `americawhat-analytics-production` 1012183d-96cd-4d7f-8e93-ca247ca43589 (WNAM),
   migrations applied, all data tables empty; ids committed in both Wrangler configs.
 - Workers `americawhat-web-production` (version 7dfff6ea-19b7-46c1-99b9-1f6a94184b8c)
-  and `americawhat-boss-production` (version f1d4b564-ed36-4355-b56d-a1ad6ed4459c):
+  and `americawhat-boss-production` (version 7346d271-5ba9-4491-ac56-5d0217e4cd80):
   **no custom domain, workers.dev disabled, preview URLs disabled** (API-verified),
-  fresh production-only secrets. Boss AUD empty → 503; no Boss GitHub token yet.
+  fresh production-only secrets. Boss bound to the production Access
+  application (AUD 6b54c079…a224fe, team dndrnet, owner only; JWT checks
+  tested with the committed values); no Boss GitHub token yet.
 - GitHub Environments `production` (main only) and `staging` with required
   reviewer `hakandndr` and no admin bypass; only `CLOUDFLARE_ACCOUNT_ID` set;
   `CF_PRODUCTION_DEPLOY_ENABLED` unset.
-- Blocked: Access application (zone not in the account), Cloudflare CI tokens
-  and the Boss PAT (owner-only). DNS (2026-10-16): the owner's Hostinger zone export is committed and
+- **DNS moved to Cloudflare (observed 2026-10-16):** zone active, nameservers
+  `courtney/porter.ns.cloudflare.com`; all records answer exactly as the
+  post-CDN export (DNS-only); the site is still served by the Hostinger origin.
+  Owner should confirm a test e-mail (spf/dkim pass).
+- Still open: Boss PAT and the two Cloudflare CI tokens (owner,
+  [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) §5). History of the DNS work: DNS (2026-10-16): the owner's Hostinger zone export is committed and
   reconciled (13 records incl. the Google verification CNAME; apex ALIAS TTL
   300) and equals the live answers of both Hostinger nameservers. **Hostinger
   CDN does not work with external nameservers**, so the earlier "keep the CDN
