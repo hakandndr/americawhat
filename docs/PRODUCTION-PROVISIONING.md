@@ -58,7 +58,20 @@ List names without values:
   delete the file, revoke the old PAT.
 - **CI tokens:** create the new per-Worker token, store it with
   `gh secret set CLOUDFLARE_API_TOKEN --env production --repo hakandndr/americawhat`
-  (prompts, no echo), revoke the old one.
+  (prompts, no echo), revoke the old one. The `production-content` token
+  (Editor on `americawhat-web-production` only, with an expiry) is rotated the
+  same way with `--env production-content`; an expired token makes the
+  content job fail before upload (news stays in GitHub; retry via the reviewed
+  manual deploy).
+- **Content signing key** (only if compromised or lost): set
+  `CF_CONTENT_DEPLOY_ENABLED=false`; generate a new pair with the command in
+  [DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup);
+  `npx wrangler secret put BOSS_CONTENT_SIGNING_KEY --env production --config workers/boss/wrangler.jsonc < <private file>`;
+  `gh variable set BOSS_CONTENT_PUBLIC_KEY --repo hakandndr/americawhat < <public file>`;
+  store the new private key in the encrypted vault and verify it can be read
+  back, then delete the local files; deploy a reviewed `production` baseline;
+  set `CF_CONTENT_DEPLOY_ENABLED=true`. Commits signed with the old key stop
+  qualifying, so pending news goes through review once.
 
 ## Configuration helpers
 

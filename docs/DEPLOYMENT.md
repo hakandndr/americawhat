@@ -67,7 +67,8 @@ editorial decisions or D1 data. Boss itself is never deployed by this path.
 
 **Enabled 2026-10-16** (setup below completed; live acceptance run
 38969184397 for aw-0141). Keep the existing `production` reviewer, main-only
-branch policy, admin-bypass setting and credentials unchanged.
+branch policy, admin-bypass setting and credentials unchanged. Day-to-day
+operation: [Operating automatic content](#operating-automatic-content).
 
 `scripts/release/content-eligibility.mjs` requires all of the following:
 
@@ -139,6 +140,43 @@ fetch may supersede a run too: retry via the reviewed manual workflow if no
 new Boss publication follows. Post-plan evidence changes abort the content
 job instead of silently switching environments. Actions logs/summary retain
 the source SHA and previous/new Web version IDs.
+
+## Operating automatic content
+
+Normal path: approve news in Boss; the signed commit deploys Web only, with no
+GitHub approval (run: `plan` → `build` → `content_deploy`; `deploy` skipped).
+Code, workflow, configuration and other non-content changes keep the
+`production` approval.
+
+**Baseline after any non-content merge.** The live Web release (`/api/health`
+→ `release`) is the baseline. Any non-content commit after it — docs and PR
+merge commits included — makes the next Boss news fall back to `production`
+review. Restore automation by deploying the new `main` once with approval:
+
+1. Merge all pending code/docs PRs first (a later docs commit invalidates the
+   baseline again).
+2. Code merges trigger the push deploy, which waits in `production`; for a
+   docs-only merge (no push deploy) run "Deploy to Cloudflare" manually from
+   `main` with target and confirm `production`.
+3. Approve, then check `/api/health` → `release` equals `origin/main` and
+   anonymous Boss → Access 302.
+
+Alternatively skip step 2 and approve the `production` run that the next
+Boss commit waits in; that deploy becomes the new baseline.
+
+**Rollback.** A failed content activation restores the previous Web version
+itself. Manual rollback uses "Roll back Cloudflare Worker" (see
+[Rollback](#rollback)); afterwards the rolled-back release is the baseline,
+and automation resumes only if every commit since it is eligible, otherwise
+the next news waits for review. Boss versions before `8007211d` lack the
+signing key: news from such a Boss is unsigned and goes to review.
+
+**Signing key custody.** The private key exists only as the production Boss
+secret `BOSS_CONTENT_SIGNING_KEY` and in the owner's encrypted vault; no
+plaintext copy is kept on disk, in GitHub or in logs. The vault copy lets the
+key be restored to Boss after an accidental secret loss
+(`wrangler secret put` from stdin, never echoed). Rotation:
+[PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md#rotation).
 
 If a content deployment fails, keep the failure visible, fix the cause and use
 the reviewed manual production workflow to retry the committed content. Disable
