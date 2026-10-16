@@ -5,6 +5,14 @@ export function h(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+export const PENDING_MARKER = '<!--aw-pending-count-->';
+
+/** The red count beside "Weekly review"; empty when the count is unknown. */
+export function pendingBadge(count) {
+  if (!Number.isInteger(count) || count < 0) return '';
+  return `<span class="nav-count" aria-hidden="true">${count}</span><span class="visually-hidden"> (${count} pending)</span>`;
+}
+
 const NAV = [
   ['/review', 'Weekly review'],
   ['/published', 'Published'],
@@ -47,6 +55,7 @@ code{font:12px var(--mono);color:var(--muted);overflow-wrap:anywhere}
 .nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}.nav::-webkit-scrollbar{display:none}
 .nav a{color:var(--muted);text-decoration:none;padding:15px 12px 13px;font-weight:500;white-space:nowrap;border-bottom:2px solid transparent}
 .nav a:hover{color:var(--accent-text);border-bottom-color:var(--line-2)}.nav a.on{color:var(--text);border-bottom-color:var(--accent);font-weight:650}
+.nav-count{display:inline-block;min-width:20px;margin-left:6px;padding:1px 6px;border-radius:999px;background:var(--accent-strong);color:var(--on-accent);font-size:11.5px;font-weight:700;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;vertical-align:1px}
 .who{color:var(--faint);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 main{padding:26px 20px 72px;max-width:var(--shell);margin:0 auto}
 .page-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 18px;margin:0 0 18px}
@@ -214,7 +223,7 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
    come from the column list (analytics-event.mjs) as --cols-xl/-lg/-md. */
 .events-table{display:block;width:100%;font-size:12.5px}
 .events-table>:is(thead,tbody){display:block}
-.events-table tr{display:grid;grid-template-columns:var(--cols-xl);column-gap:10px;padding:0 12px;border-bottom:1px solid var(--line);align-items:center}
+.events-table tr{display:grid;grid-template-columns:var(--cols-xl);column-gap:8px;padding:0 12px;border-bottom:1px solid var(--line);align-items:center}
 .events-table tbody tr:nth-child(even){background:rgba(142,160,201,.025)}
 .events-table tbody tr:last-child{border-bottom:0}
 .events-table :is(th,td){display:block;padding:6px 0;border:0;min-width:0;background:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -224,7 +233,9 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .events-table td>span,.events-table td>a,.events-table td>time{overflow:hidden;text-overflow:ellipsis}
 .events-table time{font-variant-numeric:tabular-nums}
 .events-table .c-all{color:var(--text);font-weight:600}.events-table .of{color:var(--faint);font-size:11px;margin-left:1px}
-.events-table td.c-page{color:var(--text)}.events-table .cc{font-weight:700;color:var(--text);margin-right:2px}.events-table .two{display:flex;flex-direction:column;min-width:0}.events-table .two>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.events-table .two .sub{color:var(--faint);font-size:11px;line-height:1.3}.events-table .c-time{color:var(--text)}
+.events-table td.c-page{color:var(--text)}
+.events-table td.wrap{white-space:normal;overflow-wrap:anywhere;text-overflow:clip}
+.events-table td.wrap>span{overflow:visible}.events-table .cc{font-weight:700;color:var(--text);margin-right:2px}.events-table .two{display:flex;flex-direction:column;min-width:0}.events-table .two>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.events-table .two .sub{color:var(--faint);font-size:11px;line-height:1.3}.events-table .c-time{color:var(--text)}
 .events-table td.empty{grid-column:1/-1;white-space:normal}
 .src,.actor{font-size:11.5px;font-weight:600}.src.native{color:var(--muted)}.src.legacy{color:var(--warn)}
 .actor::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;background:currentColor;vertical-align:1px}.actor.human{color:var(--info)}.actor.auto{color:var(--muted)}
@@ -262,7 +273,9 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 `;
 
 export function page({ title, active, identity, body, flash, lede = '', headActions = '', wide = false }) {
-  const nav = NAV.map(([href, label]) => `<a href="${href}"${active === href ? ' class="on" aria-current="page"' : ''}>${h(label)}</a>`).join('');
+  // The Weekly review link carries a marker that index.mjs replaces with the
+  // live pending count (or removes when GitHub cannot be read).
+  const nav = NAV.map(([href, label]) => `<a href="${href}"${active === href ? ' class="on" aria-current="page"' : ''}>${h(label)}${href === '/review' ? PENDING_MARKER : ''}</a>`).join('');
   const flashHtml = flash ? `<div class="flash ${flash.type === 'err' ? 'err' : 'ok'}" role="${flash.type === 'err' ? 'alert' : 'status'}">${h(flash.message)}</div>` : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b1120"><title>${h(title)} · AmericaWhat Boss</title><style>${CSS}</style></head>

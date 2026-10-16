@@ -102,3 +102,15 @@ test('full daily history is not truncated and has keyboard-accessible overflow c
   assert.match(html, /class="chart( dense)?" tabindex="0"/);
   assert.match(html, /#analytics-page\{max-width:100%\}/);
 });
+
+test('event table: PAGE wraps long paths onto more lines; REFERRER gets a wider single-line column', async () => {
+  const { html } = await render();
+  const { eventColumns } = await import('../workers/boss/src/pages/analytics-event.mjs');
+  const cols = Object.fromEntries(eventColumns().map((c) => [c.key, c]));
+  assert.equal(cols.page.wrap, true);
+  assert.ok(!cols.referrer.wrap, 'referrer stays on one line');
+  const min = (c) => Number(/minmax\((\d+)px/.exec(c.w)[1]);
+  assert.ok(min(cols.referrer) >= 120 && min(cols.page) >= 150);
+  assert.match(html, /<td role="cell" class="c-page wide wrap"/);
+  assert.match(html, /\.events-table td\.wrap\{white-space:normal;overflow-wrap:anywhere/);
+});

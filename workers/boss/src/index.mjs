@@ -9,7 +9,7 @@ import { authenticate } from './auth.mjs';
 import { checkCsrf, csrfToken } from './csrf.mjs';
 import { addManual, deletePublished, editPublished, EditorialError, publishedItems, serialize } from './editorial.mjs';
 import { CONTENT_PATHS, createGitHub, githubConfig } from './github.mjs';
-import { errorPage, flashFrom, htmlResponse, redirect, envBar } from './html.mjs';
+import { errorPage, flashFrom, htmlResponse, redirect, envBar, PENDING_MARKER, pendingBadge } from './html.mjs';
 import { deleteBefore, operatorLog, parseFilters, previewDelete, retentionStatus, summary, top, daily, pagination, numberedStream, newerCount, ipActivity } from './analytics-db.mjs';
 import {ipActivityParams} from './analytics-links.mjs';
 import {renderIpActivity} from './pages/ip-activity.mjs';
@@ -58,8 +58,42 @@ async function environmentBanner(response, env) {
   return new Response(html, response);
 }
 
+const PENDING_COUNT_TTL_MS = 60 * 1000;
+
 export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Date.now() } = {}) {
   const nowSec = () => Math.floor(clock() / 1000);
+
+  // Pending candidates for the navigation badge: every record in pending.json
+  // (not story clusters). Cached per isolate for a minute and keyed by the
+  // branch head, so a fetch run or a review commit shows up on the next check.
+  let pendingCache = { sha: '', count: null, at: 0 };
+  function rememberPending(sha, count) { pendingCache = { sha, count, at: clock() }; }
+  async function pendingCount(env) {
+    if (pendingCache.count != null && clock() - pendingCache.at < PENDING_COUNT_TTL_MS) return pendingCache.count;
+    const gh = createGitHub(env, { fetchImpl, now: () => new Date(clock()) });
+    const head = await gh.readHead();
+    if (head.commitSha !== pendingCache.sha || pendingCache.count == null) {
+      const snap = await gh.snapshot([CONTENT_PATHS.pending]);
+      const pending = JSON.parse(snap.files[CONTENT_PATHS.pending]);
+      rememberPending(snap.head.commitSha, Array.isArray(pending) ? pending.length : null);
+    } else {
+      rememberPending(head.commitSha, pendingCache.count);
+    }
+    return pendingCache.count;
+  }
+
+  /** Replaces the navigation marker with the pending count; never fails the page. */
+  async function withPendingBadge(response, env) {
+    if (!(response.headers.get('Content-Type') || '').startsWith('text/html')) return response;
+    const html = await response.text();
+    let badge = '';
+    if (html.includes(PENDING_MARKER)) {
+      try { badge = pendingBadge(await pendingCount(env)); } catch (error) {
+        console.error(`boss: pending count unavailable (${error instanceof Error ? error.message : String(error)})`);
+      }
+    }
+    return new Response(html.replace(PENDING_MARKER, badge), response);
+  }
 
   async function handle(request, env) {
     const url = new URL(request.url);
@@ -79,6 +113,7 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
       if (!form) return errorPage(400, 'Unreadable or too large request.');
       const check = await checkCsrf(request, env, identity, String(form.get('csrf') || ''), now);
       if (!check.ok) return errorPage(check.status, check.error);
+      pendingCache.at = 0; // a write may change pending.json
     } else if (method !== 'GET' && method !== 'HEAD') {
       return errorPage(405, 'Method not allowed.');
     }
@@ -94,6 +129,7 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
         const snap = await gh.snapshot([CONTENT_PATHS.published, CONTENT_PATHS.pending, CONTENT_PATHS.fetchStatus]);
         const published = publishedItems(JSON.parse(snap.files[CONTENT_PATHS.published]));
         const pending = JSON.parse(snap.files[CONTENT_PATHS.pending]);
+        if (Array.isArray(pending)) rememberPending(snap.head.commitSha, pending.length);
         const fetchStatus = JSON.parse(snap.files[CONTENT_PATHS.fetchStatus]);
         return htmlResponse(renderReview({ identity, flash, review: buildReview(pending, published), fetchStatus, csrf }));
       } catch (error) {
@@ -316,7 +352,7 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
     async fetch(request, env) {
       try {
         const response = await handle(request, env);
-        return environmentBanner(response, env);
+        return environmentBanner(await withPendingBadge(response, env), env);
       } catch (error) {
         console.error(`boss: unhandled ${error instanceof Error ? error.message : String(error)}`);
         return errorPage(500, 'Internal error. Nothing was changed unless a success message was shown.');
