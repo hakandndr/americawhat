@@ -158,7 +158,10 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .decide select,.decide input:not([type=radio]):not([type=checkbox]){width:auto;flex:0 1 auto;min-width:0;max-width:100%}
 .opts{display:flex;flex-wrap:wrap;gap:6px 16px}.opts label{display:inline-flex;gap:6px;align-items:center;margin:0;color:var(--muted);font-size:12.5px}
 .editor{margin-top:8px;padding:0 0 0 calc(3ch + 14px)}.editor[open]{padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg-2)}
-.editor>summary{font-weight:500;font-size:13px}.decide select{max-width:260px}
+.editor>summary{font-weight:500;font-size:13px}
+.review-tools{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:12px 0}.review-tools[hidden]{display:none}.review-counts{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums;margin-left:auto}
+.story[data-choice=approve]{border-left-color:var(--ok)}.story[data-choice=reject]{border-left-color:var(--accent)}
+#review-preview{max-width:min(720px,calc(100vw - 32px));width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r);padding:18px 20px}#review-preview::backdrop{background:rgba(5,9,18,.7)}#review-preview h3{margin:14px 0 6px;font-size:14px}#review-preview ul{margin:0;padding-left:18px;max-height:40vh;overflow:auto}.dialog-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:16px}.decide select{max-width:260px}
 .sticky-submit{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 16px;margin:16px 0 0;background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:0 -8px 24px rgba(11,17,32,.45)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted);margin:0 0 14px;align-items:center}
 .status{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:12.5px;white-space:nowrap}.status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
@@ -309,9 +312,10 @@ export const BOSS_HEADERS = Object.freeze({
   'X-Robots-Tag': 'noindex, nofollow',
 });
 
-export function htmlResponse(html, status = 200, { analyticsScript = false } = {}) {
+export function htmlResponse(html, status = 200, { analyticsScript = false, script = false } = {}) {
   const headers = { ...BOSS_HEADERS };
   if (analyticsScript) headers['Content-Security-Policy'] += "; script-src 'self'; connect-src 'self'";
+  else if (script) headers['Content-Security-Policy'] += "; script-src 'self'";
   return new Response(html, { status, headers });
 }
 

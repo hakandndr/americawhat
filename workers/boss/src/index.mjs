@@ -15,6 +15,7 @@ import {ipActivityParams} from './analytics-links.mjs';
 import {renderIpActivity} from './pages/ip-activity.mjs';
 import { exportResponse } from './export.mjs';
 import { ANALYTICS_SCRIPT } from './analytics-client.mjs';
+import { REVIEW_SCRIPT } from './review-client.mjs';
 import { describeResults, parseReviewForm, renderReview, reviewCompute, reviewSummary } from './pages/review.mjs';
 import { fieldsFromForm, overridesFromForm, renderEdit, renderNew, renderPublishedList } from './pages/published.mjs';
 import { renderAnalytics, renderImport, renderRetentionPreview } from './pages/analytics.mjs';
@@ -118,9 +119,11 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
       return errorPage(405, 'Method not allowed.');
     }
 
-    if (path === '/assets/analytics.js' && method === 'GET') return new Response(ANALYTICS_SCRIPT, { headers: {
-      'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff',
-    } });
+    if ((path === '/assets/analytics.js' || path === '/assets/review.js') && method === 'GET') {
+      return new Response(path === '/assets/review.js' ? REVIEW_SCRIPT : ANALYTICS_SCRIPT, { headers: {
+        'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff',
+      } });
+    }
 
     // ---- Weekly review ---------------------------------------------------
     if (path === '/' && method === 'GET') return redirect('/review');
@@ -131,7 +134,7 @@ export function createBoss({ fetchImpl = (...a) => fetch(...a), clock = () => Da
         const pending = JSON.parse(snap.files[CONTENT_PATHS.pending]);
         if (Array.isArray(pending)) rememberPending(snap.head.commitSha, pending.length);
         const fetchStatus = JSON.parse(snap.files[CONTENT_PATHS.fetchStatus]);
-        return htmlResponse(renderReview({ identity, flash, review: buildReview(pending, published), fetchStatus, csrf }));
+        return htmlResponse(renderReview({ identity, flash, review: buildReview(pending, published), fetchStatus, csrf }), 200, { script: true });
       } catch (error) {
         return htmlResponse(renderReview({ identity, flash, error: `Could not read content from GitHub: ${error.message}` }), 502);
       }
