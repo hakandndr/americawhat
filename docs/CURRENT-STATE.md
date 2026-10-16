@@ -2,6 +2,8 @@
 
 ## PRODUCTION IS LIVE ON CLOUDFLARE (2026-10-16 04:02 UTC)
 
+**Update (main 81b99b3, PR hakandndr/americawhat#2):** Boss form POSTs were refused with "Cross-origin request refused." because Boss pages sent `Referrer-Policy: no-referrer` (browsers then send `Origin: null` even on same-origin POSTs). Boss now sends `same-origin`; all checks unchanged. Owner-approved run 38851399888 deployed Web `de2f8985-e5d8-463c-b53e-804310b5e36f` and Boss `5aa28574-4b7f-4ad1-ba7c-7c8093d33c68` (rollback: `bc4b861b…` / `7478bfd0…`). The failed import attempts changed nothing (0 reaction imports, 0 votes) — the S1 vote import can be run now.
+
 | Item | Value |
 |---|---|
 | Site | https://americawhat.com and https://www.americawhat.com → `americawhat-web-production` version `2fc888da-7244-4680-9163-2c342e62818e` (release d7e252a) |
