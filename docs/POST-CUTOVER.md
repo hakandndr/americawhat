@@ -1,14 +1,15 @@
 # americawhat — post-cutover duties
 
 The site moved from Hostinger to Cloudflare on 2026-10-16 04:02 UTC. This file
-holds everything still needed from the migration: S2 reconciliation, the
+holds everything still needed from the migration: the
 30-day observation, the Hostinger rollback and Hostinger web retirement. The
 full migration history is in [archive/migration/](archive/migration/).
 
-## S2 reconciliation (from 2026-10-19)
+## S2 reconciliation — waived by the owner (2026-10-15)
 
-Visitors whose resolvers still pointed at Hostinger after the switch were
-logged by the old PHP endpoints. Import only the difference since S1.
+No further Hostinger snapshots are imported; S1 (2026-10-16) is the last
+legacy import and the reminder task is disabled. The procedure below stays
+for reference only, should the owner ever reverse that decision.
 
 1. Owner: hPanel → File Manager → `public_html/analytics/` → download
    `aw_panel_log.txt` and `aw_votes.json` into

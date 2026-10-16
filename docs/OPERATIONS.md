@@ -76,8 +76,9 @@ node scripts/release/cf-release.mjs schema-gate https://americawhat.com
 
 ## Data operations
 
-- **Legacy analytics import** (Hostinger log, offline SQL): see the S2 steps in
-  [POST-CUTOVER.md](POST-CUTOVER.md#s2-reconciliation-from-2026-10-19). Small
+- **Legacy analytics import** (Hostinger log, offline SQL; S2 waived, kept for
+  reference): see the steps in
+  [POST-CUTOVER.md](POST-CUTOVER.md#s2-reconciliation--waived-by-the-owner-2026-10-15). Small
   deltas can also go through Boss → Analytics → Legacy import (same statements).
 - **Reactions import** (`aw_votes.json`): Boss → Reactions; preview, then confirm
   with the SHA-256 prefix. The first import is the baseline, later ones are

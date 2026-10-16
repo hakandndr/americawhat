@@ -7,7 +7,7 @@ Read in this order at the start of a session:
    now (versions, data, open items). Update it in place; do not append dated
    status paragraphs.
 3. [POST-CUTOVER.md](POST-CUTOVER.md) — the remaining migration duties
-   (S2 reconciliation, 30-day observation, Hostinger rollback, retirement).
+   (30-day observation, Hostinger rollback, retirement; S2 waived).
 
 ## Current documents
 

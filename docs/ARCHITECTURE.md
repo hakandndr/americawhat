@@ -9,7 +9,7 @@ items: [CURRENT-STATE.md](CURRENT-STATE.md).
 
 | Component | Where | Purpose |
 |---|---|---|
-| Static site | Astro 4 (`src/`), built to `dist/` | Every public page, RSS, sitemap, OG images. No change to URLs, markup or SEO metadata. |
+| Static site | Astro 7.3.8 (`src/`), built to `dist/` | Every public page, RSS, sitemap, OG images. No change to URLs, markup or SEO metadata. |
 | `americawhat-web` Worker | `workers/web/` | Serves `dist/` as Static Assets and the public API. |
 | `americawhat-boss` Worker | `workers/boss/` | The owner's administration app on `boss.americawhat.com`, behind Cloudflare Access. |
 | `APP_DB` (D1) | `migrations/app/` | Reactions, reaction imports, abuse guards, editorial decisions, Boss audit. |
