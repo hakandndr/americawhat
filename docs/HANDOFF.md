@@ -2,6 +2,10 @@
 
 ## Start here (updated 2026-10-16)
 
+**Production runs on Cloudflare since 2026-10-16 04:02 UTC** — see the first
+table in [CURRENT-STATE.md](CURRENT-STATE.md) for versions, follow-ups and rollback.
+
+
 Current position: production D1/Workers exist without any route; the Boss is
 bound to its Access application; DNS is on Cloudflare (site still on the
 Hostinger origin). Credentials are complete; the schema-aware build runs on staging

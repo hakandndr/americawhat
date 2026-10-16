@@ -73,6 +73,13 @@ baseline backup hashes re-verified. Continued 2026-10-16 after the owner supplie
   `CNAME www → americawhat.com` in the Cloudflare dashboard, then the Web
   custom domains are attached at once. Rollback = re-add those three rows
   (DNS-only) after removing the Worker custom domains.
+- **Web domains attached 04:02 UTC** after the owner deleted those three
+  records: americawhat.com and www answer from the Worker with valid
+  certificates, health/schema ok, schema gate ok, smoke 21/21, approved OG bytes
+  served, a real page view stored as native (PT day correct). E-mail and other
+  records unchanged. `CF_PRODUCTION_DEPLOY_ENABLED=true`; production CI run
+  38848646685 built green and waits for the owner's Environment approval.
+  Open: vote baseline import via Boss, S2 after 72 h (reminder scheduled).
 
 1. **Freeze editorial.** No Boss approvals on Hostinger from here on. The
    fetch workflow may keep running (it only touches candidate files).
