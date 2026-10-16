@@ -180,7 +180,7 @@ ${[countSentences, isAggregator, isGoogleNewsUrl, isOriginalSourceUrl, isPrepare
       p.className = 'small muted';
       const remainingStories = cards.length - approve.length - reject.length;
       const remainingRecords = cards.reduce((n, card) => n + Number(card.getAttribute('data-copies') || 1), 0) - approve.length - reject.length - copies;
-      p.textContent = 'One commit: ' + approve.length + ' to publish, ' + reject.length + ' to reject' + (copies ? ', plus ' + copies + ' duplicate copies' : '') + '. ' + remainingRecords + ' records stay pending; ' + remainingStories + ' story groups skipped.';
+      p.textContent = 'One commit: ' + approve.length + ' to publish, ' + reject.length + ' to reject' + (copies ? ', plus ' + copies + ' duplicate cop' + (copies === 1 ? 'y' : 'ies') : '') + '. ' + remainingRecords + (remainingRecords === 1 ? ' record stays pending; ' : ' records stay pending; ') + remainingStories + ' story group' + (remainingStories === 1 ? '' : 's') + ' skipped.';
       body.appendChild(p);
       if (approve.length) section(body, 'Will be published', approve);
       if (reject.length) section(body, 'Will be rejected', reject);

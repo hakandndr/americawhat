@@ -81,7 +81,7 @@ test('client: confirmation counts pending records accurately when duplicate remo
   click('[data-review="back"]');
   duplicate.querySelector('input[name$="_dupes"]').checked = true;
   form.dispatchEvent(new window.Event('submit', { cancelable: true }));
-  assert.match(body.textContent, /plus 1 duplicate copies/);
+  assert.match(body.textContent, /plus 1 duplicate copy/);
   assert.match(body.textContent, /4 records stay pending/);
 });
 
