@@ -1,8 +1,9 @@
 # americawhat — Deployment (GitHub Actions → Cloudflare)
 
 Authoritative for how code reaches staging and production after the
-Cloudflare cutover. Prepared 2026-10-15 on `codex/staging-rc`; **not on
-`main` yet, and nothing in it has run on GitHub.** Production resources do
+Cloudflare cutover. Prepared 2026-10-15 on `codex/staging-rc` (pushed as
+`backup/cloudflare-staging-2026-10-15`, 6f21c0e). **Not on `main`; on GitHub only
+`ci.yml` has run (run 38833173496, green); the deploy workflows never ran.** Production resources do
 not exist yet (see [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md)).
 
 ## Workflows

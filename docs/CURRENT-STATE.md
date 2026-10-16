@@ -22,7 +22,7 @@ where it disagrees with this section, this section wins.
 - Web `americawhat-web-staging` release c08cdfc (version 1346af78-327b-434d-8cd1-294d0bf39dc3).
 - Boss `americawhat-boss-staging` release 209aa9e (version 855652dd-d155-42db-a719-9c363256ab42).
 
-### Implemented locally on `codex/staging-rc` — committed, not pushed, not deployed
+### On `codex/staging-rc`, pushed as `backup/cloudflare-staging-2026-10-15` (6f21c0e, fast-forward from 0281ef5) — CI green, not deployed
 | Commit | What |
 |---|---|
 | 7861020 | Approved 125-image OG archive committed and frozen; pinned, deterministic renderer for new stories ([OG-IMAGES.md](OG-IMAGES.md)) |
@@ -41,8 +41,7 @@ rss.xml (commit-time date), so no visible change is pending.
 - Merging with origin/main 36e1c9b is conflict-free and loses no content.
 
 ### Not verified / assumptions
-- GitHub-side behaviour of the new workflows (never run on GitHub; the
-  Environments, variable and tokens do not exist yet).
+- GitHub CI run [38833173496](https://github.com/hakandndr/americawhat/actions/runs/38833173496) on 6f21c0e: success (181 pass, 0 fail, 1 pre-existing skip "dist not built"; OG archive 125/125 pixel-identical on GitHub Linux; gate simulation and production dry-run bundles ok). Only CI ran on the push; the deploy workflows have never run on GitHub.
 - That the americawhat.com zone can be added to this Cloudflare account
   without conflicts (nameservers are still Hostinger's).
 - Owner-session live Boss flows on staging.

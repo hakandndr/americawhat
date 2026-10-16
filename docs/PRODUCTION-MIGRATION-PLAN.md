@@ -13,8 +13,7 @@ Companion documents: [DEPLOYMENT.md](DEPLOYMENT.md) (CI/CD),
 
 | Ref | SHA | Meaning |
 |---|---|---|
-| local `codex/staging-rc` | 222bd9e + docs commit | Release branch: staging work + production preparation (not pushed) |
-| `origin/backup/cloudflare-staging-2026-10-15` | 0281ef5 | Source backup of the staged code; ancestor of the local branch |
+| `codex/staging-rc` = `origin/backup/cloudflare-staging-2026-10-15` | 6f21c0e | Release branch: staging work + production preparation; CI run 38833173496 green |
 | `origin/dev/cloudflare-native` | 4438907 | Older development line; ancestor of both |
 | `origin/main` | 36e1c9b (fetched 2026-10-15 evening) | Hostinger production; 2 fetch-only commits not in the release branch (9f6c3fc, 36e1c9b) |
 
@@ -34,7 +33,7 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P5 | `log_df.php` POST compatibility | **Done** (compatible, [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md)) |
 | P6 | OG strategy | **Done in code** (frozen archive + pinned renderer); not deployed |
 | P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
-| P8 | Push the release branch for review (CI only) | Pending — owner approval |
+| P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
 | P9 | DNS zone on Cloudflare (records copied, NS changed, site still on Hostinger) | Pending — owner |
 | P10 | Production D1, Access app, secrets, Workers without domains, CI token | Pending — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
