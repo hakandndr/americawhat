@@ -172,13 +172,13 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .pager{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pager a,.pager span{min-width:36px;text-align:center;padding:5px 10px;border:1px solid var(--line-2);border-radius:var(--r-sm);text-decoration:none;color:var(--muted);font-size:13px}
 /* Analytics: a compact summary band (metrics + daily chart), the filter bar,
    then the event table as the main surface, breakdowns and data operations. */
-.analytics-workspace .page-head{margin-bottom:12px}.analytics-workspace .page-head .lede{font-size:12.5px;color:var(--faint)}
+.analytics-workspace{container-type:inline-size}.analytics-workspace .page-head{margin-bottom:12px}.analytics-workspace .page-head .lede{font-size:12.5px;color:var(--faint)}
 .analytics-workspace :is(a,summary,h2){scroll-margin-top:130px}
 .analytics-workspace .notice{margin-bottom:10px;padding:7px 12px;font-size:13px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;min-width:0}
 .panel-head{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin:0 0 6px}.panel-head h3{margin:0;flex:1 1 auto}
 .overview{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
-@media (min-width:1100px){.overview{grid-template-columns:minmax(400px,5fr) minmax(0,7fr)}}
+@container (min-width:1100px){.overview{grid-template-columns:minmax(400px,5fr) minmax(0,7fr)}}
 .kpi-panel .eyebrow{margin:0 0 6px}
 .kpi-main{display:flex;align-items:center;gap:18px}
 .kpi-main .stat{background:none;border:0;padding:0;font-size:12.5px;white-space:nowrap}.kpi-main .stat b{font-size:30px;line-height:1.1;letter-spacing:-.02em}
@@ -257,10 +257,10 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 .ip-address{font-size:17px;font-weight:600;color:var(--text);margin:0 0 10px;overflow-wrap:anywhere}.activity-overview .kv{max-width:none}.activity-kpis{grid-template-columns:repeat(2,minmax(0,1fr));margin:0;padding:0;border:0}.activity-exports{gap:6px 8px}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 /* Narrower desktops drop the columns marked lg, then md (their values stay in Details). */
-@media (max-width:1415px){.events-table tr{grid-template-columns:var(--cols-lg)}.events-table .hide-lg{display:none}}
-@media (max-width:1275px){.events-table tr{grid-template-columns:var(--cols-md)}.events-table .hide-md{display:none}}
+@container (max-width:1415px){.events-table tr{grid-template-columns:var(--cols-lg)}.events-table .hide-lg{display:none}}
+@container (max-width:1275px){.events-table tr{grid-template-columns:var(--cols-md)}.events-table .hide-md{display:none}}
 /* Below that, each event becomes a labelled card with every column. */
-@media (max-width:1099px){
+@container (max-width:1099px){
   .events-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
   .events-table tr{grid-template-columns:repeat(4,minmax(0,1fr));gap:0 14px;padding:10px 14px;align-items:start}
   .events-table :is(.hide-lg,.hide-md){display:block}
@@ -271,9 +271,9 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
   .table-foot .actions{min-width:0;max-width:100%}.table-foot form select{max-width:100%}
 }
-@media (max-width:760px){.events-table tr{grid-template-columns:repeat(2,minmax(0,1fr))}.events-table td.wide{grid-column:1/-1}.kpi-main{flex-wrap:wrap}.kpi-split{flex-basis:100%}}
-@media (max-width:360px){.events-table tr{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.activity-overview .kv{grid-template-columns:minmax(0,1fr);gap:3px}.activity-overview .kv dd{margin-bottom:8px}}
+@container (max-width:760px){.events-table tr{grid-template-columns:repeat(2,minmax(0,1fr))}.events-table td.wide{grid-column:1/-1}.kpi-main{flex-wrap:wrap}.kpi-split{flex-basis:100%}}
+@container (max-width:360px){.events-table tr{grid-template-columns:minmax(0,1fr)}}
+@container (max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.activity-overview .kv{grid-template-columns:minmax(0,1fr);gap:3px}.activity-overview .kv dd{margin-bottom:8px}}
 .pager a:hover{color:var(--text);background:var(--panel-2)}.pager .on{color:var(--text);background:var(--panel-2);box-shadow:inset 0 -2px 0 var(--accent);font-weight:650}.pager .gap{border-color:transparent}
 @media (max-width:760px){.page-head{grid-template-columns:minmax(0,1fr)}.page-head .seg{justify-self:start}.envbar{padding:6px 14px}h1{font-size:20px}.card{padding:14px}.stat b{font-size:19px}.toolbar input{max-width:none}}
 /* Persistent navigation; the narrow-screen drawer uses a native checkbox so
