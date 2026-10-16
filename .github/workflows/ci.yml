@@ -17,31 +17,42 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - name: Unit and integration tests
-        run: npm test
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.12'
-      - name: Generate OG images (Pillow)
-        run: |
-          pip install "pillow==11.3.0"
-          python scripts/gen-og.py
-      - name: Build
-        run: npm run build
+      - name: Pinned OG renderer
+        run: "python -m pip install --only-binary=:all: --require-hashes -r scripts/og/requirements.txt"
+      - run: npm ci
+      - name: Unit and integration tests
+        env:
+          OG_PYTHON: python
+        run: npm test
+      - name: Renderer reproduces the approved OG archive (pixel-identical)
+        run: python scripts/gen-og.py --verify-approved
+      - name: OG images for stories published after the approved archive
+        run: python scripts/gen-og.py --missing
+      - name: Release build
+        run: npm run build:rc
       - name: Verify static output (no PHP, config, logs or secrets in the upload set)
         run: npm run verify:static
-      - name: Bundle both Workers (dry run, no upload)
+      - name: Deploy gates and target configuration
         run: |
-          npx wrangler deploy --dry-run --config workers/web/wrangler.jsonc --outdir .wrangler/ci-web
-          npx wrangler deploy --dry-run --config workers/boss/wrangler.jsonc --outdir .wrangler/ci-boss
+          node scripts/release/cf-release.mjs simulate
+          node scripts/release/cf-release.mjs check-config staging
+          node scripts/release/cf-release.mjs check-config production --allow-unprovisioned
+      - name: Bundle both Workers, staging and production (dry run, no upload)
+        run: |
+          npx wrangler deploy --dry-run --config workers/web/wrangler.jsonc --outdir "$GITHUB_WORKSPACE/.wrangler/ci-web"
+          npx wrangler deploy --dry-run --config workers/boss/wrangler.jsonc --outdir "$GITHUB_WORKSPACE/.wrangler/ci-boss"
+          npx wrangler deploy --dry-run --config workers/web/wrangler.jsonc --env production --outdir "$GITHUB_WORKSPACE/.wrangler/ci-web-prod"
+          npx wrangler deploy --dry-run --config workers/boss/wrangler.jsonc --env production --outdir "$GITHUB_WORKSPACE/.wrangler/ci-boss-prod"
       - name: Commit hygiene (no co-author trailers or tool signatures on this branch)
         if: github.event_name == 'push'
         run: |

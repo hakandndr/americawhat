@@ -43,13 +43,16 @@
         "BOSS_ORIGIN": "https://boss.americawhat.com",
         "BOSS_ALLOWED_EMAILS": "hakan@dndr.net",
         "BOSS_ACCESS_TEAM_DOMAIN": "dndrnet.cloudflareaccess.com",
-        // Set to the AUD tag of the boss.americawhat.com Access application when it exists.
+        // Set to the AUD tag of the boss.americawhat.com Access application when it
+        // exists (scripts/release/set-production-config.mjs). Empty = Boss answers 503.
         "BOSS_ACCESS_AUD": "",
         "BOSS_GITHUB_REPOSITORY": "hakandndr/americawhat",
         "BOSS_GITHUB_BRANCH": "main",
         "BOSS_COMMIT_AUTHOR_NAME": "Hakan Dundar",
         "BOSS_COMMIT_AUTHOR_EMAIL": "hakan@dndr.net"
       },
+      // Workers Paid: owner-only pages; a delta legacy import is the heaviest request.
+      "limits": { "cpu_ms": 10000 },
       "observability": { "enabled": true }
     }
   }

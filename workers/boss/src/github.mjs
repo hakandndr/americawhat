@@ -34,6 +34,9 @@ export function githubConfig(env) {
   if (environment === 'staging' && (repo !== 'hakandndr/americawhat-staging-content' || branch !== 'content-staging')) {
     errors.push('staging Boss must target hakandndr/americawhat-staging-content on content-staging');
   }
+  if (environment === 'production' && (repo !== 'hakandndr/americawhat' || branch !== 'main')) {
+    errors.push('production Boss must target hakandndr/americawhat on main');
+  }
   if (!env.BOSS_COMMIT_AUTHOR_NAME || !env.BOSS_COMMIT_AUTHOR_EMAIL) errors.push('commit author not configured');
   return {
     ok: errors.length === 0,

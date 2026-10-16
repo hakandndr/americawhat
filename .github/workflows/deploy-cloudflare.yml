@@ -1,0 +1,220 @@
+name: Deploy to Cloudflare
+
+# Replaces the Hostinger FTP deploy (deploy.yml). See docs/DEPLOYMENT.md.
+#
+# Gates, all required for production:
+#   1. the run is on refs/heads/main (push, or a manual run from main);
+#   2. repository variable CF_PRODUCTION_DEPLOY_ENABLED is "true" (unset until cutover);
+#   3. a manual run repeats the target name as confirmation;
+#   4. env.production in both Wrangler configs is fully provisioned
+#      (cf-release.mjs check-config refuses placeholders and staging values);
+#   5. the GitHub Environment "production" (required reviewer, main only)
+#      releases its own CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID.
+# Staging runs only by hand and uses the "staging" Environment's own token.
+# Pull requests and pushes to other branches never deploy (ci.yml tests them).
+#
+# The deploy uploads a new Worker version and moves 100% to it; routes,
+# custom domains, D1 schema and Worker secrets are never changed here.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - '!src/data/pending.json'
+      - '!src/data/seen_ids.json'
+      - '!src/data/fetch-status.json'
+      - 'public/**'
+      - 'workers/**'
+      - 'migrations/**'
+      - 'scripts/**'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Where to deploy
+        type: choice
+        options: [staging, production]
+        default: staging
+        required: true
+      confirm:
+        description: Type the target name again
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+# Never two deploys to the same target at once; a newer run waits, it does not
+# cancel one that may be half-way through.
+concurrency:
+  group: deploy-cloudflare-${{ github.event_name == 'push' && 'production' || inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      deploy: ${{ steps.plan.outputs.deploy }}
+      target: ${{ steps.plan.outputs.target }}
+      env_args: ${{ steps.plan.outputs.env_args }}
+      web: ${{ steps.plan.outputs.web }}
+      boss: ${{ steps.plan.outputs.boss }}
+      web_url: ${{ steps.plan.outputs.web_url }}
+      boss_url: ${{ steps.plan.outputs.boss_url }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - id: plan
+        env:
+          INPUT_TARGET: ${{ inputs.target }}
+          INPUT_CONFIRM: ${{ inputs.confirm }}
+          PRODUCTION_ENABLED: ${{ vars.CF_PRODUCTION_DEPLOY_ENABLED }}
+        run: node scripts/release/cf-release.mjs plan
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.deploy == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Pinned OG renderer
+        run: "python -m pip install --only-binary=:all: --require-hashes -r scripts/og/requirements.txt"
+      - run: npm ci
+      - name: Target configuration (fails while production is not provisioned)
+        run: node scripts/release/cf-release.mjs check-config "${{ needs.plan.outputs.target }}"
+      - name: Unit and integration tests
+        env:
+          OG_PYTHON: python
+        run: npm test
+      - name: Renderer reproduces the approved OG archive
+        run: python scripts/gen-og.py --verify-approved
+      - name: OG images for stories published after the approved archive
+        run: python scripts/gen-og.py --missing
+      - name: Release build (frozen OG archive + generated images, normalized HTML)
+        run: npm run build:rc
+      - name: Verify static output (no PHP, config, logs or secrets in the upload set)
+        run: npm run verify:static
+      - name: Bundle both Workers (no upload)
+        env:
+          ENV_ARGS: ${{ needs.plan.outputs.env_args }}
+        run: |
+          npx wrangler deploy --dry-run --config workers/web/wrangler.jsonc $ENV_ARGS --outdir "$GITHUB_WORKSPACE/.wrangler/release/web"
+          npx wrangler deploy --dry-run --config workers/boss/wrangler.jsonc $ENV_ARGS --outdir "$GITHUB_WORKSPACE/.wrangler/release/boss"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-${{ needs.plan.outputs.target }}-${{ github.sha }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            dist/
+            .wrangler/release/
+            reports/rc-static-manifest.json
+
+  deploy:
+    needs: [plan, build]
+    runs-on: ubuntu-24.04
+    environment:
+      name: ${{ needs.plan.outputs.target }}
+      url: ${{ needs.plan.outputs.web_url }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENV_ARGS: ${{ needs.plan.outputs.env_args }}
+      WEB: ${{ needs.plan.outputs.web }}
+      BOSS: ${{ needs.plan.outputs.boss }}
+      WEB_URL: ${{ needs.plan.outputs.web_url }}
+      BOSS_URL: ${{ needs.plan.outputs.boss_url }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-${{ needs.plan.outputs.target }}-${{ github.sha }}
+          path: .
+      - name: The reviewed build, unchanged
+        run: |
+          node scripts/release/cf-release.mjs verify-dist reports/rc-static-manifest.json dist
+          node scripts/release/cf-release.mjs check-config "${{ needs.plan.outputs.target }}"
+          test -s .wrangler/release/web/index.js && test -s .wrangler/release/boss/index.js
+      - name: No unapplied D1 migrations (schema changes are a manual, reviewed step)
+        run: |
+          for db in APP_DB ANALYTICS_DB; do
+            out="$(npx wrangler d1 migrations list "$db" --remote --config workers/web/wrangler.jsonc $ENV_ARGS 2>&1)"
+            if ! printf '%s' "$out" | grep -q 'No migrations to apply'; then
+              printf '%s\n' "$out"
+              echo "::error::$db has unapplied migrations; apply them by hand first (docs/DEPLOYMENT.md)."
+              exit 1
+            fi
+          done
+      - name: Record the versions now serving (rollback targets)
+        id: previous
+        run: |
+          npx wrangler deployments status --json --config workers/web/wrangler.jsonc $ENV_ARGS > "$RUNNER_TEMP/web-status.json"
+          npx wrangler deployments status --json --config workers/boss/wrangler.jsonc $ENV_ARGS > "$RUNNER_TEMP/boss-status.json"
+          echo "web=$(node scripts/release/cf-release.mjs active-version "$RUNNER_TEMP/web-status.json")" >> "$GITHUB_OUTPUT"
+          echo "boss=$(node scripts/release/cf-release.mjs active-version "$RUNNER_TEMP/boss-status.json")" >> "$GITHUB_OUTPUT"
+      - name: Upload Web version (not yet serving)
+        id: web_upload
+        run: |
+          WRANGLER_OUTPUT_FILE_PATH="$RUNNER_TEMP/web-upload.ndjson" npx wrangler versions upload .wrangler/release/web/index.js --no-bundle \
+            --config workers/web/wrangler.jsonc $ENV_ARGS --tag "${GITHUB_SHA::12}" --message "release ${GITHUB_SHA::12}"
+          echo "version=$(node scripts/release/cf-release.mjs version-id "$RUNNER_TEMP/web-upload.ndjson" "$WEB")" >> "$GITHUB_OUTPUT"
+      - name: Upload Boss version (not yet serving)
+        id: boss_upload
+        run: |
+          WRANGLER_OUTPUT_FILE_PATH="$RUNNER_TEMP/boss-upload.ndjson" npx wrangler versions upload .wrangler/release/boss/index.js --no-bundle \
+            --config workers/boss/wrangler.jsonc $ENV_ARGS --tag "${GITHUB_SHA::12}" --message "release ${GITHUB_SHA::12}"
+          echo "version=$(node scripts/release/cf-release.mjs version-id "$RUNNER_TEMP/boss-upload.ndjson" "$BOSS")" >> "$GITHUB_OUTPUT"
+      - name: Serve the new Web version
+        id: web_deploy
+        run: npx wrangler versions deploy "${{ steps.web_upload.outputs.version }}@100%" --yes --config workers/web/wrangler.jsonc $ENV_ARGS
+      - name: Web smoke test (read-only)
+        run: npm run smoke -- "$WEB_URL"
+      - name: Serve the new Boss version
+        id: boss_deploy
+        run: npx wrangler versions deploy "${{ steps.boss_upload.outputs.version }}@100%" --yes --config workers/boss/wrangler.jsonc $ENV_ARGS
+      - name: Boss stays behind Access (anonymous request is redirected to the Access login)
+        run: |
+          location="$(curl -s -o /dev/null -w '%{redirect_url}' "$BOSS_URL/")"
+          code="$(curl -s -o /dev/null -w '%{http_code}' "$BOSS_URL/")"
+          echo "Boss anonymous: $code"
+          [ "$code" = 302 ] && printf '%s' "$location" | grep -q '\.cloudflareaccess\.com/'
+      - name: Roll back on failure
+        if: failure() && (steps.web_deploy.outcome == 'success' || steps.boss_deploy.outcome == 'success')
+        run: |
+          if [ "${{ steps.boss_deploy.outcome }}" = success ]; then
+            npx wrangler versions deploy "${{ steps.previous.outputs.boss }}@100%" --yes --config workers/boss/wrangler.jsonc $ENV_ARGS
+          fi
+          npx wrangler versions deploy "${{ steps.previous.outputs.web }}@100%" --yes --config workers/web/wrangler.jsonc $ENV_ARGS
+          echo "::error::Release failed after activation; Web and Boss are back on their previous versions."
+      - name: Release record
+        if: always()
+        run: |
+          {
+            echo "### ${{ needs.plan.outputs.target }} release ${GITHUB_SHA::12}"
+            echo "| Worker | Previous (rollback target) | New version |"
+            echo "|---|---|---|"
+            echo "| $WEB | ${{ steps.previous.outputs.web }} | ${{ steps.web_upload.outputs.version }} |"
+            echo "| $BOSS | ${{ steps.previous.outputs.boss }} | ${{ steps.boss_upload.outputs.version }} |"
+            echo
+            echo "Manual rollback: run the \"Roll back Cloudflare Worker\" workflow with the previous version id."
+          } >> "$GITHUB_STEP_SUMMARY"

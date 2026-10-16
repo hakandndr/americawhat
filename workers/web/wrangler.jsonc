@@ -1,7 +1,7 @@
 // americawhat-web: public site (Static Assets) + public API.
-// The top level is STAGING. Production is env.production and can only be
-// deployed with `--env production` after its D1 ids replace the placeholders,
-// through the owner-approved release procedure (docs/RELEASE-RUNBOOK.md).
+// The top level is STAGING. Production is env.production: its D1 ids are
+// placeholders until provisioning (docs/PRODUCTION-PROVISIONING.md), and
+// `node scripts/release/cf-release.mjs check-config production` refuses it until then.
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "americawhat-web-staging",
@@ -53,6 +53,10 @@
         "SITE_HOSTNAME": "americawhat.com",
         "PUBLIC_ORIGINS": "https://americawhat.com,https://www.americawhat.com"
       },
+      // Workers Paid: an explicit ceiling far above the measured cost of any
+      // public request (edge Trending is one D1 read), so a runaway request
+      // fails fast instead of running up to the 30 s default.
+      "limits": { "cpu_ms": 1000 },
       "observability": { "enabled": true }
     }
   }
