@@ -289,7 +289,10 @@ export const BOSS_HEADERS = Object.freeze({
   'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
-  'Referrer-Policy': 'no-referrer',
+  // Not 'no-referrer': under it browsers send `Origin: null` on same-origin form
+  // POSTs, which checkCsrf rightly refuses. 'same-origin' still sends nothing to
+  // other sites (tests/boss-same-origin-post.test.mjs).
+  'Referrer-Policy': 'same-origin',
   'X-Robots-Tag': 'noindex, nofollow',
 });
 
