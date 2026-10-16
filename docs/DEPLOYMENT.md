@@ -73,14 +73,27 @@ Content flow after cutover: Boss approves → one commit to `main`
 If the owner later wants content commits live without a click, remove the
 required reviewer from the Environment; every other gate stays.
 
-## GitHub setup (owner, at provisioning time — not done)
+## GitHub setup (Environments created 2026-10-15; API tokens still missing)
 
-| Item | Value |
+The repository is **public**, so Environments with required reviewers are
+available on the owner's plan. Verified through the GitHub API after creation:
+
+| Item | State |
 |---|---|
-| Environment `staging` | secrets `CLOUDFLARE_API_TOKEN` (staging token), `CLOUDFLARE_ACCOUNT_ID`; branches: any |
-| Environment `production` | required reviewer `hakandndr`; branch policy `main`; secrets `CLOUDFLARE_API_TOKEN` (production token), `CLOUDFLARE_ACCOUNT_ID` |
-| Repository variable | `CF_PRODUCTION_DEPLOY_ENABLED` — leave unset until cutover step "enable CI deploys" |
+| Environment `production` | **created**: rule `required_reviewers` = `hakandndr` (`prevent_self_review` false, so the owner can approve his own runs), `can_admins_bypass` **false**, deployment branches: custom policy `main` only. Secrets: `CLOUDFLARE_ACCOUNT_ID` set; `CLOUDFLARE_API_TOKEN` **missing** (owner creates it) |
+| Environment `staging` | **created**: same reviewer rule, admin bypass off, branches `main`, `backup/*`, `codex/*`. Secrets: `CLOUDFLARE_ACCOUNT_ID` set; `CLOUDFLARE_API_TOKEN` **missing** |
+| Repository variable | `CF_PRODUCTION_DEPLOY_ENABLED` — **unset** (0 repository variables, checked) until cutover step "enable CI deploys" |
 | Repository secrets `FTP_SERVER`/`FTP_USERNAME`/`FTP_PASSWORD` | keep until the Hostinger rollback window ends (they are used only by the `hostinger-final` tag), then delete |
+
+Add each token without echoing it (the command prompts for the value):
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN --env production --repo hakandndr/americawhat
+```
+
+Note: a `workflow_dispatch` workflow can be started only once its file is on
+the default branch, so the staging target of `deploy-cloudflare.yml` becomes
+usable after the merge; until then staging keeps the local procedure.
 
 Tokens (account-owned API tokens, one per environment, never shared):
 

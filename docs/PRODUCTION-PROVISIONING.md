@@ -1,9 +1,30 @@
-# americawhat — Production provisioning (prepared, NOT executed)
+# americawhat — Production provisioning (isolated, partly executed)
 
-Exact, reproducible steps for creating the production resources once the owner
-authorizes provisioning. **None of these steps has been run.** No production
-D1 database, Worker, Access application, token, secret, route or DNS record
-exists as of 2026-10-15. Every step needs explicit owner approval.
+Exact, reproducible steps for the production resources. Steps 1, 3 (generated
+secrets), 4 and part of 5 were executed on 2026-10-15 under the owner's
+provisioning authorization; nothing is attached to a domain or reachable.
+
+## Status (2026-10-15)
+
+| Resource | State | Identifier |
+|---|---|---|
+| D1 `americawhat-app-production` | **created** (WNAM), migration 0001_app_core applied, tables empty | `3097933b-4feb-4e50-bb59-760fd06a640e` |
+| D1 `americawhat-analytics-production` | **created** (WNAM), migration 0001_analytics_core applied, tables empty | `1012183d-96cd-4d7f-8e93-ca247ca43589` |
+| Worker `americawhat-web-production` | **created** without routes; workers.dev **disabled**, preview URLs **disabled**, custom domains **none** (API-verified); `*.workers.dev` answers 404 | script tag ff4ea0b048f2431d902f78befc44659e, version `7dfff6ea-19b7-46c1-99b9-1f6a94184b8c` (100 %) |
+| Worker `americawhat-boss-production` | **created** the same way; empty Access AUD → every request 503 | script tag aed1cf90d4214b98924c3706cd58edfa, version `f1d4b564-ed36-4355-b56d-a1ad6ed4459c` (100 %) |
+| Secrets | web: `REACTION_GUARD_SECRET`; boss: `BOSS_CSRF_SECRET` — fresh random values, never shown; local files deleted after upload | — |
+| Boss `GITHUB_TOKEN` | **missing** (owner PAT, step 3) → Boss cannot write to any repository | — |
+| Access app `boss.americawhat.com` | **blocked**: zone not in the account; CLI has no Access permission ([DNS-READINESS.md](DNS-READINESS.md#boss-access-dependency)) | AUD pending |
+| GitHub Environments | **created** with required reviewer, no admin bypass, branch rules ([DEPLOYMENT.md](DEPLOYMENT.md)) | — |
+| Cloudflare API tokens for CI | **missing** (owner; only the dashboard can create them) | — |
+| DNS zone | **not added** (read-only checklist in [DNS-READINESS.md](DNS-READINESS.md)) | — |
+
+Release deployed into the hidden Workers: build of 1790f6d (static inventory
+identical to the staged release except `rss.xml`), `RELEASE_ID` = that SHA.
+Bindings: only the two production D1 databases (no service binding, no staging
+resource); the Boss may write only `hakandndr/americawhat` / `main` and has no
+token yet. Staging Workers stayed on their versions (Web 1346af78…, Boss
+855652dd…) and staging D1 was not touched.
 
 Run wrangler with the owner's OAuth login (`npx wrangler login`), with
 `CLOUDFLARE_API_TOKEN` unset in the shell. Never paste a secret into a
@@ -79,6 +100,25 @@ Commit the config change (it contains ids, not secrets).
 
 ## 3. Worker secrets (outside the repository)
 
+Generated secrets (done 2026-10-15; run again only to rotate):
+
+```bash
+pwsh -NoProfile -File scripts/release/prepare-production-secrets.ps1 -Part Generated
+```
+
+Boss GitHub PAT (owner, interactive; copy the new PAT first, type EVET):
+
+```bash
+pwsh -NoProfile -File scripts/release/prepare-production-secrets.ps1 -Part GitHubPat
+```
+
+```bash
+npx wrangler secret bulk <printed boss-production-github.json path> --env production --config workers/boss/wrangler.jsonc
+```
+
+Then delete the file. The Boss has no route, so the new version this creates
+is still unreachable.
+
 Prepare one secrets file per Worker in a protected directory outside the
 repository (same pattern as `scripts/release/prepare-staging-secrets.ps1`):
 
@@ -94,11 +134,11 @@ Optional/never in production: `STAGING_TEST_KEY`, `BOSS_DEV_JWKS`,
 ## 4. Create the Workers without domains
 
 ```bash
-node scripts/release/cf-release.mjs no-routes web
+node scripts/release/cf-release.mjs no-routes web --allow-pending-access
 ```
 
 ```bash
-node scripts/release/cf-release.mjs no-routes boss
+node scripts/release/cf-release.mjs no-routes boss --allow-pending-access
 ```
 
 ```bash

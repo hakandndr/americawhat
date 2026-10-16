@@ -34,8 +34,8 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P6 | OG strategy | **Done in code** (frozen archive + pinned renderer); not deployed |
 | P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
 | P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
-| P9 | DNS zone on Cloudflare (records copied, NS changed, site still on Hostinger) | Pending — owner |
-| P10 | Production D1, Access app, secrets, Workers without domains, CI token | Pending — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) |
+| P9 | DNS zone on Cloudflare (records copied, NS changed, site still on Hostinger) | Pending — owner; checklist ready in [DNS-READINESS.md](DNS-READINESS.md); zone not in the account yet |
+| P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Partly done 2026-10-15:** D1 ×2 + migrations, Workers without any exposure, fresh secrets, GitHub Environments. Open: Access app + AUD (needs P9), Boss `GITHUB_TOKEN`, Cloudflare API tokens — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md#status-2026-10-15) |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
 | P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
 
@@ -86,7 +86,7 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | Situation | Action | Data effect |
 |---|---|---|
 | Bad release (code) | "Roll back Cloudflare Worker" workflow, or automatic rollback in the deploy job | none |
-| Site must return to Hostinger (before step 12) | Remove the Workers' custom domains (Workers → Domains & Routes), restore the recorded apex/www A/AAAA records to Hostinger; Boss → Reactions → export `aw_votes.json` and upload to Hostinger `analytics/`; if stories were published on Cloudflare, republish Hostinger with "Deploy to Hostinger" on a branch made from `hostinger-final` plus the current `src/data/*.json` | native analytics stay in D1; the PHP log continues; no double count |
+| Site must return to Hostinger (before step 12) | Remove the Workers' custom domains (Workers → Domains & Routes), recreate the apex and `www` as DNS-only CNAMEs to Hostinger CDN ([DNS-READINESS.md](DNS-READINESS.md#hostinger-rollback-consequence) — the apex is a CDN alias, not fixed IPs); Boss → Reactions → export `aw_votes.json` and upload to Hostinger `analytics/`; if stories were published on Cloudflare, republish Hostinger with "Deploy to Hostinger" on a branch made from `hostinger-final` plus the current `src/data/*.json` | native analytics stay in D1; the PHP log continues; no double count |
 | D1 data damage | Forward fix; Time Travel restore only as last resort (rewinds ALL # numbering) | — |
 | CI misbehaves | Unset `CF_PRODUCTION_DEPLOY_ENABLED`; deploys stop, live version keeps serving | none |
 

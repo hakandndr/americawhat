@@ -10,7 +10,7 @@ A new operator needs only these, in order:
 3. [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) — exact commands for
    production resources (not executed).
 4. [DEPLOYMENT.md](DEPLOYMENT.md) — GitHub workflows, gates, tokens, rollback.
-5. [OG-IMAGES.md](OG-IMAGES.md) and [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md).
+5. [DNS-READINESS.md](DNS-READINESS.md), [OG-IMAGES.md](OG-IMAGES.md) and [HOSTINGER-COMPATIBILITY.md](HOSTINGER-COMPATIBILITY.md).
 
 Rules that still hold: work on `codex/staging-rc` (worktree
 `tmp/security-boss`); never merge into `main` outside the cutover window

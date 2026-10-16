@@ -18,6 +18,21 @@ where it disagrees with this section, this section wins.
   typography, footer, Trending, Boss Analytics). No further redesign.
 - Hostinger stays active for **email** after the web migration.
 
+### Isolated production infrastructure (created 2026-10-15, owner-authorized)
+- D1 `americawhat-app-production` 3097933b-4feb-4e50-bb59-760fd06a640e and
+  `americawhat-analytics-production` 1012183d-96cd-4d7f-8e93-ca247ca43589 (WNAM),
+  migrations applied, all data tables empty; ids committed in both Wrangler configs.
+- Workers `americawhat-web-production` (version 7dfff6ea-19b7-46c1-99b9-1f6a94184b8c)
+  and `americawhat-boss-production` (version f1d4b564-ed36-4355-b56d-a1ad6ed4459c):
+  **no custom domain, workers.dev disabled, preview URLs disabled** (API-verified),
+  fresh production-only secrets. Boss AUD empty → 503; no Boss GitHub token yet.
+- GitHub Environments `production` (main only) and `staging` with required
+  reviewer `hakandndr` and no admin bypass; only `CLOUDFLARE_ACCOUNT_ID` set;
+  `CF_PRODUCTION_DEPLOY_ENABLED` unset.
+- Blocked: Access application (zone not in the account), Cloudflare CI tokens
+  and the Boss PAT (owner-only). Details: [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md),
+  DNS/email checklist: [DNS-READINESS.md](DNS-READINESS.md).
+
 ### Deployed to staging
 - Web `americawhat-web-staging` release c08cdfc (version 1346af78-327b-434d-8cd1-294d0bf39dc3).
 - Boss `americawhat-boss-staging` release 209aa9e (version 855652dd-d155-42db-a719-9c363256ab42).
@@ -54,8 +69,9 @@ staging visitor rows. **The final aw_panel_log.txt / aw_votes.json snapshots
 stay pending until the cutover window.**
 
 ### Untouched
-Hostinger files, DNS, main, production Cloudflare resources and every other
-project were not changed by this preparation.
+Hostinger files, DNS, the live americawhat.com site, `main`, staging Workers
+and data, and every other project were not changed. The only production
+resources are the isolated ones listed above.
 
 
 ## Son durum — Country · City düzeltmesi, kaynak yedeği, göç planı (2026-10-15)
