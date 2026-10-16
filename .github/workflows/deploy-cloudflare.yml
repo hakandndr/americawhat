@@ -176,13 +176,13 @@ jobs:
         id: web_upload
         run: |
           WRANGLER_OUTPUT_FILE_PATH="$RUNNER_TEMP/web-upload.ndjson" npx wrangler versions upload .wrangler/release/web/index.js --no-bundle \
-            --config workers/web/wrangler.jsonc $ENV_ARGS --tag "${GITHUB_SHA::12}" --message "release ${GITHUB_SHA::12}"
+            --config workers/web/wrangler.jsonc $ENV_ARGS --tag "${GITHUB_SHA::12}" --message "release ${GITHUB_SHA::12}" --var "RELEASE_ID:$GITHUB_SHA"
           echo "version=$(node scripts/release/cf-release.mjs version-id "$RUNNER_TEMP/web-upload.ndjson" "$WEB")" >> "$GITHUB_OUTPUT"
       - name: Upload Boss version (not yet serving)
         id: boss_upload
         run: |
           WRANGLER_OUTPUT_FILE_PATH="$RUNNER_TEMP/boss-upload.ndjson" npx wrangler versions upload .wrangler/release/boss/index.js --no-bundle \
-            --config workers/boss/wrangler.jsonc $ENV_ARGS --tag "${GITHUB_SHA::12}" --message "release ${GITHUB_SHA::12}"
+            --config workers/boss/wrangler.jsonc $ENV_ARGS --tag "${GITHUB_SHA::12}" --message "release ${GITHUB_SHA::12}" --var "RELEASE_ID:$GITHUB_SHA"
           echo "version=$(node scripts/release/cf-release.mjs version-id "$RUNNER_TEMP/boss-upload.ndjson" "$BOSS")" >> "$GITHUB_OUTPUT"
       - name: Serve the new Web version
         id: web_deploy

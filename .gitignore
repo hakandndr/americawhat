@@ -36,3 +36,6 @@ coverage/
 
 # OG images rendered for items published after the approved archive
 .og-generated/
+
+# Provisioning-only Wrangler configs (cf-release.mjs no-routes)
+workers/*/wrangler.no-routes.jsonc
