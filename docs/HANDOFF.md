@@ -72,7 +72,8 @@ Item schema and status rules: `src/lib/items.js`, `src/lib/slug.js` (Boss pins
    news follows the existing reviewed deployment path.
 4. The owner decides the weekly review in Boss (drafts are
    already in `pending.json`, see CURRENT-STATE → Open items). S2 is waived; staging sync
-   is deferred; DNDR forwarding waits for DNDR approval (PR #13).
+   is deferred; DNDR forwarding is live (2ef6a57); its cutover gap needs an
+   owner-approved DNDR history import.
 5. Editorial drafting: `scripts/editorial/apply-curation.mjs` — `keep` fills
    fields, `propose_reject` records `draft_reason`/`draft_note` that Boss
    preselects as Reject. Never remove candidates outside Boss.
