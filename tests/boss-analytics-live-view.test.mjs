@@ -20,7 +20,7 @@ const signer = makeSigner();
 // Real clock (Access assertions are time-checked); events sit in the last hour of today (PT).
 const BASE_TIME = Math.floor(Date.now() / 1000) - 3600;
 const DAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(new Date(BASE_TIME * 1000));
-const flush = async () => { for (let i = 0; i < 60; i++) await new Promise((r) => setImmediate(r)); };
+const flush = async () => { for (let i = 0; i < 20; i++) await new Promise((r) => setImmediate(r)); };
 
 function setupServer() {
   resetKeyCache();
@@ -68,17 +68,20 @@ async function openBrowser(server, path) {
     replaceState(_s, _t, url) { log.replacements.push(url); entries[index] = url; location.href = new URL(url, ORIGIN).href; },
   };
   const pending = [];
+  const inflight = [];
+  // Wait for every request the client started, then for its DOM work.
+  const settle = async () => { while (inflight.length) { await inflight.shift().catch(() => {}); await flush(); } await flush(); };
   vm.runInNewContext(ANALYTICS_SCRIPT, {
     document, window, location, DOMParser, URL, AbortController,
     setTimeout: (fn) => { pending.push(fn); return pending.length; }, clearTimeout() {},
-    fetch: async (url) => server.get(new URL(url).pathname + new URL(url).search),
+    fetch: (url) => { const p = server.get(new URL(url).pathname + new URL(url).search); inflight.push(p); return p; },
   });
-  const go = async (delta) => { index += delta; location.href = new URL(entries[index], ORIGIN).href; for (const fn of listeners) fn({}); await flush(); };
+  const go = async (delta) => { index += delta; location.href = new URL(entries[index], ORIGIN).href; for (const fn of listeners) fn({}); await settle(); };
   const click = async (selector) => {
     const link = document.querySelector(selector);
     assert.ok(link, `link ${selector}`);
     link.dispatchEvent(new window.Event('click', { bubbles: true, cancelable: true }));
-    await flush();
+    await settle();
   };
   const ids = () => [...document.querySelectorAll('#analytics-events td.c-all')].map((td) => Number(td.textContent.trim()));
   const visits = () => [...document.querySelectorAll('#analytics-events td.c-visits')].map((td) => Number(td.textContent.trim()));
@@ -89,7 +92,7 @@ async function openBrowser(server, path) {
       const form = document.getElementById('analytics-filters');
       form.querySelector(`[name="${name}"]`).value = value;
       form.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
-      await flush();
+      await settle();
     } };
 }
 
