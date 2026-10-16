@@ -53,8 +53,18 @@ node scripts/release/cf-release.mjs simulate
 bundles, artifact) → `deploy` (Environment; secrets only here):
 
 1. `verify-dist` re-hashes the downloaded `dist/` against the build manifest.
-2. `d1 migrations list --remote` for both databases must say "No migrations to
-   apply"; a schema change is applied by hand first (never by CI).
+2. **Schema gate** (`cf-release.mjs schema-gate "$WEB_URL"`): the Web Worker
+   serving now reads `d1_migrations` through its own D1 binding and publishes
+   SHA-256 digests (no names) on `/api/health`; they must equal the digests of
+   this release's `migrations/`. A pending migration, an extra one applied from
+   elsewhere, an unreadable table, a missing `schema` field (older release)
+   or a non-Worker answer (Hostinger) stops the job before anything is
+   uploaded. Schema changes are applied by hand by the owner (OAuth
+   `wrangler d1 migrations apply … --remote`), never by CI. After activation
+   the smoke test requires `schema_app`/`schema_analytics` = `ok` on the new
+   version, otherwise both Workers roll back. The CI tokens therefore need
+   **no D1 permission at all** (`wrangler d1 …` never runs in CI; a test
+   enforces it).
 3. `deployments status --json` records the versions serving now (rollback targets).
 4. `versions upload <frozen bundle> --no-bundle` for Web and Boss (tag = short
    SHA, `RELEASE_ID` = full SHA). Secrets are inherited from the current version.
@@ -111,8 +121,9 @@ Tokens (account-owned API tokens, one per environment, never shared):
 - **production**: Workers **Editor** scoped to the two Workers
   `americawhat-web-production` and `americawhat-boss-production` (they must
   exist first; per-Worker roles cannot target a Worker that does not exist),
-  plus **D1 Read** (for `migrations list`). No zone, DNS, Access or Routes
-  permission: CI never changes routes or custom domains.
+  and nothing else: no D1, zone, DNS, Access or Routes permission (CI never
+  changes routes or custom domains and never calls the D1 API). Configured so
+  by the owner on 2026-10-16 for both tokens.
 - **staging**: the same shape scoped to the two staging Workers. The staging
   token must not be able to touch production Workers and vice versa.
 

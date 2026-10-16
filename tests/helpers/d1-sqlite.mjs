@@ -54,7 +54,12 @@ export class D1Sqlite {
 
   static withMigrations(...relativeFiles) {
     const db = new D1Sqlite();
-    for (const file of relativeFiles) db.sqlite.exec(fs.readFileSync(path.join(ROOT, file), 'utf8'));
+    // Record each file in d1_migrations the way `wrangler d1 migrations apply` does.
+    db.sqlite.exec('CREATE TABLE IF NOT EXISTS d1_migrations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL)');
+    for (const file of relativeFiles) {
+      db.sqlite.exec(fs.readFileSync(path.join(ROOT, file), 'utf8'));
+      db.sqlite.prepare('INSERT INTO d1_migrations (name) VALUES (?)').run(path.basename(file));
+    }
     return db;
   }
 

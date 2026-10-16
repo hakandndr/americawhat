@@ -4,8 +4,9 @@
 
 Current position: production D1/Workers exist without any route; the Boss is
 bound to its Access application; DNS is on Cloudflare (site still on the
-Hostinger origin). Open before cutover: Boss PAT, CI tokens, e-mail test,
-then the cutover window.
+Hostinger origin). Credentials are complete. Open before cutover: owner e-mail test,
+staging release of the schema-aware build (the deploy schema gate needs it),
+then the cutover window ([PRODUCTION-MIGRATION-PLAN.md](PRODUCTION-MIGRATION-PLAN.md)).
 
 A new operator needs only these, in order:
 1. [CURRENT-STATE.md](CURRENT-STATE.md) — first section: facts, what is

@@ -35,7 +35,8 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
 | P7 | Gated CI/CD replacing FTP | **Done in code**; not on GitHub yet |
 | P8 | Push the release branch for review (CI only) | **Done** (6f21c0e, CI 38833173496 green) |
 | P9 | DNS on Cloudflare with the site still on the Hostinger origin | **Done 2026-10-16** (owner): CDN disabled, zone active (`courtney/porter.ns.cloudflare.com`), records verified 15/15 DNS-only. Owner e-mail test pending — [DNS-READINESS.md](DNS-READINESS.md) |
-| P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Mostly done:** D1 ×2 + migrations, Workers without exposure, fresh secrets, GitHub Environments, Access app + AUD (Boss version 7346d271). Open: Boss `GITHUB_TOKEN`, Cloudflare CI tokens — [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) §5 |
+| P10 | Production D1, Access app, secrets, Workers without domains, CI token | **Done 2026-10-16:** D1 ×2 + migrations, Workers without exposure, secrets incl. Boss `GITHUB_TOKEN`, GitHub Environments with per-Worker Editor tokens, Access app + AUD. CI needs no D1 permission (schema gate) |
+| P10b | Schema-aware release on staging (the deploy schema gate reads `/api/health` digests) | Pending — staging release by the documented local procedure; production gets it in cutover step 6 |
 | P11 | DNDR producer for native forwarding | Pending — DNDR-side approval; otherwise accept a DNDR gap |
 | P12 | Decisions: privacy "~90 days" wording, 3 staging visitor rows / 2 votes | Pending — owner |
 
@@ -55,9 +56,11 @@ seen 11,492 → 11,492; vote seed and the 125 approved OG files unchanged.
    FTP deploy is retired; `deploy-cloudflare.yml` runs but skips (variable unset).
 6. **Content gate:** CI on the merge commit green; published items without an
    approved OG image are listed by `reconcile-main.mjs` and rendered by the build.
-   If `main`'s `published.json` differs from what the Workers were created
-   with (P10), recreate them from the merged `main` with the `no-routes`
-   procedure first (still no domains).
+   Then upload both production Workers from the merged `main` with the
+   `no-routes` procedure (still no domains): this is always required, because
+   the provisioned versions predate the schema-aware `/api/health` that the CI
+   schema gate in step 10 reads, and it also picks up any content published
+   since provisioning.
 7. **Import S1:** `npm run analytics:legacy -- sql <S1 log> --out private/s1.sql`,
    `npx wrangler d1 execute americawhat-analytics-production --remote --env production --config workers/web/wrangler.jsonc --file private/s1.sql`
    twice (second run must add 0); delete the SQL file. The vote baseline is

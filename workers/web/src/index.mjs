@@ -14,6 +14,7 @@
 
 import publishedData from '../../../src/data/published.json' with { type: 'json' };
 import { json, methodNotAllowed, readBody, safeEqual } from '../../shared/http.mjs';
+import { schemaHealth } from '../../shared/schema.mjs';
 import { nowSeconds } from '../../shared/time.mjs';
 import { buildNativeEvent, storeNativeEvent } from './collector.mjs';
 import { dndrPageEvent, forwardAndRecord, forwardingEnabled } from './dndr-forward.mjs';
@@ -104,6 +105,9 @@ async function handleHealth(env) {
     } catch { checks[name] = 'error'; }
   }
   checks.reaction_secret = env.REACTION_GUARD_SECRET ? 'ok' : 'missing';
+  // Applied D1 migrations vs this release (workers/shared/schema.mjs); only digests are published.
+  const schema = await schemaHealth(env);
+  Object.assign(checks, schema.checks);
   const collection = env.COLLECT_VISITS || (env.ENVIRONMENT === 'production' ? 'all' : 'test-only');
   const ok = Object.values(checks).every((v) => v === 'ok');
   return json({
@@ -112,6 +116,7 @@ async function handleHealth(env) {
     release: env.RELEASE_ID || 'unversioned',
     published_items: PUBLISHED_IDS.size,
     visit_collection: collection,
+    schema: schema.digests,
     checks,
   }, ok ? 200 : 503);
 }

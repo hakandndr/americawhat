@@ -14,6 +14,10 @@
 //   node scripts/release/cf-release.mjs verify-dist <rc manifest> <dist dir>
 //   node scripts/release/cf-release.mjs no-routes <web|boss> [--allow-pending-access]
 //       Provisioning only: env.production without custom domains, for first creation.
+//   node scripts/release/cf-release.mjs schema-gate <web origin>
+//       Before any upload: the serving Web Worker's /api/health must report the
+//       same applied-migration digests as this release's migrations/ (no D1
+//       API permission needed; see workers/shared/schema.mjs).
 //   node scripts/release/cf-release.mjs simulate
 //       Prints the plan for every trigger combination (no I/O beyond reading configs).
 
@@ -21,6 +25,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { MIGRATIONS, schemaDigest } from '../../workers/shared/schema.mjs';
 
 export const OWNER = 'hakan@dndr.net';
 export const ACCESS_TEAM_DOMAIN = 'dndrnet.cloudflareaccess.com';
@@ -160,6 +165,31 @@ export function checkTargetConfig(target, { web, boss }) {
   return { errors, notProvisioned };
 }
 
+/** Migration file names in the repository, per database. */
+export function repoMigrations(root = '.') {
+  const list = (db) => fs.readdirSync(path.join(root, 'migrations', db)).filter((f) => f.endsWith('.sql')).sort();
+  return { app: list('app'), analytics: list('analytics') };
+}
+
+/**
+ * Pure decision for the pre-deploy schema gate.
+ * `health` is the parsed /api/health of the version serving now; `expected` the
+ * digests of this release's migrations. Fails closed on anything unexpected.
+ */
+export function schemaGate(health, expected) {
+  const errors = [];
+  const live = health && typeof health === 'object' ? health.schema : null;
+  if (!live || typeof live !== 'object') {
+    errors.push('the serving Worker reports no schema digests (older release or not a Cloudflare Worker); deploy the schema-aware release by hand first');
+    return { ok: false, errors };
+  }
+  for (const db of ['app', 'analytics']) {
+    if (!live[db]) errors.push(`${db}: the serving Worker could not read d1_migrations`);
+    else if (live[db] !== expected[db]) errors.push(`${db}: applied migrations differ from this release; apply the pending migration(s) by hand (owner, wrangler d1 migrations apply ... --remote), then rerun`);
+  }
+  return { ok: errors.length === 0, errors };
+}
+
 /** The version id of `workerName` from a WRANGLER_OUTPUT_FILE_PATH ND-JSON file. */
 export function versionIdFrom(text, workerName) {
   const entries = String(text).split('\n').filter(Boolean).map((l) => JSON.parse(l));
@@ -200,7 +230,7 @@ function setOutputs(values) {
   console.log(lines.join('\n'));
 }
 
-function main(argv) {
+async function main(argv) {
   const [command, ...args] = argv;
   if (command === 'plan') {
     const plan = planRelease({
@@ -250,6 +280,27 @@ function main(argv) {
     console.log(out);
     return 0;
   }
+  if (command === 'schema-gate') {
+    const origin = String(args[0] || '').replace(/\/$/, '');
+    if (!/^https:\/\//.test(origin)) { console.error('usage: schema-gate <https://origin>'); return 2; }
+    const repo = repoMigrations();
+    for (const db of ['app', 'analytics']) {
+      if (JSON.stringify(repo[db]) !== JSON.stringify([...MIGRATIONS[db]].sort())) {
+        console.error(`workers/shared/schema.mjs MIGRATIONS.${db} does not list migrations/${db}/*.sql`);
+        return 1;
+      }
+    }
+    const expected = { app: await schemaDigest(repo.app), analytics: await schemaDigest(repo.analytics) };
+    let health = null;
+    try {
+      const res = await fetch(`${origin}/api/health`, { headers: { 'Cache-Control': 'no-cache' } });
+      health = await res.json();
+    } catch (error) { console.error(`health unreachable: ${error.message}`); }
+    const gate = schemaGate(health, expected);
+    for (const e of gate.errors) console.error(`schema gate: ${e}`);
+    console.log(JSON.stringify({ origin, ok: gate.ok, migrations: { app: repo.app.length, analytics: repo.analytics.length } }));
+    return gate.ok ? 0 : 1;
+  }
   if (command === 'version-id') {
     console.log(versionIdFrom(fs.readFileSync(args[0], 'utf8'), args[1]));
     return 0;
@@ -289,4 +340,4 @@ function main(argv) {
   return 2;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1] || '').href) process.exit(main(process.argv.slice(2)));
+if (import.meta.url === pathToFileURL(process.argv[1] || '').href) process.exit(await main(process.argv.slice(2)));

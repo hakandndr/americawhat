@@ -67,7 +67,10 @@ test('the Cloudflare deploy is gated: main only, opt-in variable, confirmation, 
   for (const job of Object.values(wf.jobs)) for (const step of job.steps) assert.doesNotMatch(step.run || '', /\$\{\{\s*(inputs|github\.event)\./);
   assert.match(text, /check-config "\$\{\{ needs\.plan\.outputs\.target \}\}"\n/);
   assert.match(text, /verify-dist reports\/rc-static-manifest\.json dist/);
-  assert.match(text, /No migrations to apply/);
+  assert.ok(text.includes('node scripts/release/cf-release.mjs schema-gate "$WEB_URL"'));
+  // The CI tokens have no D1 permission: no D1 API call may appear in a deploy workflow.
+  assert.doesNotMatch(text, /wrangler d1 /);
+  assert.doesNotMatch(load('rollback-cloudflare.yml').text, /wrangler d1 /);
   assert.match(text, /versions upload \.wrangler\/release\/web\/index\.js --no-bundle/);
   assert.doesNotMatch(text, /wrangler deploy (?!--dry-run)/, 'only versions upload/deploy; routes are never changed by CI');
   assert.doesNotMatch(text, /secret (put|bulk)|d1 migrations apply|d1 execute/);

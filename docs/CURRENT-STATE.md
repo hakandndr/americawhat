@@ -35,8 +35,13 @@ where it disagrees with this section, this section wins.
   `courtney/porter.ns.cloudflare.com`; all records answer exactly as the
   post-CDN export (DNS-only); the site is still served by the Hostinger origin.
   Owner should confirm a test e-mail (spf/dkim pass).
-- Still open: Boss PAT and the two Cloudflare CI tokens (owner,
-  [PRODUCTION-PROVISIONING.md](PRODUCTION-PROVISIONING.md) §5). History of the DNS work: DNS (2026-10-16): the owner's Hostinger zone export is committed and
+- Credentials complete (2026-10-16): Boss `GITHUB_TOKEN` (Boss version
+  14998af5…), both GitHub Environments hold per-Worker Editor tokens and the
+  account id. CI needs no D1 permission: the deploy's migration check is now a
+  schema gate through the serving Worker's /api/health digests (local only so
+  far; the staging and production Workers still run the older release and the
+  gate fails closed on them until the schema-aware release is deployed).
+  History of the DNS work: DNS (2026-10-16): the owner's Hostinger zone export is committed and
   reconciled (13 records incl. the Google verification CNAME; apex ALIAS TTL
   300) and equals the live answers of both Hostinger nameservers. **Hostinger
   CDN does not work with external nameservers**, so the earlier "keep the CDN

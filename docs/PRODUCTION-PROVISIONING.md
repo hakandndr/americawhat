@@ -157,6 +157,20 @@ The Workers now exist, unreachable (no workers.dev, no preview URLs, no
 domain). Delete the generated `wrangler.no-routes.jsonc` files and the
 secrets files.
 
+## Status update (2026-10-16, later)
+
+- Boss `GITHUB_TOKEN` uploaded by the owner; production Boss secrets are
+  `BOSS_CSRF_SECRET`, `GITHUB_TOKEN` (names verified). The upload created Boss
+  version `14998af5-7f54-470c-852f-7b24cb9f12f0` (still no route, workers.dev or
+  preview URL — API-verified). Web secrets: `REACTION_GUARD_SECRET`.
+- GitHub Environments `production` and `staging` both hold
+  `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` (names verified);
+  tokens are per-Worker **Editor** only (owner-reported; values never read).
+  `CF_PRODUCTION_DEPLOY_ENABLED` unset (0 repository variables).
+- The D1 permission gap is closed by the schema gate (no D1 permission needed).
+  Applied migrations in all four AmericaWhat D1 databases match this release
+  (checked read-only with owner OAuth).
+
 ## 5. Remaining credentials (owner; values never in chat, commits or logs)
 
 ### 5a. Boss GitHub PAT (production)
@@ -187,7 +201,7 @@ Account API tokens → Create token → Custom token):
 |---|---|---|
 | Name | `americawhat-ci-production` | `americawhat-ci-staging` |
 | Workers | **Editor**, scoped to the individual Workers `americawhat-web-production` and `americawhat-boss-production` | **Editor**, scoped to `americawhat-web-staging` and `americawhat-boss-staging` |
-| D1 | **Read** (for `d1 migrations list`; if that command is refused, D1 Edit — not verified yet) | same |
+| D1 | **none** — the schema gate reads migrations through the Worker's own binding ([DEPLOYMENT.md](DEPLOYMENT.md)) | none |
 | Zone / DNS / Access / Routes | none | none |
 | Account resources | Hakan@dndr.net's Account only | same |
 | Expiry | date noted for rotation | same |
@@ -210,7 +224,7 @@ the merge (the deploy workflow is not on `main` yet).
 ## 5 (original). CI credentials (GitHub)
 
 Create the account-owned API token for production: Workers **Editor** on the
-two production Workers only, **D1 Read**; no zone/DNS/Access permissions. In
+two production Workers only; no D1/zone/DNS/Access permissions. In
 GitHub → Settings → Environments → `production`: required reviewer
 `hakandndr`, deployment branches `main`, secrets `CLOUDFLARE_API_TOKEN`,
 `CLOUDFLARE_ACCOUNT_ID`. Do **not** set `CF_PRODUCTION_DEPLOY_ENABLED` yet.
@@ -229,6 +243,8 @@ npx wrangler deployments status --env production --config workers/web/wrangler.j
 ```bash
 npx wrangler d1 migrations list APP_DB --remote --env production --config workers/web/wrangler.jsonc
 ```
+
+(owner OAuth only; the CI tokens deliberately cannot run this)
 
 ```bash
 npx wrangler secret list --env production --config workers/boss/wrangler.jsonc

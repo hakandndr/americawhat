@@ -155,16 +155,14 @@ jobs:
           node scripts/release/cf-release.mjs verify-dist reports/rc-static-manifest.json dist
           node scripts/release/cf-release.mjs check-config "${{ needs.plan.outputs.target }}"
           test -s .wrangler/release/web/index.js && test -s .wrangler/release/boss/index.js
-      - name: No unapplied D1 migrations (schema changes are a manual, reviewed step)
-        run: |
-          for db in APP_DB ANALYTICS_DB; do
-            out="$(npx wrangler d1 migrations list "$db" --remote --config workers/web/wrangler.jsonc $ENV_ARGS 2>&1)"
-            if ! printf '%s' "$out" | grep -q 'No migrations to apply'; then
-              printf '%s\n' "$out"
-              echo "::error::$db has unapplied migrations; apply them by hand first (docs/DEPLOYMENT.md)."
-              exit 1
-            fi
-          done
+      # Schema changes are a manual, reviewed step. The CI token has no D1
+      # permission: the serving Web Worker reads d1_migrations through its own
+      # binding and publishes a digest on /api/health, which must equal this
+      # release's migrations/ before anything is uploaded. After activation
+      # the smoke test requires schema_app/schema_analytics = ok on the new
+      # version, otherwise both Workers roll back.
+      - name: No unapplied D1 migrations (schema gate through the serving Worker)
+        run: node scripts/release/cf-release.mjs schema-gate "$WEB_URL"
       - name: Record the versions now serving (rollback targets)
         id: previous
         run: |
