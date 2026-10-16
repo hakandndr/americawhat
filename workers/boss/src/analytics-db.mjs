@@ -9,7 +9,8 @@
 //              day in time order (occurred_at, then id), out of day_total;
 //              filters never change it. Only an import of older events into
 //              an existing day can move later rows of that day.
-//   IP VISITS  retained page_view rows with exactly that address, all time
+//   IP VISITS  retained page_view rows with exactly that address, up to the
+//              same ALL # as the list being shown (rows and counts agree)
 //   Addresses  distinct address strings in the view — not people
 
 import { daysBefore, isDay, laDay, laDayBounds, laMidnight, nextDay } from '../../shared/time.mjs';
@@ -141,17 +142,17 @@ export async function stream(db, f) {
       ORDER BY id DESC LIMIT ?`,
   ).bind(...args, f.limit + 1).all();
   const rows = results.slice(0, f.limit);
-  return { rows: await decorateRows(db, rows), nextBefore: results.length > f.limit ? rows[rows.length - 1].id : null };
+  return { rows: await decorateRows(db, rows, f.snapshot), nextBefore: results.length > f.limit ? rows[rows.length - 1].id : null };
 }
 
-async function decorateRows(db, rows) {
+async function decorateRows(db, rows, upperId = null) {
   const ips = [...new Set(rows.map((r) => r.ip).filter(Boolean))];
   const visits = new Map();
   for (let i = 0; i < ips.length; i += 90) {
     const chunk = ips.slice(i, i + 90);
     const { results: counts } = await db.prepare(
-      `SELECT ip, COUNT(*) AS n FROM visitor_events WHERE event = 'page_view' AND ip IN (${chunk.map(() => '?').join(',')}) GROUP BY ip`,
-    ).bind(...chunk).all();
+      `SELECT ip, COUNT(*) AS n FROM visitor_events WHERE event = 'page_view' AND ip IN (${chunk.map(() => '?').join(',')})${upperId == null ? '' : ' AND id <= ?'} GROUP BY ip`,
+    ).bind(...chunk, ...(upperId == null ? [] : [upperId])).all();
     for (const c of counts) visits.set(c.ip, Number(c.n));
   }
   return rows.map((r) => ({ ...r, today_no: Number(r.today_no), day_total: Number(r.day_total), ip_visits: visits.get(r.ip) || 0 }));
@@ -183,7 +184,7 @@ export async function pagination(db, f) {
   return { pages, current, total: pages.reduce((n, row) => n + row.rows, 0), snapshot: Number(results[0].upper_id) };
 }
 
-/** Hydrate a bounded primary-key interval; Day # and IP VISITS retain global definitions. */
+/** Hydrate a bounded primary-key interval; IP VISITS counts up to the same frozen ALL #. */
 export async function numberedStream(db, f, plan) {
   const selected = plan.pages[plan.current - 1];
   if (!selected) return { ...plan, rows: [], changed: false };
@@ -194,7 +195,14 @@ export async function numberedStream(db, f, plan) {
     FROM visitor_events ${w.sql ? `${w.sql} AND` : 'WHERE'} id BETWEEN ? AND ?
     ORDER BY id DESC LIMIT ?
   `).bind(...w.args, selected.lastId, selected.firstId, f.limit).all();
-  return { ...plan, rows: await decorateRows(db, results), changed: results.length !== selected.rows };
+  return { ...plan, rows: await decorateRows(db, results, plan.snapshot), changed: results.length !== selected.rows };
+}
+
+/** Records matching the filters that arrived after the frozen upper ALL #. */
+export async function newerCount(db, f, upperId) {
+  const w = whereFor({ ...f, snapshot: null });
+  const row = await db.prepare(`SELECT COUNT(*) AS n FROM visitor_events ${w.sql ? `${w.sql} AND` : 'WHERE'} id > ?`).bind(...w.args, upperId).first();
+  return Number(row?.n || 0);
 }
 
 /** Exact-address activity: indexed summaries and one bounded history page. No writes. */

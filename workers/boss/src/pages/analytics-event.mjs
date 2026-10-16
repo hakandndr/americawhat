@@ -9,7 +9,7 @@ import {formatLaSeconds,isoUtc} from '../../../shared/time.mjs';
 
 export const ALL_TIP='ALL #: permanent database ID of this event. Never reset, reused or renumbered by filters; gaps are deleted records.';
 export const DAY_TIP='DAY #: position in time order among all retained events of the same Pacific Time day (1 = first event), shown with the day total. Filters never change it.';
-const VISITS_TIP='Retained page views from this exact address, all dates and sources. Events, not people or sessions.';
+const VISITS_TIP='Retained page views from this exact address, all dates and sources, up to the last ALL # of this list. Events, not people or sessions.';
 
 const dash='<span class="faint">—</span>';
 const text=(value,title=value)=>value==null||value===''?dash:`<span title="${h(title)}">${h(value)}</span>`;

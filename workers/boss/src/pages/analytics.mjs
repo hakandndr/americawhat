@@ -100,7 +100,16 @@ ${link(current + 1, 'Next', current >= last)}${link(last, 'Last', current >= las
 </nav></div>`;
 }
 
-export function renderAnalytics({ identity, flash, f, sum, days = [], tops, streamPage, retention, coverage, corpora, outbox }) {
+/** Whether the list is live or fixed, and one link back to the newest records with the same filters. */
+function freshness(f, streamPage, pinned, newer) {
+  const latest = `/analytics${qs(f, { snapshot: null, p: null, before: null })}`;
+  const upTo = streamPage.snapshot ? ` up to ALL # ${h(streamPage.snapshot)}` : '';
+  if (!pinned) return `<p class="faint small" id="analytics-freshness">Latest records${upTo} · <a data-analytics-nav href="${h(latest)}">Refresh</a></p>`;
+  const note = newer > 0 ? `<strong>${newer} newer record${newer === 1 ? '' : 's'}</strong> arrived since. ` : '';
+  return `<p class="small" id="analytics-freshness" role="note">Fixed list${upTo} so pages stay stable. ${note}<a data-analytics-nav class="btn secondary" href="${h(latest)}">Show latest</a></p>`;
+}
+
+export function renderAnalytics({ identity, flash, f, sum, days = [], tops, streamPage, retention, coverage, corpora, outbox, pinned = false, newer = 0 }) {
   const chips = [['today', 'Today'], ['7d', '7 days'], ['30d', '30 days'], ['all', 'All time']]
     .map(([r, l]) => `<a data-analytics-nav${f.range === r ? ' class="on" aria-current="true"' : ''} href="/analytics${qs(f, { range: r, from: '', to: '', before: null, snapshot: null })}">${l}</a>`).join('');
   const o = sum.overall;
@@ -118,7 +127,7 @@ export function renderAnalytics({ identity, flash, f, sum, days = [], tops, stre
 <div id="analytics-retention">${retention.overdue ? `<div class="notice warn" role="note"><span class="lbl warn">Global retention</span><span>${retention.overdueRecords} raw records are past the ${retention.targetDays}-day target. See <a href="#data-ops">Data operations</a>; nothing is deleted automatically.</span></div>` : ''}</div>
 ${overview(v, rangeLabel, days)}
 
-<section class="section" aria-labelledby="h-filters"><form method="get" action="/analytics" class="filterbar" id="analytics-filters" data-view-url="/analytics${h(qs(f, { p: streamPage.current }))}">${hidden('range', f.range)}
+<section class="section" aria-labelledby="h-filters"><form method="get" action="/analytics" class="filterbar" id="analytics-filters" data-view-url="/analytics${h(pinned ? qs(f, { p: streamPage.current }) : qs(f, { snapshot: null, p: streamPage.current > 1 ? streamPage.current : null }))}">${hidden('range', f.range)}
   <div class="panel-head"><h2 id="h-filters">Filters</h2><p class="faint small">Days are Pacific Time · empty fields match everything</p></div>
   <div class="filter-row">
     <div><label for="f-from">From (PT day)</label><input id="f-from" name="from" value="${h(f.from)}" placeholder="YYYY-MM-DD" inputmode="numeric"></div>
@@ -147,6 +156,7 @@ ${overview(v, rangeLabel, days)}
 
 <section id="analytics-events" class="section" aria-labelledby="h-events">
 <div class="stream-head"><h2 id="h-events">Visitor events</h2><p class="faint small">Newest first · ${streamPage.rows.length} rows on this page · <span class="warn">*</span> approximate time · hover a header for its meaning; Details shows every raw field</p></div>
+${freshness(f, streamPage, pinned, newer)}
 <div class="table-card"><table class="events-table" role="table" style="${columnStyle(cols)}">${eventHead(cols)}
 <tbody role="rowgroup">${rows || '<tr role="row"><td role="cell" class="empty">No records in this view. Widen the date range or reset the filters.</td></tr>'}</tbody></table>
 ${paginationControls(f, streamPage)}</div>
