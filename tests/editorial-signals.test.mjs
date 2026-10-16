@@ -75,3 +75,17 @@ test('curation applies to the current pending without dropping unnamed candidate
   assert.equal(bad.ok, false);
   assert.equal(bad.errors.length, 3);
 });
+
+test('curation can propose rejections: the candidate stays pending with draft_reason/draft_note only', () => {
+  const pending = [c('a', 'A'), c('b', 'B'), c('new', 'Added meanwhile')];
+  const r = applyCuration(pending, { propose_reject: [{ id: 'b', reason: 'NOT_US', note: 'Dartmouth, Nova Scotia' }] });
+  assert.equal(r.ok, true);
+  assert.deepEqual(r.pending.map((p) => p.id), ['a', 'b', 'new']);
+  assert.equal(r.pending[1].draft_reason, 'NOT_US');
+  assert.equal(r.pending[1].draft_note, 'Dartmouth, Nova Scotia');
+  assert.equal(r.proposed, 1);
+  assert.equal(r.untouched, 2);
+  const bad = applyCuration(pending, { keep: [{ id: 'a' }], propose_reject: [{ id: 'a', reason: 'NOT_US' }, { id: 'b', reason: 'NOPE' }] });
+  assert.equal(bad.ok, false);
+  assert.equal(bad.errors.length, 2);
+});

@@ -57,11 +57,13 @@ Access app, staging content repository `hakandndr/americawhat-staging-content`.
 
 | Priority | Item | When |
 |---|---|---|
-| 1 | S2 reconciliation: download Hostinger `aw_panel_log.txt` / `aw_votes.json` again, import the deltas ([POST-CUTOVER.md](POST-CUTOVER.md)); a one-time reminder task is scheduled | from 2026-10-19 04:05 UTC |
-| 2 | Bring staging to the production code (manual "Deploy to Cloudflare" → staging; approval needed) | next session |
+| 1 | Review and merge PR #5 (Boss red pending-count badge beside Weekly review; Analytics PAGE wraps, REFERRER wider; drafted rejections preselect Reject) and approve the production deploy; then merge PR #6 (editorial drafts in `pending.json`) | owner |
+| 2 | Weekly review in Boss after #5/#6: 5 stories drafted for approval (Pelham driveway tickets, Spring Hill iguana, Grand Junction guinea pig, Uber One class action, Washington HOA fences — the last needs "allow aggregator link"); 117 candidates preselected Reject with reason and note; 24 left for judgement (incl. the Keys resort tab story — victim over 60 — and the Josh Allen DUI story — named public figure) | owner |
+| — | S2 reconciliation: **waived** by the owner 2026-10-15; reminder task disabled; S1 stays the last legacy import | closed |
+| — | Staging sync to the production code: deferred to a separate session (approval needed) | deferred |
 | 3 | 30-day observation; then retire Hostinger web files, delete the FTP secrets, revoke the old Hostinger Boss credential (e-mail stays) | until 2026-11-15, then separate approval |
 | 4 | Credential expiry: note and rotate the Boss GitHub PAT (≤90 days) and both Cloudflare CI tokens | track dates in the owner's vault |
-| 5 | DNDR forwarding is off (no DNDR producer); native analytics work independently | needs a DNDR-side decision |
+| 5 | DNDR forwarding is off; `workers/web` `dndr-forward.mjs` needs a DNDR-side producer registration and a `DNDR_COLLECTOR` binding. Deferred to a separate DNDR session; native analytics work independently | deferred |
 | 6 | Privacy page "~90 days" wording vs. manual-only retention; 3 real visitor rows / 2 votes in staging (delete or keep) | owner decision |
 
 ## Backups and rollback anchors

@@ -5,7 +5,8 @@ import {formatLaSeconds,isoUtc} from '../../../shared/time.mjs';
 // share one column list: one compact row per event, full values in titles and
 // in Details. Each column's width feeds the row grid; columns marked `drop`
 // leave the row at narrower desktop widths (their values stay in Details) and
-// come back in the labelled cards used on small screens.
+// come back in the labelled cards used on small screens. `wrap` columns
+// (PAGE) break long values over several lines instead of truncating them.
 
 export const ALL_TIP='ALL #: permanent database ID of this event. Never reset, reused or renumbered by filters; gaps are deleted records.';
 export const DAY_TIP='DAY #: position in time order among all retained events of the same Pacific Time day (1 = first event), shown with the day total. Filters never change it.';
@@ -46,10 +47,10 @@ export function eventColumns({ip}={}) {
     {key:'source',label:'SOURCE',tip:'Which writer stored the row: native (this site) or legacy (imported Hostinger log).',w:'54px',cell:(r)=>`<span class="src ${r.origin==='legacy'?'legacy':'native'}">${h(r.origin)}</span>`},
     {key:'event',label:'EVENT',w:'60px',drop:'lg',cell:(r)=>text(r.event)},
     {key:'actor',label:'ACTOR',tip:'Class stored at ingestion: human or automated. Never rewritten.',w:'72px',cell:(r)=>`<span class="actor ${r.automation==='human'?'human':'auto'}">${h(r.automation)}</span>`},
-    {key:'agent',label:'AGENT',tip:'Agent family from the user agent, or the legacy crawler label. Not verified.',w:'minmax(68px,.5fr)',drop:'md',cell:(r)=>text(r.agent||r.source_label)},
-    {key:'place',label:'COUNTRY · CITY',w:'minmax(160px,1.3fr)',cell:place},
-    {key:'page',label:'PAGE',w:'minmax(124px,2fr)',wide:true,cell:(r)=>text(r.page??r.path,r.path&&r.path!==r.page?`${r.page} (path ${r.path})`:r.page)},
-    {key:'referrer',label:'REFERRER',w:'minmax(84px,.6fr)',drop:'md',cell:(r)=>text(r.referrer||'—',r.referrer_raw||r.referrer)},
+    {key:'agent',label:'AGENT',tip:'Agent family from the user agent, or the legacy crawler label. Not verified.',w:'minmax(60px,.4fr)',drop:'md',cell:(r)=>text(r.agent||r.source_label)},
+    {key:'place',label:'COUNTRY · CITY',w:'minmax(130px,1fr)',cell:place},
+    {key:'page',label:'PAGE',w:'minmax(150px,2fr)',wide:true,wrap:true,cell:(r)=>text(r.page??r.path,r.path&&r.path!==r.page?`${r.page} (path ${r.path})`:r.page)},
+    {key:'referrer',label:'REFERRER',w:'minmax(120px,1.1fr)',drop:'md',cell:(r)=>text(r.referrer||'—',r.referrer_raw||r.referrer)},
     {key:'device',label:'DEVICE',w:'56px',drop:'lg',cell:(r)=>text(r.device_class)},
     {key:'browser',label:'BROWSER · OS',w:'minmax(96px,.7fr)',cell:(r)=>{const v=[r.browser,r.os].filter(Boolean).join(' · ');return v?`<span title="${h(r.user_agent||v)}">${h(v)}</span>`:dash;}},
     {key:'more',label:'<span class="visually-hidden">DETAILS</span>',w:'60px',cell:eventDetails},
@@ -63,7 +64,7 @@ export function columnStyle(cols) {
   return `--cols-xl:${tier([])};--cols-lg:${tier(['lg'])};--cols-md:${tier(['lg','md'])}`;
 }
 
-const cellClass=(c)=>[`c-${c.key}`,c.num&&'num',c.wide&&'wide',c.key==='more'&&'more',c.drop&&`hide-${c.drop}`].filter(Boolean).join(' ');
+const cellClass=(c)=>[`c-${c.key}`,c.num&&'num',c.wide&&'wide',c.key==='more'&&'more',c.wrap&&'wrap',c.drop&&`hide-${c.drop}`].filter(Boolean).join(' ');
 
 export function eventHead(cols) {
   return `<thead role="rowgroup"><tr role="row">${cols.map((c)=>`<th role="columnheader" scope="col" class="${cellClass(c)}"${c.tip?` title="${h(c.tip)}"`:''}>${c.label}</th>`).join('')}</tr></thead>`;

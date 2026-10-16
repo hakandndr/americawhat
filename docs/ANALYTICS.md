@@ -28,7 +28,7 @@ Authoritative for the AmericaWhat analytics store, the Boss Analytics screen,
 the legacy import, DNDR reconciliation and retention. Status labels used here:
 **IMPLEMENTED**, **TESTED LOCALLY**, **STAGING**, **PRODUCTION**, **OWNER DECISION**.
 Production since 2026-10-16: native collection on `americawhat.com`, S1 legacy
-import applied (1,083 events), S2 pending ([POST-CUTOVER.md](POST-CUTOVER.md)).
+import applied (1,083 events); S2 waived by the owner, S1 is the last legacy import.
 
 ## 1. Former Hostinger collection (historical, verified 2026-10-14)
 
