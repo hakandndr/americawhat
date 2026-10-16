@@ -9,7 +9,7 @@ dist/
 .wrangler/
 .ftp-deploy-sync-state.json
 public/*/config.php
-public/og/
+# public/og/ is the committed, approved OG archive (scripts/release/approved-og.json)
 
 # Assistant and editor working files
 .claude/
@@ -33,3 +33,6 @@ tmp/
 reports/
 coverage/
 .venv/
+
+# OG images rendered for items published after the approved archive
+.og-generated/
