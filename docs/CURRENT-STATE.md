@@ -1,17 +1,17 @@
 # americawhat — current state
 
 Single source of truth for what is live. Verified 2026-10-16 (release
-60c3c74). Update the tables in place when something changes.
+032e88f). Update the tables in place when something changes.
 
 ## Production (Cloudflare Workers, live since 2026-10-16 04:02 UTC)
 
 | Item | Value |
 |---|---|
-| Source | `main` @ **60c3c74** (GitHub `hakandndr/americawhat`; later `main` commits are content/docs only) |
-| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `b046f207-5735-4538-90da-9986855da37a` |
-| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `af911624-9961-430d-b195-0c0f4f0f7e4d`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
-| Previous versions (rollback) | Web `5fa975eb-873b-4340-bb67-ca8f780675dc`, Boss `6b2782ab-3cf4-4981-9f0b-35850f8465bf` (release a6ef6b2); before that Web `de2f8985…`, Boss `5aa28574…` (81b99b3) |
-| Health | `/api/health`: status ok, environment production, release 60c3c74, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
+| Source | `main` @ **032e88f** (GitHub `hakandndr/americawhat`; later `main` commits are content/docs only) |
+| Site | https://americawhat.com and https://www.americawhat.com → Worker `americawhat-web-production`, version `7fd196f8-6b23-4d0f-880d-f0f88844ca01` |
+| Boss | https://boss.americawhat.com → Worker `americawhat-boss-production`, version `0553c2ea-6fcf-49ac-ab0e-2d95f87205af`, behind Cloudflare Access (team `dndrnet`, `hakan@dndr.net` only; AUD `6b54c079…a224fe`) |
+| Previous versions (rollback) | Web `b046f207-5735-4538-90da-9986855da37a`, Boss `af911624-9961-430d-b195-0c0f4f0f7e4d` (release 60c3c74); before that Web `5fa975eb…`, Boss `6b2782ab…` (a6ef6b2) |
+| Health | `/api/health`: status ok, environment production, release 032e88f, `app_db`, `analytics_db`, `reaction_secret`, `schema_app`, `schema_analytics` all ok |
 | D1 | `americawhat-app-production` `3097933b-4feb-4e50-bb59-760fd06a640e`, `americawhat-analytics-production` `1012183d-96cd-4d7f-8e93-ca247ca43589` (WNAM, migration 0001 each) |
 | Analytics | 1,083 legacy events (Hostinger log S1, imported idempotently; ledger 1,084 incl. 1 line without a page) + native page views since cutover (26 at the time of writing) |
 | Reactions | S1 baseline **applied** through Boss: 1 import (`baseline`, 14 items, +19 votes); live votes are added on top (21 in total at the time of writing) |
@@ -57,7 +57,7 @@ Access app, staging content repository `hakandndr/americawhat-staging-content`.
 
 | Priority | Item | When |
 |---|---|---|
-| 1 | Weekly review in Boss (live since 60c3c74: red pending-count badge beside Weekly review, drafted rejections preselected): 5 stories drafted for approval (Pelham driveway tickets, Spring Hill iguana, Grand Junction guinea pig, Uber One class action, Washington HOA fences — the last needs "allow aggregator link"); 117 candidates preselected Reject with reason and note; 24 left for judgement (incl. the Keys resort tab story — victim over 60 — and the Josh Allen DUI story — named public figure) | owner |
+| 1 | Weekly review in Boss (live since 032e88f: red pending-count badge, records vs story cards, Expand/Collapse all, "Select prepared drafts", live Approve/Reject/Skip counts, confirmation preview before the one-commit apply). The 117 proposed rejections were applied by the owner; 30 candidates remain, 5 with prepared drafts (Pelham driveway tickets, Spring Hill iguana, Grand Junction guinea pig, Uber One class action, Washington HOA fences — the last needs "allow aggregator link" and is not picked by "Select prepared drafts") | owner |
 | — | S2 reconciliation: **waived** by the owner 2026-10-15; reminder task disabled; S1 stays the last legacy import | closed |
 | — | Staging sync to the production code: deferred to a separate session (approval needed) | deferred |
 | 2 | 30-day observation; then retire Hostinger web files, delete the FTP secrets, revoke the old Hostinger Boss credential (e-mail stays) | until 2026-11-15, then separate approval |
