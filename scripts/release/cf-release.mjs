@@ -121,6 +121,7 @@ export function checkTargetConfig(target, { web, boss }) {
       expect(cfg.vars?.ENVIRONMENT === 'staging', `${label} ENVIRONMENT must be staging`);
       expect(JSON.stringify(cfg.d1_databases.map((d) => d.database_id)) === JSON.stringify([STAGING.appDb, STAGING.analyticsDb]), `${label} must bind the staging D1 databases`);
       expect(!cfg.routes, `${label} staging must not have routes`);
+      expect(!cfg.services && !cfg.triggers, `${label} staging must not bind services or run crons (no visitor data leaves staging)`);
     }
     expect(boss.vars.BOSS_GITHUB_REPOSITORY === STAGING.contentRepo && boss.vars.BOSS_GITHUB_BRANCH === STAGING.contentBranch, 'staging Boss must target the staging content repository');
     return { errors, notProvisioned };
@@ -152,6 +153,10 @@ export function checkTargetConfig(target, { web, boss }) {
   expect(ids(pw) === ids(pb), 'web and boss production must bind the same D1 databases');
   expect(new Set(pw.d1_databases.map((d) => d.database_id)).size === 2 || notProvisioned.length > 0, 'app and analytics must be different databases');
   expect(pw.vars.SITE_HOSTNAME === 'americawhat.com', 'web SITE_HOSTNAME');
+  // The only cross-project binding: DNDR's ProducerApi as producer prd_americawhat_native.
+  expect(!pb.services, 'boss production must not bind other services');
+  expect(!pw.services || JSON.stringify(pw.services) === JSON.stringify([{ binding: 'DNDR_COLLECTOR', service: 'dndr-collector', entrypoint: 'ProducerApi', props: { producerId: 'prd_americawhat_native' } }]),
+    'web production may bind only DNDR_COLLECTOR -> dndr-collector#ProducerApi as prd_americawhat_native');
   expect(pw.vars.PUBLIC_ORIGINS === 'https://americawhat.com,https://www.americawhat.com', 'web PUBLIC_ORIGINS');
   const v = pb.vars;
   expect(v.BOSS_ORIGIN === 'https://boss.americawhat.com', 'boss BOSS_ORIGIN');
@@ -303,6 +308,17 @@ async function main(argv) {
   }
   if (command === 'version-id') {
     console.log(versionIdFrom(fs.readFileSync(args[0], 'utf8'), args[1]));
+    return 0;
+  }
+  if (command === 'schedules') {
+    // The Web Worker's cron schedules for a target, as the Cloudflare API body.
+    // Versions do not carry triggers; this is applied as its own narrow step.
+    const cfg = readConfigs().web;
+    const own = args[0] === 'production' ? cfg.env?.production : args[0] === 'staging' ? cfg : null;
+    if (!own) { console.error('usage: schedules staging|production'); return 2; }
+    const crons = own.triggers?.crons || [];
+    if (!crons.every((c) => /^[\d*/,-]+( [\d*/,-]+){4}$/.test(c))) { console.error('invalid cron expression'); return 1; }
+    console.log(JSON.stringify(crons.map((cron) => ({ cron }))));
     return 0;
   }
   if (command === 'active-version') {

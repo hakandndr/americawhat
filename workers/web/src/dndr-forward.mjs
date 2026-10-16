@@ -6,10 +6,23 @@
 // identity is the binding's own props, never chosen here. The event id is the
 // stored row's event_uid, so a retry is idempotent on the DNDR side.
 //
-// Enabling it requires a DNDR-side producer registration, which is outside
-// this repository; until then the binding is absent and nothing is sent.
+// Only production forwards: staging and local previews never send visitor
+// data, even when a binding is present. The production binding names the
+// DNDR producer prd_americawhat_native (site_americawhat), which must be
+// registered on the DNDR side before events are accepted.
+//
+// DNDR stamps a PAGE event at the time it receives it, so a retry is only
+// meaningful shortly after the visit: retryOutbox() resends pending or
+// failed rows inside RETRY_WINDOW_SECONDS and leaves older ones for an
+// explicit, reviewed reconciliation instead of mis-dating them.
 
-export const FORWARD_ENVIRONMENTS = Object.freeze(['staging', 'production']);
+export const FORWARD_ENVIRONMENTS = Object.freeze(['production']);
+export const DNDR_PRODUCER_ID = 'prd_americawhat_native';
+export const RETRY_WINDOW_SECONDS = 6 * 3600;
+export const RETRY_MAX_ATTEMPTS = 6;
+export const RETRY_BATCH = 50;
+// A row this fresh may still be in flight from the request's own waitUntil.
+export const RETRY_MIN_AGE_SECONDS = 120;
 const STATUSES = new Set(['accepted', 'duplicate', 'rejected', 'error']);
 
 export function forwardingEnabled(env) {
@@ -53,4 +66,26 @@ export async function forwardAndRecord(env, db, event, now) {
     ).bind(state, state === 'sent' ? '' : `${status}${reason ? `: ${reason}` : ''}`, now, event.producerEventId).run();
   } catch { /* the source row is already stored; the outbox stays pending */ }
   return status;
+}
+
+/**
+ * Outbox recovery (cron): resends pending or failed rows of recent native
+ * events in one bounded batch, oldest first. Idempotent: DNDR deduplicates
+ * on (producer, event_uid), and a row that reached DNDR is marked sent.
+ * Returns the number of rows attempted. Never throws.
+ */
+export async function retryOutbox(env, db, now, hostname) {
+  if (!forwardingEnabled(env)) return 0;
+  let rows = [];
+  try {
+    rows = (await db.prepare(
+      `SELECT v.event_uid, v.path, v.referrer_raw, v.ip, v.user_agent, v.country_code, v.region, v.city
+         FROM dndr_outbox o JOIN visitor_events v ON v.event_uid = o.event_uid
+        WHERE o.state IN ('pending', 'failed') AND o.attempts < ? AND o.updated_at <= ?
+          AND v.origin = 'native' AND v.occurred_at >= ?
+        ORDER BY v.occurred_at ASC LIMIT ?`,
+    ).bind(RETRY_MAX_ATTEMPTS, now - RETRY_MIN_AGE_SECONDS, now - RETRY_WINDOW_SECONDS, RETRY_BATCH).all()).results || [];
+  } catch { return 0; }
+  for (const row of rows) await forwardAndRecord(env, db, dndrPageEvent(row, hostname), now);
+  return rows.length;
 }
