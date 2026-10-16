@@ -21,6 +21,12 @@ function entryCard(entry, i) {
   const prefix = `e${i}_`;
   const sourceUrl = rep.source_url || (isOriginalSourceUrl(rep.external_url) ? rep.external_url : '');
   const others = entry.members.filter((m) => m.id !== rep.id).map((m) => m.id);
+  // An editorial draft may propose a rejection (pending.json draft_reason /
+  // draft_note, written by scripts/editorial/apply-curation.mjs). It only
+  // preselects the choice; nothing changes until the owner submits the form.
+  const drafted = [rep, ...entry.members].find((m) => REJECTION_REASONS[m.draft_reason]);
+  const draftReason = drafted ? drafted.draft_reason : '';
+  const action = draftReason ? 'reject' : 'skip';
   // Signals describe the candidate; checks are advisory prompts to read the
   // source. Neither is a decision: only the owner's choice below changes data.
   const signals = [
@@ -28,6 +34,7 @@ function entryCard(entry, i) {
     `<span class="tag">${h(entry.copies)} cop${entry.copies === 1 ? 'y' : 'ies'}</span>`,
     `<span class="tag geo-${h(entry.geography.verdict)}">${h(entry.geography.verdict)}${entry.geography.evidence.length ? `: ${h(entry.geography.evidence.join(', '))}` : ''}</span>`,
     entry.drafted ? '<span class="tag ok">comment drafted</span>' : '',
+    draftReason ? `<span class="tag warn" title="${h(drafted.draft_note || '')}">draft: reject ${h(draftReason)}</span>` : '',
   ].join('');
   const checks = [
     ...entry.flags.map((f) => `<span class="tag flag" title="Advisory: read the source. Not a rejection.">${h(f.code.replace('HARD_REJECT_', ''))}: ${h(f.terms.join(', '))}</span>`),
@@ -63,12 +70,12 @@ function entryCard(entry, i) {
   </details>
   <div class="decide" role="group" aria-label="Decision for story ${i + 1}">
     <div class="choice">
-      <label class="s"><input type="radio" name="${prefix}action" value="skip" checked> Skip</label>
-      <label class="a"><input type="radio" name="${prefix}action" value="approve"> Approve</label>
-      <label class="r"><input type="radio" name="${prefix}action" value="reject"> Reject</label>
+      <label class="s"><input type="radio" name="${prefix}action" value="skip"${action === 'skip' ? ' checked' : ''}> Skip</label>
+      <label class="a"><input type="radio" name="${prefix}action" value="approve"${action === 'approve' ? ' checked' : ''}> Approve</label>
+      <label class="r"><input type="radio" name="${prefix}action" value="reject"${action === 'reject' ? ' checked' : ''}> Reject</label>
     </div>
-    ${select(`${prefix}reason`, [['', 'Rejection reason…'], ...REASON_OPTIONS], entry.suggestions[0] || '', ` aria-label="Rejection reason (used only when Reject is chosen)"`)}
-    <input name="${prefix}note" placeholder="note (optional)" aria-label="Note" style="max-width:240px">
+    ${select(`${prefix}reason`, [['', 'Rejection reason…'], ...REASON_OPTIONS], draftReason || entry.suggestions[0] || '', ` aria-label="Rejection reason (used only when Reject is chosen)"`)}
+    <input name="${prefix}note" value="${h(drafted?.draft_note || '')}" placeholder="note (optional)" aria-label="Note" style="max-width:240px">
     <div class="opts">
     ${others.length ? `<label><input type="checkbox" name="${prefix}dupes" value="1" checked> also remove the ${others.length} other cop${others.length === 1 ? 'y' : 'ies'} as DUPLICATE</label>` : ''}
     <label><input type="checkbox" name="${prefix}ovs" value="1"> allow ≠ 2 sentences</label>
