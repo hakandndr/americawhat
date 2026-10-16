@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "aw-0141",
+      "title": "Watch: Bear wanders through Pennsylvania restaurant, raids dumpster",
+      "comment": "A black bear visited the Jubilee Restaurant in Pocono Pines, checked out the host stand, and later went searching through the dumpsters. Apparently, the menu wasn't quite as interesting as whatever the kitchen had thrown away.",
+      "category": "food-crime",
+      "source_url": "https://www.upi.com/Odd_News/2026/10/05/bear-Jubilee-Restaurant-Pocono-Pines/5481791217525/",
+      "source_name": "UPI Odd News",
+      "date": "2026-10-05",
+      "status": "REAL",
+      "city": "Pocono Pines",
+      "state": "Pennsylvania",
+      "source_domain": "upi.com",
+      "seen_id": "src-3a61a4cec004"
+    },
+    {
       "id": "aw-0140",
       "title": "Washington HOA fined homeowners for not building fences, then lost on appeal",
       "comment": "A Washington HOA fined homeowners for refusing to install fences under a rule that applied only during a development period that had already ended. The appeals court sided with the homeowners and awarded their attorney fees, leaving the association with a bill and no new fences.",
