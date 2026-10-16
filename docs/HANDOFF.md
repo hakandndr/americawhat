@@ -13,8 +13,9 @@ irreplaceable part).
 fetch.yml (02:00/14:00/20:00 UTC) → src/data/pending.json on main
 Boss (boss.americawhat.com, Cloudflare Access, owner only)
    → approve/reject/edit → ONE commit of published.json + pending.json to main
-deploy-cloudflare.yml → build (Astro, pinned OG renderer) → owner approves
-   → Worker versions for americawhat.com (web) and boss.americawhat.com (Boss)
+deploy-cloudflare.yml → eligibility → tests/build (Astro, pinned OG renderer)
+   → verified Boss content: automatic Web-only version (after one-time setup)
+   → other changes: owner approves production → Web + Boss versions
 Web Worker: static site + reactions + first-party page views → D1
 ```
 
@@ -48,8 +49,10 @@ Item schema and status rules: `src/lib/items.js`, `src/lib/slug.js` (Boss pins
 - Reports to the owner in Turkish; code and docs in English.
 - Commits as `Hakan Dundar <hakan@dndr.net>`; no tool or assistant attribution
   (hooks in `.githooks/` enforce it).
-- Never push to `main` directly: branch → PR → CI → merge. Production deploys
-  always wait for the owner's approval in the `production` Environment.
+- Never push code to `main` directly: branch → PR → CI → merge. Application
+  production deploys wait for the owner's `production` Environment approval.
+  The separate content path accepts only signed Boss transactions over the
+  live reviewed code baseline; see [DEPLOYMENT.md](DEPLOYMENT.md) for setup.
 - Never change DNS, Hostinger, D1 data or other projects without explicit
   approval. E-mail DNS records must stay as they are.
 - Wrangler with the owner's OAuth (`CLOUDFLARE_API_TOKEN` unset). The CLI
@@ -64,9 +67,12 @@ Item schema and status rules: `src/lib/items.js`, `src/lib/slug.js` (Boss pins
    (worktree `D:\IT\AmericaWhat\americawhat\tmp\security-boss` works; its
    branch `codex/staging-rc` is historical — do not reuse it for new work).
 2. Read [CURRENT-STATE.md](CURRENT-STATE.md) → "Open items".
-3. First task: the owner decides the weekly review in Boss (drafts are
+3. Boss UX/content automation changes require an initial owner-approved code
+   release and the one-time `production-content`/proof-key setup in DEPLOYMENT.
+   Until then news follows the existing reviewed deployment path.
+4. The owner decides the weekly review in Boss (drafts are
    already in `pending.json`, see CURRENT-STATE → Open items). S2 is waived; staging sync
    and DNDR forwarding are deferred to separate sessions.
-4. Editorial drafting: `scripts/editorial/apply-curation.mjs` — `keep` fills
+5. Editorial drafting: `scripts/editorial/apply-curation.mjs` — `keep` fills
    fields, `propose_reject` records `draft_reason`/`draft_note` that Boss
    preselects as Reject. Never remove candidates outside Boss.

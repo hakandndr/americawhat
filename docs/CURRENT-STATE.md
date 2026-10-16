@@ -35,6 +35,18 @@ verification CNAME and `ftp` — all DNS-only and unchanged (checked with
 
 ## CI/CD
 
+Prepared in the Boss UX/content publishing feature branch (not live): fixed
+desktop sidebar/mobile drawer; compact searchable review rows with one-level
+editors, live readiness and selection counts; canonical Published title/URL
+links. Separate signed Boss content deployment of Web only through
+`production-content`, with fail-closed full-history checks and rollback.
+Owner-reviewed application deployment remains in `production`. One-time
+Environment/token/proof-key setup and the initial approved code release are
+still required; exact steps and live acceptance checks are in
+[DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup).
+No production deployment or credential/Environment changes were made by this
+feature work. The live tables above continue to describe the existing release.
+
 - `ci.yml`: tests and builds every push except `main` and every PR; no secrets.
 - `deploy-cloudflare.yml`: on push to `main` (site/Worker paths) or manual;
   `CF_PRODUCTION_DEPLOY_ENABLED=true`; deploy job runs in the `production`

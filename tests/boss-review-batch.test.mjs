@@ -44,17 +44,18 @@ test('only complete, override-free drafts count as prepared', () => {
   assert.equal(isPreparedDraft({ ...pending[0], date: '' }), false);
 });
 
-test('records and story cards are distinguished; drafts open; nothing is preselected to Approve', () => {
+test('records and unique stories are distinguished; editors start compact; nothing is preselected to Approve', () => {
   const { html, document } = render();
-  assert.match(html, /<b>7<\/b>pending candidates \(records\)/);
-  assert.match(html, /<b>6<\/b>story cards \(distinct stories\)/);
-  assert.match(document.getElementById('review-scope').textContent, /7 pending candidates are grouped into 6 story cards: 1 extra copy is listed inside its story's card|7 pending candidates are grouped into 6 story cards: 1 extra copy is listed inside their story's card/);
+  assert.match(html, /<b>7<\/b> pending records/);
+  assert.match(html, /<b>6<\/b> unique stories/);
+  assert.match(document.getElementById('review-scope').textContent, /7 pending records · 6 unique stories · 1 extra duplicate records/);
   assert.equal(document.getElementById('review-tools').hasAttribute('hidden'), true, 'tools appear only when the script runs');
   assert.match(document.querySelector('[data-review="prepared"]').textContent, /Select prepared drafts \(1\)/);
   assert.equal(card(document, 'ready').getAttribute('data-prepared'), '1');
   assert.equal(card(document, 'agg').hasAttribute('data-prepared'), false);
-  assert.equal(card(document, 'ready').querySelector('details.editor').hasAttribute('open'), true);
-  assert.equal(card(document, 'one').querySelector('details.editor').hasAttribute('open'), true, 'a drafted comment opens even if incomplete');
+  assert.equal(card(document, 'ready').querySelector('details.editor').hasAttribute('open'), false);
+  assert.equal(card(document, 'one').querySelector('details.editor').hasAttribute('open'), false, 'draft text is readable in the row without opening the form');
+  assert.equal(card(document, 'ready').querySelector('[data-draft-preview]').textContent, ready.comment);
   assert.equal(card(document, 'plain').querySelector('details.editor').hasAttribute('open'), false);
   assert.equal(document.querySelectorAll('input[type=radio][value=approve][checked]').length, 0);
   assert.equal(card(document, 'rej').querySelector('input[type=radio]:checked').value, 'reject');
@@ -77,7 +78,7 @@ function runClient() {
   const form = document.getElementById('review-form');
   let submitted = 0;
   form.requestSubmit = () => { const e = new window.Event('submit', { cancelable: true }); form.dispatchEvent(e); if (!e.defaultPrevented) submitted++; };
-  vm.runInNewContext(REVIEW_SCRIPT, { document, window, Number, Array });
+  vm.runInNewContext(REVIEW_SCRIPT, { document, window, Number, Array, URL });
   const click = (selector) => document.querySelector(selector).dispatchEvent(new window.Event('click', { bubbles: true }));
   return { document, window, dialog, form, click, submitted: () => submitted };
 }
@@ -86,7 +87,7 @@ test('client: expand/collapse all, select prepared drafts, live counts', () => {
   const { document, click } = runClient();
   assert.equal(document.getElementById('review-tools').hasAttribute('hidden'), false);
   const counts = () => document.getElementById('review-counts').textContent;
-  assert.equal(counts(), 'Story cards: Approve 0 · Reject 1 · Skip 5');
+  assert.equal(counts(), 'Stories: Approve 0 · Reject 1 · Skip 5');
   click('[data-review="expand"]');
   assert.ok([...document.querySelectorAll('details.editor')].every((d) => d.open));
   click('[data-review="collapse"]');
@@ -94,8 +95,53 @@ test('client: expand/collapse all, select prepared drafts, live counts', () => {
   click('[data-review="prepared"]');
   const chosen = (id) => card(document, id).querySelector('input[type=radio]:checked').value;
   assert.equal(chosen('ready'), 'approve');
-  for (const id of ['agg', 'one', 'plain', 'copy1', 'rej']) assert.equal(chosen(id), 'skip', id);
-  assert.equal(counts(), 'Story cards: Approve 1 · Reject 0 · Skip 5');
+  for (const id of ['agg', 'one', 'plain', 'copy1']) assert.equal(chosen(id), 'skip', id);
+  assert.equal(chosen('rej'), 'reject', 'bulk prepare preserves rejection decisions');
+  assert.equal(counts(), 'Stories: Approve 1 · Reject 1 · Skip 4');
+});
+
+test('client: edits revalidate preparedness, search preserves selections, reset clears decisions', () => {
+  const { document, window, form, click, dialog } = runClient();
+  click('[data-review="prepared"]');
+  const input = card(document, 'one').querySelector('[name$="_comment"]');
+  input.value = 'A new fact. A dry ending.';
+  form.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.equal(card(document, 'one').getAttribute('data-prepared'), '1');
+  const search = document.getElementById('review-search');
+  search.value = 'no matching title';
+  search.dispatchEvent(new window.Event('input'));
+  assert.equal(document.getElementById('review-no-match').hidden, false);
+  assert.equal(card(document, 'ready').hidden, true);
+  form.dispatchEvent(new window.Event('submit', { cancelable: true }));
+  assert.match(document.getElementById('review-preview-body').textContent, /1 to publish, 1 to reject/);
+  assert.equal(dialog.hasAttribute('open'), true);
+  click('[data-review="back"]');
+  click('[data-review="reset"]');
+  assert.match(document.getElementById('review-counts').textContent, /Approve 0 · Reject 0 · Skip 6/);
+});
+
+test('client: bulk preparation preserves a deliberate rejection of a prepared story', () => {
+  const { document, window, form, click } = runClient();
+  card(document, 'ready').querySelector('input[type=radio][value=reject]').checked = true;
+  form.dispatchEvent(new window.Event('change', { bubbles: true }));
+  click('[data-review="prepared"]');
+  assert.equal(card(document, 'ready').querySelector('input[type=radio]:checked').value, 'reject');
+});
+
+test('a long review renders every editor once, with unique field names and no nested disclosure', () => {
+  const base = buildReview([pending[0]], []);
+  const entries = Array.from({ length: 250 }, (_, i) => {
+    const representative = { ...pending[0], id: `long-${i}`, title: `Candidate ${i}` };
+    return { ...base.entries[0], representative, members: [representative] };
+  });
+  const { document } = parseHTML(renderReview({ identity: {}, review: { ...base, entries, candidates: 250, stories: 250 }, csrf: 't' }));
+  assert.equal(document.querySelectorAll('article.story').length, 250);
+  assert.equal(document.querySelectorAll('details.editor').length, 250);
+  assert.equal(document.querySelectorAll('details details').length, 0);
+  assert.equal(document.querySelectorAll('details[open]').length, 0);
+  const fields = [...document.querySelectorAll('input:not([type=radio]),select,textarea')].map((el) => el.name).filter(Boolean);
+  assert.equal(new Set(fields).size, fields.length);
+  assert.equal(document.querySelector('[name=count]').getAttribute('value'), '250');
 });
 
 test('client: Select prepared drafts confirms itself next to the button and follows manual changes', () => {

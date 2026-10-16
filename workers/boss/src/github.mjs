@@ -8,6 +8,8 @@
 // The token lives only in this Worker's secret GITHUB_TOKEN. It is never
 // logged or returned.
 
+import { signContentCommit } from '../../shared/content-proof.mjs';
+
 export const CONTENT_PATHS = Object.freeze({
   published: 'src/data/published.json',
   pending: 'src/data/pending.json',
@@ -118,6 +120,9 @@ export function createGitHub(env, { fetchImpl = fetch, now = () => new Date() } 
       const { files: changed, result } = await compute(files);
       const entries = Object.entries(changed || {}).filter(([p, text]) => text !== files[p]);
       if (!entries.length) return { commitSha: null, result, attempts: attempt };
+      if (entries.some(([path]) => ![CONTENT_PATHS.published, CONTENT_PATHS.pending].includes(path))) {
+        throw new GitHubError(400, 'Boss may change only published.json and pending.json');
+      }
       const tree = [];
       for (const [path, text] of entries) {
         const blob = await api('POST', '/git/blobs', { content: text, encoding: 'utf-8' });
@@ -126,7 +131,8 @@ export function createGitHub(env, { fetchImpl = fetch, now = () => new Date() } 
       const newTree = await api('POST', '/git/trees', { base_tree: head.treeSha, tree });
       const stamp = now().toISOString();
       const commit = await api('POST', '/git/commits', {
-        message,
+        message: env.ENVIRONMENT === 'production' && env.BOSS_CONTENT_SIGNING_KEY
+          ? await signContentCommit(env.BOSS_CONTENT_SIGNING_KEY, head.commitSha, newTree.sha, message) : message,
         tree: newTree.sha,
         parents: [head.commitSha],
         author: { ...config.author, date: stamp },

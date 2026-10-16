@@ -30,6 +30,8 @@ on:
       - 'astro.config.mjs'
       - 'package.json'
       - 'package-lock.json'
+      - '.github/workflows/**'
+      - 'tests/**'
   workflow_dispatch:
     inputs:
       target:
@@ -63,16 +65,25 @@ jobs:
       boss: ${{ steps.plan.outputs.boss }}
       web_url: ${{ steps.plan.outputs.web_url }}
       boss_url: ${{ steps.plan.outputs.boss_url }}
+      content: ${{ steps.content.outputs.content }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
+          fetch-depth: 0
       - id: plan
         env:
           INPUT_TARGET: ${{ inputs.target }}
           INPUT_CONFIRM: ${{ inputs.confirm }}
           PRODUCTION_ENABLED: ${{ vars.CF_PRODUCTION_DEPLOY_ENABLED }}
         run: node scripts/release/cf-release.mjs plan
+      - name: Fail-closed Boss content classification against the live release
+        id: content
+        if: steps.plan.outputs.deploy == 'true' && github.event_name == 'push'
+        env:
+          CONTENT_ENABLED: ${{ vars.CF_CONTENT_DEPLOY_ENABLED }}
+          BOSS_CONTENT_PUBLIC_KEY: ${{ vars.BOSS_CONTENT_PUBLIC_KEY }}
+        run: node scripts/release/content-eligibility.mjs
 
   build:
     needs: plan
@@ -125,6 +136,7 @@ jobs:
 
   deploy:
     needs: [plan, build]
+    if: needs.plan.outputs.content != 'true'
     runs-on: ubuntu-24.04
     environment:
       name: ${{ needs.plan.outputs.target }}
@@ -215,4 +227,87 @@ jobs:
             echo "| $BOSS | ${{ steps.previous.outputs.boss }} | ${{ steps.boss_upload.outputs.version }} |"
             echo
             echo "Manual rollback: run the \"Roll back Cloudflare Worker\" workflow with the previous version id."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  content_deploy:
+    needs: [plan, build]
+    if: needs.plan.outputs.content == 'true'
+    runs-on: ubuntu-24.04
+    # No reviewer here. This environment's token is Editor on ONLY the Web
+    # Worker; it must have no Boss, D1, DNS, Routes or Access permission.
+    environment:
+      name: production-content
+      url: https://americawhat.com
+    env:
+      ENV_ARGS: --env production
+      WEB: americawhat-web-production
+      WEB_URL: https://americawhat.com
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-production-${{ github.sha }}
+          path: .
+      - name: Recheck proof, complete live-to-head history and current main before credentials
+        env:
+          CONTENT_ENABLED: ${{ vars.CF_CONTENT_DEPLOY_ENABLED }}
+          BOSS_CONTENT_PUBLIC_KEY: ${{ vars.BOSS_CONTENT_PUBLIC_KEY }}
+        run: node scripts/release/content-eligibility.mjs --require
+      - name: Verify frozen build and schema without D1 credentials
+        run: |
+          node scripts/release/cf-release.mjs verify-dist reports/rc-static-manifest.json dist
+          node scripts/release/cf-release.mjs check-config production
+          node scripts/release/cf-release.mjs schema-gate "$WEB_URL"
+          test -s .wrangler/release/web/index.js
+      - name: Record Web rollback target
+        id: previous
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler deployments status --json --config workers/web/wrangler.jsonc $ENV_ARGS > "$RUNNER_TEMP/web-status.json"
+          echo "web=$(node scripts/release/cf-release.mjs active-version "$RUNNER_TEMP/web-status.json")" >> "$GITHUB_OUTPUT"
+      - name: Upload content Web version (not yet serving)
+        id: web_upload
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          WRANGLER_OUTPUT_FILE_PATH="$RUNNER_TEMP/web-upload.ndjson" npx wrangler versions upload .wrangler/release/web/index.js --no-bundle \
+            --config workers/web/wrangler.jsonc $ENV_ARGS --tag "${GITHUB_SHA::12}" --message "content ${GITHUB_SHA::12}" --var "RELEASE_ID:$GITHUB_SHA"
+          echo "version=$(node scripts/release/cf-release.mjs version-id "$RUNNER_TEMP/web-upload.ndjson" "$WEB")" >> "$GITHUB_OUTPUT"
+      - name: Serve approved news
+        id: web_deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler versions deploy "${{ steps.web_upload.outputs.version }}@100%" --yes --config workers/web/wrangler.jsonc $ENV_ARGS
+      - name: Read-only production smoke test
+        env:
+          EXPECTED_RELEASE: ${{ github.sha }}
+        run: npm run smoke -- "$WEB_URL"
+      - name: Roll Web back after a failed or uncertain activation
+        if: failure() && steps.previous.outcome == 'success' && steps.web_deploy.outcome != 'skipped'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler versions deploy "${{ steps.previous.outputs.web }}@100%" --yes --config workers/web/wrangler.jsonc $ENV_ARGS
+          echo "::error::Content deployment failed; previous Web version restored. GitHub content remains available for a retry."
+      - name: Content release record
+        if: always()
+        run: |
+          {
+            echo "### Boss content ${GITHUB_SHA::12}"
+            echo "Web previous: ${{ steps.previous.outputs.web }}"
+            echo "Web uploaded: ${{ steps.web_upload.outputs.version }}"
+            echo "Boss Worker unchanged. Manual rollback uses the protected rollback workflow."
           } >> "$GITHUB_STEP_SUMMARY"

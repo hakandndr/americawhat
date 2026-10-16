@@ -54,14 +54,10 @@ a{color:var(--accent-text);text-decoration-color:rgba(255,84,104,.4);text-underl
 code{font:12px var(--mono);color:var(--muted);overflow-wrap:anywhere}
 .envbar{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;padding:6px 20px;background:var(--sunk);border-bottom:1px solid var(--line);color:var(--muted);font-size:12.5px}
 .envbar b{font-size:10.5px;letter-spacing:.1em;color:var(--info);border:1px solid var(--info-line);background:var(--info-soft);border-radius:999px;padding:1px 9px;white-space:nowrap}
-.topbar{position:sticky;top:0;z-index:20;background:var(--header);border-bottom:1px solid var(--line)}
-.topbar-in{max-width:var(--shell);margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:0 28px;flex-wrap:wrap}
 .brand{display:flex;align-items:baseline;gap:9px;padding:12px 0;color:var(--text);text-decoration:none;font-weight:800;font-size:17px;letter-spacing:-.02em;white-space:nowrap}
 .brand i{font-style:normal;color:var(--accent-text)}
 .brand small{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);border-left:1px solid var(--line-2);padding-left:9px}
-.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}.nav::-webkit-scrollbar{display:none}
-.nav a{color:var(--muted);text-decoration:none;padding:15px 12px 13px;font-weight:500;white-space:nowrap;border-bottom:2px solid transparent}
-.nav a:hover{color:var(--accent-text);border-bottom-color:var(--line-2)}.nav a.on{color:var(--text);border-bottom-color:var(--accent);font-weight:650}
+.nav a{color:var(--muted);text-decoration:none;font-weight:500;white-space:nowrap}.nav a.on{color:var(--text);font-weight:650}
 .nav-count{display:inline-block;min-width:20px;margin-left:6px;padding:1px 6px;border-radius:999px;background:var(--accent-strong);color:var(--on-accent);font-size:11.5px;font-weight:700;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;vertical-align:1px}.nav-count.neutral{background:var(--panel-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line-3)}
 .who{color:var(--faint);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 main{padding:26px 20px 72px;max-width:var(--shell);margin:0 auto}
@@ -279,7 +275,42 @@ legend{padding:0 6px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-
 @media (max-width:360px){.events-table tr{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.activity-overview .kv{grid-template-columns:minmax(0,1fr);gap:3px}.activity-overview .kv dd{margin-bottom:8px}}
 .pager a:hover{color:var(--text);background:var(--panel-2)}.pager .on{color:var(--text);background:var(--panel-2);box-shadow:inset 0 -2px 0 var(--accent);font-weight:650}.pager .gap{border-color:transparent}
-@media (max-width:760px){main{padding:18px 14px 60px}.page-head{grid-template-columns:minmax(0,1fr)}.page-head .seg{justify-self:start}.topbar-in{padding:0 14px;gap:0 16px}.who{display:none}.envbar{padding:6px 14px}h1{font-size:20px}.card{padding:14px}.stat b{font-size:19px}.toolbar input{max-width:none}.nav{flex-basis:100%;margin:0 -6px;order:3}.nav a{padding:10px 10px 9px}.sticky-submit{position:static;box-shadow:none}}
+@media (max-width:760px){.page-head{grid-template-columns:minmax(0,1fr)}.page-head .seg{justify-self:start}.envbar{padding:6px 14px}h1{font-size:20px}.card{padding:14px}.stat b{font-size:19px}.toolbar input{max-width:none}}
+/* Persistent navigation; the narrow-screen drawer uses a native checkbox so
+   it stays operable with the same strict CSP and without JavaScript. */
+.skip-link{position:fixed;left:240px;top:-80px;z-index:50;background:var(--panel);padding:10px}.skip-link:focus{top:8px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:216px;z-index:30;background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;overflow-y:auto}
+.sidebar .brand{padding:4px 8px 24px;font-size:18px;gap:6px}.sidebar .brand small{font-size:9px;padding-left:6px}
+.sidebar .nav{display:flex;flex-direction:column;flex:0 0 auto;gap:4px;overflow:visible;margin:0}
+.sidebar .nav a{display:flex;align-items:center;gap:4px;padding:10px 12px;border:0;border-left:3px solid transparent;border-radius:4px;font-size:13px}
+.sidebar .nav a.on{background:var(--panel);border-left-color:var(--accent)}.sidebar .nav a:hover{background:var(--panel)}
+.sidebar .nav-count{margin-left:auto}.sidebar .who{display:block;margin-top:auto;padding:24px 8px 0;white-space:normal;overflow-wrap:anywhere}
+main{max-width:calc(var(--shell) + 216px);margin:0 0 0 216px;padding:28px 28px 64px;min-width:0}.envbar{margin-left:216px}
+.mobile-nav,.drawer-close,.drawer-shade,.nav-toggle{display:none}
+.review-summary{display:flex;flex-wrap:wrap;gap:8px 20px;margin:0 0 12px;color:var(--muted);font-size:13px}.review-summary b{color:var(--text)}
+.review-list{border:1px solid var(--line);border-radius:var(--r);overflow:clip;margin-top:12px}
+.review-list .story{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 16px;border:0;border-left:3px solid transparent;border-bottom:1px solid var(--line);border-radius:0;margin:0;padding:10px 14px}.review-list .story:last-child{border-bottom:0}
+.review-list .story[hidden]{display:none}.review-list .story.has-flags{border-left-color:var(--warn)}.review-list .story[data-choice=approve]{border-left-color:var(--ok)}.review-list .story[data-choice=reject]{border-left-color:var(--accent)}
+.review-list .story-head{grid-column:1;grid-row:1;grid-template-columns:30px minmax(0,1fr);gap:0 10px}.review-list .story-title{font-size:14px;margin:0 0 3px}.review-list .story-meta{font-size:12px;margin:0 0 4px}
+.draft-preview{margin:4px 0;color:var(--muted);font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.story-status{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.story-status .tag{margin:0}.decision-status{font-size:12px;font-weight:650;color:var(--info)}
+.review-list .decide{grid-column:2;grid-row:1;align-content:start;align-items:start;max-width:240px;border:0;padding:0;margin:0;gap:8px}.review-list .choice label{padding:5px 10px;font-size:12px;min-height:34px}
+.review-list .editor{grid-column:1/-1;padding:0;margin:2px 0 0 40px}.review-list .editor[open]{padding:12px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm)}
+.review-list .editor>summary{font-size:12px;min-height:28px;align-content:center}.review-list .editor .grid{grid-template-columns:repeat(2,minmax(0,1fr))}.editor-title{grid-column:1/-1}
+.review-list .story:not(:has(input[value=reject]:checked)) .reject-fields{display:none}.reject-fields{display:flex;flex-wrap:wrap;gap:8px;max-width:100%}
+.review-tools{gap:8px}.review-filter{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-basis:100%}.review-filter input{flex:1 1 220px;width:auto;max-width:380px}.review-filter select{width:auto;max-width:100%}
+.review-foot{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}.review-foot .review-counts{margin:0}.review-list .opts{margin-top:10px}
+@media (max-width:760px){
+ main{margin-left:0;padding:18px 14px 40px}.envbar{margin-left:0}.skip-link{left:16px}
+ .mobile-nav{display:flex;position:sticky;top:0;z-index:20;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 14px}.mobile-nav .brand{padding:0;font-size:16px}
+ .nav-toggle{display:block;position:fixed;left:20px;top:15px;width:1px;height:1px;opacity:0}.nav-toggle:focus-visible~.mobile-nav .menu-label{outline:2px solid var(--focus);outline-offset:2px}
+ .menu-label,.drawer-close{cursor:pointer;border:1px solid var(--control-line);border-radius:var(--r-sm);padding:7px 12px;color:var(--text);font-size:13px;margin:0}
+ .sidebar{width:min(280px,85vw);visibility:hidden;transform:translateX(-100%)}.nav-toggle:checked~.sidebar{visibility:visible;transform:none}
+ .drawer-close{display:block;align-self:flex-end;margin-bottom:12px}.nav-toggle:checked~.drawer-shade{display:block;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:25;margin:0}
+ .review-list .story{display:block;padding:10px}.review-list .story-head{grid-template-columns:22px minmax(0,1fr);gap:0 8px}.review-list .decide,.review-list .editor{margin:8px 0 0 30px;max-width:none}.review-list .editor .grid{grid-template-columns:minmax(0,1fr)}
+ .review-list .decide input:not([type=radio]),.review-list .decide select{width:100%;max-width:100%}.review-list .choice label{min-height:40px}.review-tools button{white-space:normal}.review-counts{margin-left:0}
+ .sticky-submit{position:sticky;bottom:0;padding:8px;gap:6px;box-shadow:0 -4px 16px var(--bg)}.sticky-submit button{white-space:normal;width:100%}.sticky-submit .review-foot>.small{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 `;
 
@@ -290,8 +321,11 @@ export function page({ title, active, identity, body, flash, lede = '', headActi
   const flashHtml = flash ? `<div class="flash ${flash.type === 'err' ? 'err' : 'ok'}" role="${flash.type === 'err' ? 'alert' : 'status'}">${h(flash.message)}</div>` : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b1120"><title>${h(title)} · AmericaWhat Boss</title><style>${CSS}</style></head>
-<body><header class="topbar"><div class="topbar-in"><a class="brand" href="/review"><span>america<i>what</i></span><small>Boss</small></a><nav class="nav" aria-label="Boss sections">${nav}</nav><span class="who">${h(identity?.email || '')}</span></div></header>
-<main${wide ? ' class="analytics-workspace"' : ''}>${flashHtml}<div class="page-head"><h1>${h(title)}</h1>${headActions}${lede ? `<p class="lede">${lede}</p>` : ''}</div>${body}</main></body></html>`;
+<body><a class="skip-link" href="#main-content">Skip to content</a><input class="nav-toggle" type="checkbox" id="nav-toggle" aria-label="Navigation drawer" aria-controls="boss-sidebar">
+<header class="mobile-nav"><label class="menu-label" for="nav-toggle">☰ Menu</label><a class="brand" href="/review"><span>america<i>what</i></span><small>Boss</small></a></header>
+<label class="drawer-shade" for="nav-toggle" aria-label="Close navigation"></label>
+<aside class="sidebar" id="boss-sidebar"><label class="drawer-close" for="nav-toggle">Close menu ×</label><a class="brand" href="/review"><span>america<i>what</i></span><small>Boss</small></a><nav class="nav" aria-label="Boss sections">${nav}</nav><span class="who">${h(identity?.email || '')}</span></aside>
+<main id="main-content" tabindex="-1"${wide ? ' class="analytics-workspace"' : ''}>${flashHtml}<div class="page-head"><h1>${h(title)}</h1>${headActions}${lede ? `<p class="lede">${lede}</p>` : ''}</div>${body}</main></body></html>`;
 }
 
 /** The environment notice inserted after <body> outside production (see index.mjs). */

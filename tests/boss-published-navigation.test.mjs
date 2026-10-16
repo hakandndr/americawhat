@@ -62,6 +62,21 @@ test('Published pagination reaches all records once and preserves pinned/collidi
   assert.equal(urls(document)[0][1], map.get('aw-0002'));
 });
 
+test('Published headline and Live URL open the canonical public article, Edit stays separate', async () => {
+  const { document } = await setup().get();
+  for (const row of rows(document)) {
+    const title = row.querySelector('td:nth-child(4) a');
+    const live = row.querySelector('td:nth-child(7) a');
+    assert.equal(title.getAttribute('href'), 'https://americawhat.com' + live.textContent);
+    assert.equal(live.getAttribute('href'), title.getAttribute('href'));
+    for (const link of [title, live]) {
+      assert.equal(link.getAttribute('target'), '_blank');
+      assert.match(link.getAttribute('rel'), /noopener/);
+    }
+    assert.match(row.querySelector('td:last-child a').getAttribute('href'), /^\/published\/edit\?id=aw-/);
+  }
+});
+
 test('Published search/category/pagination compose and every pager link carries the filters', async () => {
   const ctx = setup();
   const expected = items.filter((item) => item.category === 'florida-man' && item.title.includes('Match')).map((item) => item.id);
@@ -99,11 +114,11 @@ test('Published query and stored headlines stay escaped in the integrated UI', a
   assert.equal(query.document.querySelector('[autofocus]'), null);
 });
 
-test('Boss navy/red theme retains the narrow-screen static submit-bar correction', async () => {
+test('Boss navy/red theme keeps a compact narrow-screen submit bar reachable', async () => {
   const { document } = await setup().get();
   const css = document.querySelector('style').textContent;
   assert.ok(css.includes('--bg:#0b1120'));
   assert.ok(css.includes('--accent:#e23b4e'));
   const mobile = css.slice(css.indexOf('@media (max-width:760px)'));
-  assert.ok(mobile.includes('.sticky-submit{position:static;box-shadow:none}'));
+  assert.ok(mobile.includes('.sticky-submit{position:sticky;bottom:0;padding:8px;gap:6px;'));
 });

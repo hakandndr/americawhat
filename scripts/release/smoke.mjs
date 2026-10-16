@@ -30,6 +30,11 @@ await check('security headers', async () => {
   return missing.length === 0 || `missing ${missing.join(',')}`;
 });
 await check('health ok', async () => { const r = await get('/api/health'); const j = await r.json(); return (r.status === 200 && j.status === 'ok') || JSON.stringify(j.checks); });
+if (process.env.EXPECTED_RELEASE) await check('expected production release is serving', async () => {
+  const r = await get('/api/health', { cache: 'no-store' });
+  const j = await r.json();
+  return r.status === 200 && j.environment === 'production' && j.release === process.env.EXPECTED_RELEASE || `unexpected release ${j.release}`;
+});
 await check('GET never writes (vote.php GET -> 405, log_df GET -> 204)', async () => {
   const a = await get('/analytics/vote.php?id=aw-0001&reaction=wat');
   const b = await get('/analytics/log_df.php?path=/');
