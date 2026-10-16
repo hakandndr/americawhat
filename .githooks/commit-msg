@@ -1,0 +1,19 @@
+#!/bin/sh
+# Rejects commit messages that carry co-author trailers or tool-generation
+# signatures. Every commit in this repository is authored by the owner alone.
+# Enable once per clone:  git config core.hooksPath .githooks
+
+msg_file="$1"
+
+if grep -qiE '^[[:space:]]*co-authored-by:' "$msg_file"; then
+  echo "commit-msg: co-author trailers are not allowed in this repository." >&2
+  exit 1
+fi
+
+if grep -qiE '(generated (with|by)|noreply@anthropic\.com|anthropic|claude|chatgpt|openai|copilot)' "$msg_file"; then
+  echo "commit-msg: the message names an assistant tool or a generation signature." >&2
+  echo "Describe the change itself instead." >&2
+  exit 1
+fi
+
+exit 0

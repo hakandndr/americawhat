@@ -6,10 +6,30 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "build:rc": "node scripts/release/build-rc.mjs",
+    "preview": "astro preview",
+    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
+    "build:og": "python scripts/gen-og.py --missing",
+    "og:verify": "python scripts/gen-og.py --verify-approved",
+    "verify:static": "node scripts/build/verify-static.mjs",
+    "verify:refinement": "node scripts/build/verify-refinement.mjs",
+    "verify:public-parity": "node scripts/build/verify-public-parity.mjs",
+    "test:web-client": "node --experimental-vm-modules --disable-warning=ExperimentalWarning scripts/build/verify-web-client.mjs",
+    "preview:boss": "node scripts/dev/boss-preview.mjs --serve",
+    "test:boss-preview": "node scripts/dev/boss-preview.mjs",
+    "parity:live": "node scripts/parity/compare-live.mjs https://americawhat.com",
+    "smoke": "node scripts/release/smoke.mjs",
+    "analytics:legacy": "node --disable-warning=ExperimentalWarning scripts/analytics/legacy-import.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "3.1.6",
-    "astro": "^4.16.0"
+    "@astrojs/sitemap": "3.7.4",
+    "astro": "7.3.8"
+  },
+  "devDependencies": {
+    "linkedom": "^0.18.12",
+    "wrangler": "4.151.0"
+  },
+  "engines": {
+    "node": ">=22.12.0 <23"
   }
 }

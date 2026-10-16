@@ -1,0 +1,23 @@
+---
+import Base from "../../layouts/Base.astro";
+import Feed from "../../components/Feed.astro";
+import CategoryChips from "../../components/CategoryChips.astro";
+import { FEED_PAGE_SIZE, feedHref, newest } from "../../lib/feed.js";
+
+export function getStaticPaths() {
+  const last = Math.max(1, Math.ceil(newest.length / FEED_PAGE_SIZE));
+  return Array.from({ length: last - 1 }, (_, i) => ({ params: { page: String(i + 2) }, props: { page: i + 2, last } }));
+}
+const { page, last } = Astro.props;
+const items = newest.slice((page - 1) * FEED_PAGE_SIZE, page * FEED_PAGE_SIZE);
+const from = (page - 1) * FEED_PAGE_SIZE + 1;
+---
+<Base title={`Stories ${from}–${from + items.length - 1} — americawhat`} canonicalPath={feedHref(page)} noindex>
+  <header class="page-head">
+    <h1 class="page-title">More stories</h1>
+    <p class="page-updated">Stories {from}–{from + items.length - 1} of {newest.length}. <a href="/">Back to the latest</a></p>
+  </header>
+  <CategoryChips />
+  <Feed items={items} page={page} lastPage={last} />
+  <script src="../../scripts/tracking.js"></script>
+</Base>

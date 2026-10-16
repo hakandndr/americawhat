@@ -1,0 +1,29 @@
+#!/bin/sh
+# Blocks staged files that must never enter the repository: assistant working
+# files, local secrets, server-only configuration, private backups and
+# exported visitor data. Enable once per clone:  git config core.hooksPath .githooks
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$staged" ] && exit 0
+
+blocked=$(printf '%s\n' "$staged" | grep -E \
+  -e '(^|/)\.claude/' \
+  -e '(^|/)\.env($|\.)' \
+  -e '(^|/)\.dev\.vars($|\.)' \
+  -e '(^|/)config\.php$' \
+  -e '(^|/)dndr-relay\.config\.php$' \
+  -e '(^|/)aw_panel_log[^/]*$' \
+  -e '(^|/)private/' \
+  -e '(^|/)backups?/' \
+  -e '\.(bundle|pem|key|p12|sqlite|sqlite3|db)$' \
+  -e '(^|/)\.wrangler/' \
+  | grep -v -E '(^|/)config\.sample\.php$' \
+  | grep -v -E '^\.dev\.vars\.example$|/\.dev\.vars\.example$')
+
+if [ -n "$blocked" ]; then
+  echo "pre-commit: these paths must not be committed:" >&2
+  printf '  %s\n' $blocked >&2
+  exit 1
+fi
+
+exit 0

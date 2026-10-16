@@ -5,10 +5,16 @@ const {
   canonicalPath = "/",
   ogType = "website",
   ogImage = "/og/default.png",
+  noindex = false,
 } = Astro.props;
 import "../styles/global.css";
 import { items } from "../lib/items.js";
 import Subscribe from "../components/Subscribe.astro";
+// The latin files of the faces every page paints above the fold (see global.css).
+import antonLatin from "../assets/fonts/anton-normal-latin.woff2?url";
+import archivoLatin from "../assets/fonts/archivo-normal-latin.woff2?url";
+import archivoItalicLatin from "../assets/fonts/archivo-italic-latin.woff2?url";
+const criticalFonts = [antonLatin, archivoLatin, archivoItalicLatin];
 const canonical = new URL(canonicalPath, Astro.site);
 const ogImageUrl = new URL(ogImage, Astro.site);
 const slugs = items.map((i) => i.slug);
@@ -21,6 +27,7 @@ const randHref = slugs.length
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {criticalFonts.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0WJWDYB022"></script>
   <script is:inline>
@@ -33,6 +40,7 @@ const randHref = slugs.length
   <link rel="alternate icon" href="/favicon.svg" />
   <link rel="mask-icon" href="/favicon.svg" color="#ff5468" />
   <meta name="theme-color" content="#0b1120" />
+  {noindex && <meta name="robots" content="noindex, follow" />}
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="alternate" type="application/rss+xml" title="americawhat feed" href="/rss.xml" />
@@ -48,17 +56,6 @@ const randHref = slugs.length
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:image" content={ogImageUrl} />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    rel="preload"
-    as="style"
-    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,500&display=swap"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,500&display=swap"
-    rel="stylesheet"
-  />
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
@@ -67,32 +64,33 @@ const randHref = slugs.length
       <a href="/" class="logo">america<b>what</b><span class="logo-q">?</span></a>
       <div class="head-right">
         <nav class="site-nav" aria-label="Primary">
-          <a href={randHref} class="nav-random" id="nav-random">random<span class="nav-q">?</span></a>
-          <a href="/about/">About</a>
-          <a href="/contact/">Contact</a>
+          <a href={randHref} class="nav-random" id="nav-random">Random<span class="nav-q">?</span></a>
+          <a href="/category/">Categories</a>
+          <a href="/archive/">Archive</a>
         </nav>
-        <span class="tagline">wait, what.</span>
       </div>
     </div>
   </header>
   <slot name="hero" />
   <main class="wrap" id="main">
-    <slot />
+    <div class="page-body"><slot /></div>
   </main>
   <footer class="site-foot">
-    <Subscribe />
-    <b>americawhat.com</b> — something's coming. probably confusing.<br />
-    A <a href="https://dndr.net" target="_blank" rel="noopener noreferrer">DNDR Labs</a> project.<br />
-    Got a "wait, what" of your own? <a href="mailto:hello@americawhat.com" style="color:var(--red-hot)">hello@americawhat.com</a>
-    <nav class="foot-nav" aria-label="More">
-      <a href="/about/">About</a>
-      <a href="/contact/">Contact</a>
-      <a href="/guidelines/">Submission Guidelines</a>
-      <a href="/privacy/">Privacy</a>
-      <a href="/terms/">Terms</a>
-      <a href="/disclaimer/">Disclaimer</a>
-      <a href="/rss.xml">RSS</a>
-    </nav>
+    <div class="foot-inner">
+      <a href="/" class="logo">america<b>what</b><span class="logo-q">?</span></a>
+      <a class="foot-contact" href="mailto:hello@americawhat.com">hello@americawhat.com</a>
+      <nav class="foot-nav" aria-label="More">
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+        <a href="/guidelines/">Submission Guidelines</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/disclaimer/">Disclaimer</a>
+        <a href="/rss.xml">RSS</a>
+      </nav>
+      <Subscribe />
+      <p class="foot-credit">A <a href="https://dndr.net" target="_blank" rel="noopener noreferrer">DNDR Labs</a> project.</p>
+    </div>
   </footer>
   <script is:inline define:vars={{ slugs }}>
     (function () {

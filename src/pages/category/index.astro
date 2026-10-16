@@ -1,0 +1,16 @@
+---
+import Base from "../../layouts/Base.astro";
+import { CATEGORIES } from "../../data/categories.js";
+import { newest, categoryHref } from "../../lib/feed.js";
+---
+<Base title="Categories — americawhat" canonicalPath="/category/" description="Browse every AmericaWhat story by category.">
+  <header class="page-head"><h1 class="page-title">Categories</h1></header>
+  <div class="page-card page-prose">
+    <ul class="category-directory">
+      {Object.entries(CATEGORIES).map(([key, c]) => (
+        <li><a href={categoryHref(key)}>{c.label}</a><p>{c.blurb} <span>{newest.filter((item) => item.category === key).length} stories.</span></p></li>
+      ))}
+    </ul>
+  </div>
+  <script src="../../scripts/tracking.js"></script>
+</Base>

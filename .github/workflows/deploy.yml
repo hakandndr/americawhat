@@ -1,50 +1,24 @@
-name: Deploy to Hostinger
+name: Deploy to Hostinger (retired)
 
+# The Hostinger FTP deploy is retired. AmericaWhat is deployed to Cloudflare by
+# deploy-cloudflare.yml. This file keeps the workflow's name so that, once it
+# reaches main, a push can no longer publish anything to Hostinger: there is
+# no push trigger, no FTP step and no use of the FTP secrets.
+#
+# Rollback to Hostinger (docs/DEPLOYMENT.md, "Hostinger rollback") does NOT run
+# this file: it re-runs the old workflow on the tag `hostinger-final`, which
+# holds the last Hostinger-compatible source and the original deploy.yml.
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - 'src/data/pending.json'
-      - 'src/data/seen_ids.json'
-      - 'src/data/fetch-status.json'
   workflow_dispatch:
 
-# Only one deploy at a time; a newer push cancels older queued/running deploys
-# so the LATEST commit always wins (prevents out-of-order overwrites).
-concurrency:
-  group: deploy-hostinger
-  cancel-in-progress: true
+permissions:
+  contents: read
 
 jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
+  retired:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Generate OG images
+      - name: Refuse
         run: |
-          pip install pillow
-          python scripts/gen-og.py
-      - run: npm run build
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ./
-          exclude: |
-            **/.git*/**
-            **/node_modules/**
-            **/aw_votes.json
-            **/config.php
-            **/studio/**
-            **/boss/**
+          echo "::error::The Hostinger FTP deploy is retired. Use 'Deploy to Cloudflare', or the hostinger-final tag for a Hostinger rollback (docs/DEPLOYMENT.md)."
+          exit 1

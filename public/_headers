@@ -1,0 +1,12 @@
+# Cloudflare Static Assets response headers (the equivalent of public/.htaccess).
+# HTML is served by the platform with "public, max-age=0, must-revalidate",
+# which matches the old "no-cache, must-revalidate" rule.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  Strict-Transport-Security: max-age=31536000
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -1,0 +1,80 @@
+name: Roll back Cloudflare Worker
+
+# Moves 100% of one Worker's traffic back to a recorded version (the
+# "Previous" column of a "Deploy to Cloudflare" release record, or a UUID from
+# `wrangler deployments list`). Code only: D1 data, secrets and routes stay.
+# Runs in the target's GitHub Environment, so production needs its reviewer.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        type: choice
+        options: [staging, production]
+        required: true
+      worker:
+        type: choice
+        options: [web, boss]
+        required: true
+      version_id:
+        description: Worker version UUID to serve at 100%
+        type: string
+        required: true
+      confirm:
+        description: Type target/worker, for example production/web
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-cloudflare-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      target: ${{ steps.plan.outputs.target }}
+      worker: ${{ steps.plan.outputs.worker }}
+      version_id: ${{ steps.plan.outputs.version_id }}
+      env_args: ${{ steps.plan.outputs.env_args }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - id: plan
+        env:
+          INPUT_TARGET: ${{ inputs.target }}
+          INPUT_WORKER: ${{ inputs.worker }}
+          INPUT_VERSION_ID: ${{ inputs.version_id }}
+          INPUT_CONFIRM: ${{ inputs.confirm }}
+        run: node scripts/release/cf-release.mjs plan-rollback
+
+  rollback:
+    needs: plan
+    runs-on: ubuntu-24.04
+    environment:
+      name: ${{ needs.plan.outputs.target }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENV_ARGS: ${{ needs.plan.outputs.env_args }}
+      WORKER: ${{ needs.plan.outputs.worker }}
+      VERSION_ID: ${{ needs.plan.outputs.version_id }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Serve the recorded version
+        run: |
+          npx wrangler deployments status --json --config "workers/$WORKER/wrangler.jsonc" $ENV_ARGS > "$RUNNER_TEMP/before.json"
+          echo "Serving before rollback: $(node scripts/release/cf-release.mjs active-version "$RUNNER_TEMP/before.json")"
+          npx wrangler versions deploy "$VERSION_ID@100%" --yes --config "workers/$WORKER/wrangler.jsonc" $ENV_ARGS
+          npx wrangler deployments status --json --config "workers/$WORKER/wrangler.jsonc" $ENV_ARGS > "$RUNNER_TEMP/after.json"
+          test "$(node scripts/release/cf-release.mjs active-version "$RUNNER_TEMP/after.json")" = "$VERSION_ID"

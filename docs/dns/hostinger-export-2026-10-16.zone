@@ -1,0 +1,22 @@
+; Zone file for americawhat.com
+; Generated on 2026-10-16 01:28:29 UTC
+
+$ORIGIN americawhat.com
+$TTL 3600
+
+@                              3600 IN SOA   hermes.dns-parking.com. dns.hostinger.com. 2026072102 10000 2400 604800 600
+@                              300 IN ALIAS americawhat.com.cdn.hstgr.net.
+@                              14400 IN MX    5 mx1.hostinger.com
+                               14400 IN MX    10 mx2.hostinger.com
+@                              86400 IN NS    hermes.dns-parking.com.
+                               86400 IN NS    artemis.dns-parking.com.
+@                              3600 IN TXT   "v=spf1 include:_spf.mail.hostinger.com ~all"
+_dmarc                         3600 IN TXT   "v=DMARC1; p=none"
+autoconfig                     300 IN CNAME autoconfig.mail.hostinger.com.
+autodiscover                   300 IN CNAME autodiscover.mail.hostinger.com.
+ftp                            1800 IN A     45.89.205.38
+hostingermail-a._domainkey     300 IN CNAME hostingermail-a.dkim.mail.hostinger.com.
+hostingermail-b._domainkey     300 IN CNAME hostingermail-b.dkim.mail.hostinger.com.
+hostingermail-c._domainkey     300 IN CNAME hostingermail-c.dkim.mail.hostinger.com.
+www                            300 IN CNAME www.americawhat.com.cdn.hstgr.net.
+zzwor4l5qvov                   14400 IN CNAME gv-5bsl4swe37pvva.dv.googlehosted.com.

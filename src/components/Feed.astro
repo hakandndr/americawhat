@@ -1,0 +1,18 @@
+---
+import Card from "./Card.astro";
+import { feedHref } from "../lib/feed.js";
+const { items, page = 1, lastPage = 1 } = Astro.props;
+---
+<div data-feed data-page={page} data-last={lastPage}>
+  <section class="feed" id="feed" aria-label="Stories">
+    {items.map((item) => <Card item={item} />)}
+  </section>
+  <nav class="feed-more" aria-label="More stories">
+    {page < lastPage
+      ? <a class="load-more" href={feedHref(page + 1)} data-next={page + 1} rel="next" aria-controls="feed">Load more stories ↓</a>
+      : <p class="feed-end">That’s every story in the feed. <a href="/archive/">Browse the archive</a></p>}
+    {page > 1 && <a class="feed-back" href={feedHref(page - 1)} rel="prev">← Newer stories</a>}
+    <p class="feed-status visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+  </nav>
+</div>
+<script src="../scripts/feed.js"></script>

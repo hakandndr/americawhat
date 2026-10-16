@@ -1,0 +1,7 @@
+.githooks/* text eol=lf
+*.sh text eol=lf
+*.png binary
+*.woff2 binary
+*.ttf binary
+*.zone text eol=lf
+docs/dns/*.txt text eol=lf

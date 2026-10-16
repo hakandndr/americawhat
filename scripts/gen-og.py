@@ -1,26 +1,66 @@
 #!/usr/bin/env python3
 """
-americawhat — build-time Open Graph image generator.
+americawhat — deterministic Open Graph image generator.
 
-Reads src/data/published.json and renders a 1200x630 PNG per item into
-public/og/<id>.png, plus public/og/default.png for the home page and
-non-item pages. Runs BEFORE `astro build` (see .github/workflows/deploy.yml),
-so Astro copies public/og/ into dist/og/ and it deploys with the site.
+The 125 PNGs in public/og/ are the APPROVED archive (scripts/release/approved-og.json).
+They are committed, frozen release inputs: this script never writes into
+public/og/ and never regenerates them for a release.
+
+Modes (all read src/data/published.json):
+
+  python scripts/gen-og.py --missing
+      Default. Renders an image ONLY for published items that have no approved
+      PNG into .og-generated/<id>.png (git-ignored) and records each one in
+      .og-generated/manifest.json with the digest of its render inputs. An
+      up-to-date image is kept; one whose title/category/source changed is
+      re-rendered; entries for items that are no longer published or are now
+      approved are dropped. scripts/release/build-rc.mjs copies these files into
+      dist/og/ after the Astro build. If one item fails to render, a copy of the
+      approved default.png is used for it and the entry is marked "fallback"
+      (the build continues; the next run retries).
+
+  python scripts/gen-og.py --verify-approved
+      Renders every approved image into a temporary directory and compares
+      PIXELS with public/og/. Proves that this pinned renderer is the one that
+      produced the approved archive (bytes may differ across platforms: the
+      Windows and Linux Pillow wheels bundle different zlib builds). Exit 1 on
+      any pixel difference.
+
+  python scripts/gen-og.py --all --out <dir> [--allow-unpinned]
+      Preview: renders everything into <dir> (never public/og/).
+
+Determinism: Pillow and FreeType versions and the two bundled fonts are pinned
+(scripts/og/requirements.txt, FONT_SHA256 below) and text layout is forced to
+Pillow's BASIC engine. Linux wheels ship libraqm and Windows wheels do not;
+without forcing BASIC the same Pillow version kerns titles differently per
+platform, which is one reason production (unpinned `pip install pillow` on
+Linux) never matched the approved archive.
 
 Design: dark theme, left red accent, "americawhat?" wordmark top-left, category
 chip (own colour) top-right, big auto-sizing title, prominent Source, and
 americawhat.com bottom-right. No date. Fonts are bundled under scripts/og-fonts
 (SIL OFL) so the build never depends on the network.
 """
-import json, os, sys
-from PIL import Image, ImageDraw, ImageFont
+import argparse, hashlib, json, os, shutil, sys, tempfile
+from PIL import Image, ImageChops, ImageDraw, ImageFont, features
+import PIL
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, "scripts", "og-fonts")
 TITLE_FONT = os.path.join(FONT_DIR, "BigShoulders-Bold.ttf")
 MONO_FONT = os.path.join(FONT_DIR, "IBMPlexMono-Bold.ttf")
 PUB_JSON = os.path.join(ROOT, "src", "data", "published.json")
-OUT_DIR = os.path.join(ROOT, "public", "og")
+APPROVED_DIR = os.path.join(ROOT, "public", "og")
+APPROVED_JSON = os.path.join(ROOT, "scripts", "release", "approved-og.json")
+GENERATED_DIR = os.path.join(ROOT, ".og-generated")
+
+# The renderer that reproduced the approved archive (2026-10-15).
+PINNED_PILLOW = "11.3.0"
+PINNED_FREETYPE = "2.13.3"
+FONT_SHA256 = {
+    "BigShoulders-Bold.ttf": "b43bcd198b9fdf717dd42aa61a34dba32e01aceaeae659d689afd0ca52c37ea2",
+    "IBMPlexMono-Bold.ttf": "dbd2a2fb024579438d6400a84e57579bfd2dbe67c306c8fd9fde92a61e4f2eea",
+}
 
 W, H = 1200, 630
 NIGHT = (11, 17, 32)
@@ -47,6 +87,10 @@ TITLE_BOTTOM = H - 118   # title must not run into the Source line
 MAX_TITLE_H = TITLE_BOTTOM - TITLE_TOP
 
 
+def font(path, size):
+    return ImageFont.truetype(path, size, layout_engine=ImageFont.Layout.BASIC)
+
+
 def _glow(d, height, cap):
     for y in range(height):
         a = int(46 * (1 - y / height))
@@ -68,16 +112,26 @@ def _wrap(d, text, font, maxw):
     return lines
 
 
+def source_of(item):
+    return item.get("source_name") or item.get("sourceName") or ""
+
+
+def input_digest(item):
+    """SHA-256 of exactly the fields drawn on an item image (same rule in scripts/release/og.mjs)."""
+    fields = [str(item.get("id", "")), str(item.get("title", "")), str(item.get("category", "")), str(source_of(item))]
+    return hashlib.sha256("\x1f".join(fields).encode("utf-8")).hexdigest()
+
+
 def render_item(item, out_path):
     img = Image.new("RGB", (W, H), NIGHT)
     d = ImageDraw.Draw(img)
     _glow(d, 150, (64, 86, 124))
     d.rectangle([0, 0, 10, H], fill=RED)
 
-    brand = ImageFont.truetype(TITLE_FONT, 42)
-    label = ImageFont.truetype(MONO_FONT, 26)
-    src_f = ImageFont.truetype(MONO_FONT, 30)
-    site_f = ImageFont.truetype(MONO_FONT, 26)
+    brand = font(TITLE_FONT, 42)
+    label = font(MONO_FONT, 26)
+    src_f = font(MONO_FONT, 30)
+    site_f = font(MONO_FONT, 26)
 
     # header row — brand wordmark: white "america", red "what", white "?"
     bx, by = PAD, 52
@@ -99,14 +153,14 @@ def render_item(item, out_path):
     title = item.get("title", "")
     chosen = None
     for size in range(96, 58, -6):
-        f = ImageFont.truetype(TITLE_FONT, size)
+        f = font(TITLE_FONT, size)
         lines = _wrap(d, title, f, W - 2 * PAD)
         lh = int(size * 1.06)
         if lh * len(lines) <= MAX_TITLE_H:
             chosen = (f, lines, size, lh)
             break
     if chosen is None:  # even at min size it's tall — clamp to min, let it use full budget
-        f = ImageFont.truetype(TITLE_FONT, 60)
+        f = font(TITLE_FONT, 60)
         lines = _wrap(d, title, f, W - 2 * PAD)
         lh = int(60 * 1.06)
         chosen = (f, lines, 60, lh)
@@ -119,8 +173,7 @@ def render_item(item, out_path):
 
     # footer
     d.line([(PAD, H - 104), (W - PAD, H - 104)], fill=LINE, width=1)
-    src = item.get("source_name") or item.get("sourceName") or ""
-    d.text((PAD, H - 78), f"Source: {src}", font=src_f, fill=STAR)
+    d.text((PAD, H - 78), f"Source: {source_of(item)}", font=src_f, fill=STAR)
     site = "americawhat.com"
     d.text((W - PAD - d.textlength(site, font=site_f), H - 74), site, font=site_f, fill=DIM)
 
@@ -132,9 +185,9 @@ def render_default(out_path):
     d = ImageDraw.Draw(img)
     _glow(d, 200, (70, 92, 140))
     d.rectangle([0, 0, 10, H], fill=RED)
-    big = ImageFont.truetype(TITLE_FONT, 150)
-    sub = ImageFont.truetype(MONO_FONT, 32)
-    site_f = ImageFont.truetype(MONO_FONT, 26)
+    big = font(TITLE_FONT, 150)
+    sub = font(MONO_FONT, 32)
+    site_f = font(MONO_FONT, 26)
     d.text((PAD, 190), "AMERICA,", font=big, fill=INK)
     d.text((PAD, 330), "WHAT?", font=big, fill=RED)
     d.text((PAD, 512), "The strange, the everyday, the unbelievably American.", font=sub, fill=DIM)
@@ -143,21 +196,171 @@ def render_default(out_path):
     img.save(out_path)
 
 
-def main():
+def sha256_file(path):
+    with open(path, "rb") as fh:
+        return hashlib.sha256(fh.read()).hexdigest()
+
+
+def renderer():
+    return {
+        "pillow": PIL.__version__,
+        "freetype": features.version("freetype2"),
+        "layout": "basic",
+        "fonts": {name: sha256_file(os.path.join(FONT_DIR, name)) for name in sorted(FONT_SHA256)},
+    }
+
+
+def renderer_problems():
+    r = renderer()
+    problems = []
+    if r["pillow"] != PINNED_PILLOW:
+        problems.append(f"Pillow {r['pillow']} (pinned {PINNED_PILLOW}; pip install --require-hashes -r scripts/og/requirements.txt)")
+    if r["freetype"] != PINNED_FREETYPE:
+        problems.append(f"FreeType {r['freetype']} (pinned {PINNED_FREETYPE})")
+    for name, digest in FONT_SHA256.items():
+        if r["fonts"].get(name) != digest:
+            problems.append(f"font {name} differs from the pinned file")
+    return problems
+
+
+def load_items():
     with open(PUB_JSON, encoding="utf-8") as fh:
         data = json.load(fh)
     items = data.get("items", []) if isinstance(data, dict) else data
-    os.makedirs(OUT_DIR, exist_ok=True)
-    render_default(os.path.join(OUT_DIR, "default.png"))
-    n = 0
-    for it in items:
-        iid = it.get("id")
-        if not iid:
+    return [it for it in items if it.get("id")]
+
+
+def load_approved():
+    with open(APPROVED_JSON, encoding="utf-8") as fh:
+        return {f["name"]: f for f in json.load(fh)["files"]}
+
+
+def write_json(path, value):
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(value, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+    os.replace(tmp, path)
+
+
+def generate_missing(out_dir=GENERATED_DIR):
+    approved = load_approved()
+    items = load_items()
+    os.makedirs(out_dir, exist_ok=True)
+    manifest_path = os.path.join(out_dir, "manifest.json")
+    previous = {}
+    if os.path.exists(manifest_path):
+        with open(manifest_path, encoding="utf-8") as fh:
+            previous = json.load(fh).get("items", {})
+    current, rendered, kept, fallbacks = {}, 0, 0, 0
+    wanted = set()
+    for item in items:
+        iid = item["id"]
+        name = f"{iid}.png"
+        if name in approved:
             continue
-        render_item(it, os.path.join(OUT_DIR, f"{iid}.png"))
-        n += 1
-    print(f"OG images: generated {n} item images + default.png in public/og/")
+        wanted.add(name)
+        out = os.path.join(out_dir, name)
+        digest = input_digest(item)
+        old = previous.get(iid)
+        if old and old.get("inputSha256") == digest and old.get("status") == "rendered" \
+                and os.path.exists(out) and sha256_file(out) == old.get("sha256"):
+            current[iid] = old
+            kept += 1
+            continue
+        status = "rendered"
+        try:
+            render_item(item, out)
+        except Exception as error:  # one bad item must not take the site's other previews down
+            shutil.copyfile(os.path.join(APPROVED_DIR, "default.png"), out)
+            status = "fallback"
+            fallbacks += 1
+            print(f"::warning::OG render failed for {iid} ({type(error).__name__}); using default.png")
+        rendered += status == "rendered"
+        current[iid] = {"file": name, "inputSha256": digest, "sha256": sha256_file(out),
+                        "bytes": os.path.getsize(out), "status": status}
+    for name in os.listdir(out_dir):
+        if name.endswith(".png") and name not in wanted:
+            os.remove(os.path.join(out_dir, name))
+    write_json(manifest_path, {"renderer": renderer(), "items": dict(sorted(current.items()))})
+    print(json.dumps({"approved": len(approved), "generated": len(current), "rendered": rendered,
+                      "kept": kept, "fallback": fallbacks}))
+    return 0
+
+
+def same_pixels(a, b):
+    with Image.open(a) as ia, Image.open(b) as ib:
+        ia, ib = ia.convert("RGB"), ib.convert("RGB")
+        return ia.size == ib.size and ImageChops.difference(ia, ib).getbbox() is None
+
+
+def verify_approved():
+    approved = load_approved()
+    items = {f"{it['id']}.png": it for it in load_items()}
+    result = {"approved": len(approved), "pixel_identical": 0, "byte_identical": 0,
+              "pixel_different": [], "input_changed": [], "unpublished": []}
+    with tempfile.TemporaryDirectory() as tmp:
+        for name, entry in sorted(approved.items()):
+            out = os.path.join(tmp, name)
+            if name == "default.png":
+                render_default(out)
+            elif name in items:
+                if entry.get("inputSha256") and entry["inputSha256"] != input_digest(items[name]):
+                    result["input_changed"].append(name)
+                    continue
+                render_item(items[name], out)
+            else:
+                result["unpublished"].append(name)
+                continue
+            ref = os.path.join(APPROVED_DIR, name)
+            if sha256_file(ref) != entry["sha256"]:
+                result["pixel_different"].append(name + " (approved file altered)")
+                continue
+            if sha256_file(out) == entry["sha256"]:
+                result["byte_identical"] += 1
+            if same_pixels(out, ref):
+                result["pixel_identical"] += 1
+            else:
+                result["pixel_different"].append(name)
+    print(json.dumps(result))
+    return 1 if result["pixel_different"] else 0
+
+
+def render_all(out_dir):
+    if os.path.abspath(out_dir) == os.path.abspath(APPROVED_DIR):
+        sys.exit("Refusing to write into public/og/: the approved archive is frozen.")
+    os.makedirs(out_dir, exist_ok=True)
+    render_default(os.path.join(out_dir, "default.png"))
+    items = load_items()
+    for it in items:
+        render_item(it, os.path.join(out_dir, f"{it['id']}.png"))
+    print(f"OG preview: {len(items)} item images + default.png in {out_dir}")
+    return 0
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument("--missing", action="store_true", help="render images for unapproved items (default)")
+    mode.add_argument("--verify-approved", action="store_true", help="prove the renderer reproduces the approved archive")
+    mode.add_argument("--all", action="store_true", help="preview every image into --out")
+    p.add_argument("--out", help="output directory for --all")
+    p.add_argument("--allow-unpinned", action="store_true", help="--all only: accept another Pillow/FreeType")
+    args = p.parse_args(argv)
+
+    problems = renderer_problems()
+    if problems and not (args.all and args.allow_unpinned):
+        for problem in problems:
+            print(f"Unpinned OG renderer: {problem}", file=sys.stderr)
+        return 2
+    if args.all:
+        if not args.out:
+            p.error("--all needs --out <dir>")
+        return render_all(args.out)
+    if args.verify_approved:
+        return verify_approved()
+    return generate_missing()
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
