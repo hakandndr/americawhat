@@ -2,7 +2,7 @@
 // approve / reject (with a reason code) / skip for each, and the whole batch
 // is one atomic commit. Nothing is approved or removed without that choice.
 
-import { buildReview, CATEGORIES, isOriginalSourceUrl, REJECTION_REASONS, STATUSES } from '../../../shared/editorial-signals.mjs';
+import { buildReview, CATEGORIES, countSentences, isAggregator, isOriginalSourceUrl, REJECTION_REASONS, STATUSES } from '../../../shared/editorial-signals.mjs';
 import { approveBatch, rejectBatch, serialize } from '../editorial.mjs';
 import { CONTENT_PATHS } from '../github.mjs';
 import { h, hidden, page, safeHref, select } from '../html.mjs';
@@ -16,6 +16,23 @@ function fetchStatusLine(status) {
   return `Last fetch ${h(status.finishedAt || '?')} · ${h(status.sourcesChecked)} sources · fetched ${h(t.fetched)} · added ${h(t.added)} · duplicate ${h(t.duplicate)} · low score ${h(t.lowScore)} · excluded ${h(t.excluded)}`;
 }
 
+/**
+ * A prepared draft carries every field an approval needs and passes the same
+ * checks without an override: two-sentence comment, valid category, REAL
+ * status, a date, a source name and an original (non-aggregator) article URL.
+ * Only these are picked by "Select prepared drafts".
+ */
+export function isPreparedDraft(rep) {
+  let host = '';
+  try { host = new URL(String(rep.source_url || '')).hostname; } catch { return false; }
+  return Boolean(String(rep.title || '').trim() && String(rep.source_name || '').trim())
+    && countSentences(rep.comment || '') === 2
+    && CATEGORIES.includes(rep.category)
+    && rep.status === 'REAL'
+    && /^\d{4}-\d{2}-\d{2}$/.test(String(rep.date || ''))
+    && isOriginalSourceUrl(rep.source_url) && !isAggregator(host);
+}
+
 function entryCard(entry, i) {
   const rep = entry.representative;
   const prefix = `e${i}_`;
@@ -27,6 +44,7 @@ function entryCard(entry, i) {
   const drafted = [rep, ...entry.members].find((m) => REJECTION_REASONS[m.draft_reason]);
   const draftReason = drafted ? drafted.draft_reason : '';
   const action = draftReason ? 'reject' : 'skip';
+  const prepared = isPreparedDraft(rep);
   // Signals describe the candidate; checks are advisory prompts to read the
   // source. Neither is a decision: only the owner's choice below changes data.
   const signals = [
@@ -34,6 +52,7 @@ function entryCard(entry, i) {
     `<span class="tag">${h(entry.copies)} cop${entry.copies === 1 ? 'y' : 'ies'}</span>`,
     `<span class="tag geo-${h(entry.geography.verdict)}">${h(entry.geography.verdict)}${entry.geography.evidence.length ? `: ${h(entry.geography.evidence.join(', '))}` : ''}</span>`,
     entry.drafted ? '<span class="tag ok">comment drafted</span>' : '',
+    prepared ? '<span class="tag ok">prepared draft</span>' : '',
     draftReason ? `<span class="tag warn" title="${h(drafted.draft_note || '')}">draft: reject ${h(draftReason)}</span>` : '',
   ].join('');
   const checks = [
@@ -44,7 +63,7 @@ function entryCard(entry, i) {
   const search = `https://www.google.com/search?q=${encodeURIComponent(`${rep.title} ${rep.source_domain || ''}`)}`;
   const members = entry.members.map((m) => `<li>${h(m.source_name || m.source_domain)} <span class="muted">${h(m.source_domain)} · ${h(m.date)}</span> — <a href="${safeHref(m.external_url)}" rel="noreferrer noopener" target="_blank">link</a>${m.id === rep.id ? ' <b>(shown)</b>' : ''}</li>`).join('');
   const titleId = `${prefix}t`;
-  return `<article class="story${entry.flags.length || entry.publishedMatch ? ' has-flags' : ''}" aria-labelledby="${titleId}">
+  return `<article class="story${entry.flags.length || entry.publishedMatch ? ' has-flags' : ''}" aria-labelledby="${titleId}" data-copies="${h(entry.copies)}"${prepared ? ' data-prepared="1"' : ''}>
   ${hidden(`${prefix}id`, rep.id)}${hidden(`${prefix}others`, others.join(','))}
   <div class="story-head"><span class="rank" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><div>
   <h2 class="story-title" id="${titleId}">${h(rep.title)}</h2>
@@ -54,7 +73,7 @@ function entryCard(entry, i) {
   ${checks ? `<div class="signals"><span class="lbl warn">Check</span>${checks}</div>` : ''}
   <p class="small muted">Read the source before approving. <a href="${safeHref(rep.external_url)}" rel="noreferrer noopener" target="_blank">Open the fetched link</a> · <a href="${safeHref(search)}" rel="noreferrer noopener" target="_blank">Find the original article</a></p>
   </div></div>
-  <details class="editor"><summary>Edit the story before approving (${h(entry.copies)} candidate${entry.copies === 1 ? '' : 's'})</summary>
+  <details class="editor"${entry.drafted ? ' open' : ''}><summary>Edit the story before approving (${h(entry.copies)} candidate${entry.copies === 1 ? '' : 's'})</summary>
   <div class="grid">
     <div><label for="${prefix}title">Title</label><input id="${prefix}title" name="${prefix}title" value="${h(rep.title)}"></div>
     <div><label for="${prefix}category">Category</label>${select(`${prefix}category`, CATEGORIES.map((c) => [c, c]), rep.category, ` id="${prefix}category"`)}</div>
@@ -87,20 +106,32 @@ function entryCard(entry, i) {
 
 export function renderReview({ identity, flash, review, fetchStatus, csrf, error }) {
   if (error) return page({ title: 'Weekly review', active: '/review', identity, flash, body: `<div class="flash err" role="alert">${h(error)}</div>` });
+  const copies = review.candidates - review.stories;
+  const prepared = review.entries.filter((e) => isPreparedDraft(e.representative)).length;
   const body = `
 <div class="stats">
-  <div class="stat"><b>${review.candidates}</b>candidates</div>
-  <div class="stat"><b>${review.stories}</b>distinct stories</div>
+  <div class="stat"><b>${review.candidates}</b>pending candidates (records)</div>
+  <div class="stat"><b>${review.stories}</b>story cards (distinct stories)</div>
   <div class="stat"><b>${review.flagged}</b>with risk flags</div>
   <div class="stat"><b>${review.foreign}</b>likely not US</div>
   <div class="stat"><b>${review.alreadyPublished}</b>match a published story</div>
 </div>
 <div class="notice" role="note" style="margin-top:14px"><span class="lbl">How this works</span><span>Stories are ranked by deterministic signals. <span class="warn">Check</span> items are advisory — they mean “read the source”, never an automatic decision. Every story stays <b>Skip</b> until you choose; nothing changes until you apply, and the whole batch is one commit.</span></div>
-<form method="post" action="/review/apply">
+<p class="small muted" id="review-scope">${review.candidates} pending candidate${review.candidates === 1 ? '' : 's'} are grouped into ${review.stories} story card${review.stories === 1 ? '' : 's'}${copies > 0 ? `: ${copies} extra cop${copies === 1 ? 'y is' : 'ies are'} listed inside their story's card and handled with it` : ''}. Decisions below are per story card.</p>
+<div class="review-tools" id="review-tools" hidden>
+  <button type="button" class="secondary" data-review="expand">Expand all</button>
+  <button type="button" class="secondary" data-review="collapse">Collapse all</button>
+  <button type="button" class="secondary" data-review="prepared">Select prepared drafts (${prepared})</button>
+  <span class="review-counts" id="review-counts" role="status" aria-live="polite"></span>
+</div>
+<form method="post" action="/review/apply" id="review-form">
   ${hidden('csrf', csrf)}${hidden('count', review.entries.length)}
   ${review.entries.map(entryCard).join('') || '<div class="card empty">No pending candidates. The next fetch will add more.</div>'}
   <div class="sticky-submit"><span class="small muted">Only stories set to Approve or Reject are changed. Approval publishes to the site through one Git commit.</span><button type="submit">Apply selected decisions (one commit)</button></div>
-</form>`;
+</form>
+<dialog id="review-preview" aria-labelledby="review-preview-title"><h2 id="review-preview-title">Confirm this batch</h2><div id="review-preview-body"></div>
+<div class="dialog-actions"><button type="button" class="secondary" data-review="back">Back to the review</button><button type="button" data-review="confirm">Confirm and apply (one commit)</button></div></dialog>
+<script src="/assets/review.js" defer></script>`;
   return page({ title: 'Weekly review', active: '/review', identity, flash, body, lede: fetchStatusLine(fetchStatus) });
 }
 
