@@ -1,6 +1,60 @@
 {
   "items": [
     {
+      "id": "aw-0139",
+      "title": "Iguana rescued from 40-foot tree in Spring Hill after a week on the loose",
+      "comment": "A 9-year-old pet iguana, about 3 feet long, spent a week on the loose in Spring Hill, Kansas, before turning up roughly 40 feet up a tree. Getting him down took a fire district crew and a catch pole on loan from the police department, which is two agencies for one lizard.",
+      "category": "only-in-america",
+      "source_url": "https://www.kctv5.com/2026/10/08/iguana-rescued-spring-hill-tree-after-week-loose/",
+      "source_name": "KCTV5",
+      "date": "2026-10-08",
+      "status": "REAL",
+      "city": "Spring Hill",
+      "state": "Kansas",
+      "source_domain": "upi.com",
+      "seen_id": "src-585d1fa1caa3"
+    },
+    {
+      "id": "aw-0138",
+      "title": "Animal control wrangles guinea pig on the loose in Grand Junction",
+      "comment": "Grand Junction police posted video of an officer closing in on a loose guinea pig in a grassy field and wrapping it in a towel. The department credited a little teamwork and a lot of patience, and the suspect is now in the custody of a local pet store.",
+      "category": "only-in-america",
+      "source_url": "https://www.upi.com/Odd_News/2026/10/01/guinea-pig-grand-junction-colorado/2421790876634/",
+      "source_name": "UPI",
+      "date": "2026-10-01",
+      "status": "REAL",
+      "city": "Grand Junction",
+      "state": "Colorado",
+      "source_domain": "upi.com",
+      "seen_id": "src-bd489751ed0c"
+    },
+    {
+      "id": "aw-0137",
+      "title": "Pelham residents get $100 tickets for parking in their own driveways",
+      "comment": "Pelham, Alabama, is writing $100 tickets to Walker Road residents whose vehicles hang over the sidewalk at the end of their own driveways, and the city says it cannot grant variances. One resident measured 194 inches of parking space against a 243-inch pickup, so compliance appears to require a shorter truck.",
+      "category": "bureaucracy",
+      "source_url": "https://abc3340.com/news/local/thats-my-grocery-budget-pelham-driveway-parking-leads-to-100-tickets",
+      "source_name": "ABC 33/40",
+      "date": "2026-09-22",
+      "status": "REAL",
+      "city": "Pelham",
+      "state": "Alabama",
+      "source_domain": "al.com",
+      "seen_id": "src-e7632ae40ca8"
+    },
+    {
+      "id": "aw-0136",
+      "title": "Class action alleges Uber enrolled customers in Uber One without consent",
+      "comment": "A federal class action says Uber pitches Uber One to existing customers as a promotional offer, then enrolls them in a $9.99-a-month auto-renewing subscription billed to the card already on file. The membership promises customers can cancel anytime, which the lawsuit says is the part that takes the longest.",
+      "category": "fine-print",
+      "source_url": "https://topclassactions.com/lawsuit-settlements/lawsuit-news/class-action-alleges-consumers-enrolled-in-uber-one-subscription-without-consent/",
+      "source_name": "Top Class Actions",
+      "date": "2026-10-09",
+      "status": "REAL",
+      "source_domain": "topclassactions.com",
+      "seen_id": "src-e15e4df3962d"
+    },
+    {
       "id": "aw-0135",
       "title": "Boca Raton Lotus Palm HOA Faces Defamation Lawsuit From Former Racquet Sports Director",
       "comment": "A Boca Raton HOA is being sued for defamation by a resident it used to govern. The association's choice of words has become a matter of damages.",
