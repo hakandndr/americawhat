@@ -14,7 +14,7 @@ fetch.yml (02:00/14:00/20:00 UTC) → src/data/pending.json on main
 Boss (boss.americawhat.com, Cloudflare Access, owner only)
    → approve/reject/edit → ONE commit of published.json + pending.json to main
 deploy-cloudflare.yml → eligibility → tests/build (Astro, pinned OG renderer)
-   → verified Boss content: automatic Web-only version (after one-time setup)
+   → verified Boss content: automatic Web-only version (`production-content`)
    → other changes: owner approves production → Web + Boss versions
 Web Worker: static site + reactions + first-party page views → D1
 ```
@@ -67,9 +67,9 @@ Item schema and status rules: `src/lib/items.js`, `src/lib/slug.js` (Boss pins
    (worktree `D:\IT\AmericaWhat\americawhat\tmp\security-boss` works; its
    branch `codex/staging-rc` is historical — do not reuse it for new work).
 2. Read [CURRENT-STATE.md](CURRENT-STATE.md) → "Open items".
-3. The redesigned Boss is live (8a9cf35). Automatic content deployment needs
-   the one-time `production-content`/proof-key setup in DEPLOYMENT; until then
-   news follows the existing reviewed deployment path.
+3. The redesigned Boss is live (8a9cf35). Automatic content deployment is
+   live (accepted 2026-10-16 with aw-0141). After any code or docs merge, the
+   next news waits for an owner-approved `production` deploy (new baseline).
 4. The owner decides the weekly review in Boss (drafts are
    already in `pending.json`, see CURRENT-STATE → Open items). S2 is waived; staging sync
    is deferred; DNDR forwarding is live (2ef6a57); its cutover gap needs an

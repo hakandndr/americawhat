@@ -65,9 +65,9 @@ editorial decisions or D1 data. Boss itself is never deployed by this path.
 
 ## Automatic Boss content: eligibility and one-time setup
 
-**Not enabled by this PR.** Keep the existing `production` reviewer, main-only
-branch policy, admin-bypass setting and credentials unchanged. The redesign's
-first production deployment must be owner-approved.
+**Enabled 2026-10-16** (setup below completed; live acceptance run
+38969184397 for aw-0141). Keep the existing `production` reviewer, main-only
+branch policy, admin-bypass setting and credentials unchanged.
 
 `scripts/release/content-eligibility.mjs` requires all of the following:
 

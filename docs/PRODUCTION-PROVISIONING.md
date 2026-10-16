@@ -35,7 +35,9 @@ Current versions: [CURRENT-STATE.md](CURRENT-STATE.md).
 | Web Worker | `REACTION_GUARD_SECRET` | random, production-only |
 | Boss Worker | `BOSS_CSRF_SECRET` | random, production-only |
 | Boss Worker | `GITHUB_TOKEN` | fine-grained PAT: only `hakandndr/americawhat`, Contents read/write, ≤ 90 days |
+| Boss Worker | `BOSS_CONTENT_SIGNING_KEY` | Ed25519 PKCS8 (base64) content-proof key, production Boss only; public half is repository variable `BOSS_CONTENT_PUBLIC_KEY`; rotate as in [DEPLOYMENT.md](DEPLOYMENT.md#automatic-boss-content-eligibility-and-one-time-setup) |
 | GitHub Environment `production` | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | token: Workers Editor on the two production Workers only |
+| GitHub Environment `production-content` | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | token: Workers Editor on `americawhat-web-production` only, with an expiry |
 | GitHub Environment `staging` | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | token: Workers Editor on the two staging Workers only |
 | Repository (legacy) | `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD` | Hostinger rollback only; delete at retirement ([POST-CUTOVER.md](POST-CUTOVER.md)) |
 
