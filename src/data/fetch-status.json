@@ -1,12 +1,12 @@
 {
-  "finishedAt": "2026-10-18T07:07:37.824Z",
+  "finishedAt": "2026-10-18T17:12:21.948Z",
   "sourcesChecked": 14,
   "totals": {
     "fetched": 1233,
-    "added": 2,
-    "excluded": 4,
-    "duplicate": 1218,
-    "lowScore": 9
+    "added": 0,
+    "excluded": 10,
+    "duplicate": 1212,
+    "lowScore": 11
   },
   "pendingAfter": 39,
   "sources": [
@@ -15,8 +15,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 2,
+      "duplicate": 98,
       "lowScore": 0
     },
     {
@@ -34,16 +34,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 96,
-      "lowScore": 4
+      "duplicate": 98,
+      "lowScore": 2
     },
     {
       "name": "Google News — Only in America",
       "ok": true,
       "fetched": 31,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 31,
+      "excluded": 1,
+      "duplicate": 30,
       "lowScore": 0
     },
     {
@@ -59,9 +59,9 @@
       "name": "Google News — Weird",
       "ok": true,
       "fetched": 100,
-      "added": 2,
-      "excluded": 1,
-      "duplicate": 97,
+      "added": 0,
+      "excluded": 0,
+      "duplicate": 100,
       "lowScore": 0
     },
     {
@@ -96,9 +96,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "excluded": 2,
+      "duplicate": 97,
+      "lowScore": 1
     },
     {
       "name": "Google News — Only-in-America Oddities",
@@ -114,8 +114,8 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -124,16 +124,16 @@
       "fetched": 100,
       "added": 0,
       "excluded": 1,
-      "duplicate": 99,
-      "lowScore": 0
+      "duplicate": 96,
+      "lowScore": 3
     },
     {
       "name": "Google News — Odd Thefts",
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "excluded": 1,
+      "duplicate": 99,
       "lowScore": 0
     }
   ]
