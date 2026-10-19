@@ -1,22 +1,22 @@
 {
-  "finishedAt": "2026-10-18T22:20:03.368Z",
+  "finishedAt": "2026-10-19T07:34:16.072Z",
   "sourcesChecked": 14,
   "totals": {
-    "fetched": 1231,
-    "added": 1,
-    "excluded": 4,
-    "duplicate": 1220,
-    "lowScore": 6
+    "fetched": 1234,
+    "added": 3,
+    "excluded": 11,
+    "duplicate": 1208,
+    "lowScore": 12
   },
-  "pendingAfter": 40,
+  "pendingAfter": 43,
   "sources": [
     {
       "name": "Google News — Florida Man",
       "ok": true,
       "fetched": 100,
       "added": 1,
-      "excluded": 1,
-      "duplicate": 98,
+      "excluded": 0,
+      "duplicate": 99,
       "lowScore": 0
     },
     {
@@ -40,28 +40,28 @@
     {
       "name": "Google News — Only in America",
       "ok": true,
-      "fetched": 29,
+      "fetched": 31,
       "added": 0,
       "excluded": 0,
-      "duplicate": 29,
+      "duplicate": 31,
       "lowScore": 0
     },
     {
       "name": "Google News — Food Crime",
       "ok": true,
-      "fetched": 77,
+      "fetched": 78,
       "added": 0,
       "excluded": 0,
-      "duplicate": 77,
+      "duplicate": 78,
       "lowScore": 0
     },
     {
       "name": "Google News — Weird",
       "ok": true,
       "fetched": 100,
-      "added": 0,
-      "excluded": 0,
-      "duplicate": 100,
+      "added": 2,
+      "excluded": 1,
+      "duplicate": 97,
       "lowScore": 0
     },
     {
@@ -105,9 +105,9 @@
       "ok": true,
       "fetched": 100,
       "added": 0,
-      "excluded": 0,
-      "duplicate": 98,
-      "lowScore": 2
+      "excluded": 7,
+      "duplicate": 85,
+      "lowScore": 8
     },
     {
       "name": "Google News — Absurd Fines",
@@ -115,8 +115,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 100,
-      "lowScore": 0
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Neighbor Feuds",
@@ -124,8 +124,8 @@
       "fetched": 100,
       "added": 0,
       "excluded": 0,
-      "duplicate": 98,
-      "lowScore": 2
+      "duplicate": 99,
+      "lowScore": 1
     },
     {
       "name": "Google News — Odd Thefts",
