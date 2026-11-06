@@ -12,7 +12,9 @@
     "source_name": "The Sun",
     "date": "2026-11-05",
     "score": 5,
-    "fetched_at": "2026-11-05T20:58:30.950Z"
+    "fetched_at": "2026-11-05T20:58:30.950Z",
+    "draft_reason": "UNVERIFIABLE",
+    "draft_note": "Tabloid/aggregator only; no reliable original report."
   },
   {
     "id": "aw-p-09aa3286b79f",
@@ -27,7 +29,9 @@
     "source_name": "KBOI",
     "date": "2026-11-05",
     "score": 4,
-    "fetched_at": "2026-11-05T20:58:17.590Z"
+    "fetched_at": "2026-11-05T20:58:17.590Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-fdf8f458d9c6",
@@ -42,22 +46,26 @@
     "source_name": "KEYE",
     "date": "2026-11-05",
     "score": 3,
-    "fetched_at": "2026-11-05T20:58:13.658Z"
+    "fetched_at": "2026-11-05T20:58:13.658Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-12a0d830d110",
     "seen_id": "src-12a0d830d110",
-    "title": "Florida Man's $210K Porsche Theft Allegedly Foiled By One Small Mistake: He Was Wearing A GPS Ankle Monitor",
-    "comment": "",
+    "title": "Ankle monitor puts Florida teen at the scene of a $210K Porsche theft, deputies say",
+    "comment": "Deputies say a 19-year-old joined at least three others in taking a $210,000 Porsche Panamera, seven pairs of shoes included, from a mansion in Miami-Dade's Horse Country. The court-ordered GPS ankle monitor he was already wearing from an earlier police-chase case placed him at the scene.",
     "excerpt": "Florida Man's $210K Porsche Theft Allegedly Foiled By One Small Mistake: He Was Wearing A GPS Ankle Monitor BroBible",
     "category": "florida-man",
-    "source_url": "",
+    "source_url": "https://www.local10.com/news/local/2026/11/04/mans-ankle-monitor-puts-him-at-scene-of-210k-porsche-theft-from-horse-country-mansion-mdso/",
     "external_url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxQR0xwUUw1SWQyU1Q3b2FseVBWTHRyQkZ4ZEJXLW8zZ0FnbFljTXgzRG9zeVJidzh2MXBOY0NXTHBCTndTS202eUhqbl9aSTRVSWR1QjQwNllrSnR2a1Y2RGlUN2lpeWM1UHlKOURDRFRMLTRuZGU3b1MtU2FDLXkyVTNoa1I2QVE?oc=5",
     "source_domain": "brobible.com",
-    "source_name": "BroBible",
-    "date": "2026-11-05",
+    "source_name": "Local 10 News",
+    "date": "2026-11-04",
     "score": 3,
-    "fetched_at": "2026-11-05T20:58:13.783Z"
+    "fetched_at": "2026-11-05T20:58:13.783Z",
+    "state": "Florida",
+    "status": "REAL"
   },
   {
     "id": "aw-p-6b762a5221b5",
@@ -72,7 +80,9 @@
     "source_name": "The Sun-Gazette Newspaper",
     "date": "2026-11-04",
     "score": 5,
-    "fetched_at": "2026-11-05T09:15:17.943Z"
+    "fetched_at": "2026-11-05T09:15:17.943Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-bd3f2e3601d8",
@@ -87,7 +97,9 @@
     "source_name": "KTLA",
     "date": "2026-11-04",
     "score": 5,
-    "fetched_at": "2026-11-05T09:15:23.831Z"
+    "fetched_at": "2026-11-05T09:15:23.831Z",
+    "draft_reason": "HARD_REJECT_DEATH_MISSING",
+    "draft_note": "Death, human remains or missing person."
   },
   {
     "id": "aw-p-34d732ab8e0c",
@@ -102,7 +114,9 @@
     "source_name": "24.KG",
     "date": "2026-11-05",
     "score": 5,
-    "fetched_at": "2026-11-05T09:15:35.230Z"
+    "fetched_at": "2026-11-05T09:15:35.230Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-220385ce9308",
@@ -117,7 +131,9 @@
     "source_name": "WFLX",
     "date": "2026-10-29",
     "score": 3,
-    "fetched_at": "2026-11-05T09:15:14.168Z"
+    "fetched_at": "2026-11-05T09:15:14.168Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-dedd34b007e2",
@@ -132,7 +148,9 @@
     "source_name": "Cape May County Herald",
     "date": "2026-11-04",
     "score": 4,
-    "fetched_at": "2026-11-04T20:42:55.682Z"
+    "fetched_at": "2026-11-04T20:42:55.682Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-412b1b43dc19",
@@ -147,7 +165,9 @@
     "source_name": "KING5.com",
     "date": "2026-11-03",
     "score": 4,
-    "fetched_at": "2026-11-04T20:42:55.773Z"
+    "fetched_at": "2026-11-04T20:42:55.773Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-bcd2cbb34d10",
@@ -162,7 +182,9 @@
     "source_name": "UPI Odd News",
     "date": "2026-11-04",
     "score": 4,
-    "fetched_at": "2026-11-04T20:43:07.466Z"
+    "fetched_at": "2026-11-04T20:43:07.466Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Mild animal item; too close to recently published animal rescues (aw-0128, aw-0139)."
   },
   {
     "id": "aw-p-c77cda1ef9aa",
@@ -177,7 +199,9 @@
     "source_name": "FOX 35 Orlando",
     "date": "2026-11-04",
     "score": 3,
-    "fetched_at": "2026-11-04T20:42:51.795Z"
+    "fetched_at": "2026-11-04T20:42:51.795Z",
+    "draft_reason": "HARD_REJECT_DOMESTIC",
+    "draft_note": "Partner shot / domestic violence."
   },
   {
     "id": "aw-p-5c34dafa3408",
@@ -192,7 +216,9 @@
     "source_name": "The Truth About Guns",
     "date": "2026-11-04",
     "score": 3,
-    "fetched_at": "2026-11-04T20:42:51.882Z"
+    "fetched_at": "2026-11-04T20:42:51.882Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-e95d3d339b60",
@@ -207,7 +233,9 @@
     "source_name": "Cville Right Now",
     "date": "2026-11-04",
     "score": 3,
-    "fetched_at": "2026-11-04T20:42:55.592Z"
+    "fetched_at": "2026-11-04T20:42:55.592Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-bfcf792e24be",
@@ -222,7 +250,9 @@
     "source_name": "KROX",
     "date": "2026-11-04",
     "score": 5,
-    "fetched_at": "2026-11-04T08:51:51.352Z"
+    "fetched_at": "2026-11-04T08:51:51.352Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-022a9df053e2",
@@ -237,22 +267,27 @@
     "source_name": "WCLU Radio",
     "date": "2026-11-02",
     "score": 4,
-    "fetched_at": "2026-11-04T08:51:47.077Z"
+    "fetched_at": "2026-11-04T08:51:47.077Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-7ba24beb06ce",
     "seen_id": "src-7ba24beb06ce",
-    "title": "Florida man arrested for allegedly robbing bank wearing 'old man' mask, DOJ says",
-    "comment": "",
+    "title": "Florida man accused of robbing two banks in a prosthetic 'old man' mask",
+    "comment": "Federal prosecutors say a 40-year-old St. Petersburg man robbed banks in Largo and St. Petersburg wearing a realistic old-man mask with gray facial hair, and told the tellers to leave out the dye packs. He was on supervised release at the time, having served a decade-long federal sentence for five bank robberies in Texas.",
     "excerpt": "Florida man arrested for allegedly robbing bank wearing 'old man' mask, DOJ says firstcoastnews.com",
     "category": "florida-man",
-    "source_url": "",
+    "source_url": "https://www.firstcoastnews.com/article/news/nation-world/florida-man-robbing-bank-old-man-mask-doj-says/507-bfd17ed1-6eee-4214-bd61-7a1ae98a3a28",
     "external_url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNUy0yUm5zNVQzMVEtQnFwc0UxSXBxdWVtM0Itbk5ZUV9kWDVRbEM4aVJjT0trdEpEQlE5Z193WVR2OUwza1FIZktaWlRxaDBHWC1FRkdTSDV6R25GR3BJLTlPWkt0ZWY4NS0zY3JuZjNVaE9QU3kwVkZ2YW9IVnBhWGFhbmxlWDZPc0x6dm02a2JRUS11QUVQYU9ZMXVTTlB2bkt1RlpYR0V2aUZPN01XRzRTUXJnV1cta083dWh2SmNXTW9ZUjBJcjhzMjRRMWZ3d01sZlVEcTJEdS1m?oc=5",
     "source_domain": "firstcoastnews.com",
-    "source_name": "firstcoastnews.com",
-    "date": "2026-10-27",
+    "source_name": "First Coast News",
+    "date": "2026-10-17",
     "score": 4,
-    "fetched_at": "2026-11-04T08:51:47.224Z"
+    "fetched_at": "2026-11-04T08:51:47.224Z",
+    "city": "St. Petersburg",
+    "state": "Florida",
+    "status": "REAL"
   },
   {
     "id": "aw-p-8e54eeb61b17",
@@ -267,7 +302,9 @@
     "source_name": "Gridiron Heroics",
     "date": "2026-11-03",
     "score": 4,
-    "fetched_at": "2026-11-04T08:51:47.344Z"
+    "fetched_at": "2026-11-04T08:51:47.344Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-12e59731f11f",
@@ -282,7 +319,9 @@
     "source_name": "GovTech",
     "date": "2026-11-03",
     "score": 4,
-    "fetched_at": "2026-11-04T08:51:51.238Z"
+    "fetched_at": "2026-11-04T08:51:51.238Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-f991ecdcd816",
@@ -297,7 +336,9 @@
     "source_name": "Nursing Times",
     "date": "2026-11-03",
     "score": 9,
-    "fetched_at": "2026-11-03T20:28:12.610Z"
+    "fetched_at": "2026-11-03T20:28:12.610Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-b4a5c934b0b3",
@@ -312,7 +353,9 @@
     "source_name": "Pulse Nigeria",
     "date": "2026-11-03",
     "score": 5,
-    "fetched_at": "2026-11-03T20:28:00.995Z"
+    "fetched_at": "2026-11-03T20:28:00.995Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-4c5767d1242c",
@@ -327,7 +370,9 @@
     "source_name": "WWLTV.com",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-11-03T20:27:50.966Z"
+    "fetched_at": "2026-11-03T20:27:50.966Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-05fca840ea36",
@@ -342,7 +387,9 @@
     "source_name": "De Último Minuto",
     "date": "2026-11-01",
     "score": 4,
-    "fetched_at": "2026-11-03T20:27:51.312Z"
+    "fetched_at": "2026-11-03T20:27:51.312Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-7bfbadf66eb4",
@@ -357,22 +404,27 @@
     "source_name": "TribLIVE.com",
     "date": "2026-11-03",
     "score": 4,
-    "fetched_at": "2026-11-03T20:27:55.055Z"
+    "fetched_at": "2026-11-03T20:27:55.055Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-45169549e393",
     "seen_id": "src-45169549e393",
-    "title": "Police find three escaped alpacas wandering loose in Maine",
-    "comment": "",
+    "title": "Scarborough police round up three escaped alpacas",
+    "comment": "Scarborough police on patrol found three alpacas wandering Scottow Hill Road and walked them down the street behind a cruiser until the owner could be found. The suspects were returned home without charges.",
     "excerpt": "Police officers on patrol in Maine wound up apprehending some unusual suspects: a trio of escaped alpacas.",
-    "category": "crime-weird",
-    "source_url": "",
+    "category": "only-in-america",
+    "source_url": "https://www.upi.com/Odd_News/2026/11/03/escaped-alpacas-scarborough-maine/3171793722729/",
     "external_url": "https://www.upi.com/Odd_News/2026/11/03/escaped-alpacas-scarborough-maine/3171793722729/",
     "source_domain": "upi.com",
-    "source_name": "UPI Odd News",
+    "source_name": "UPI",
     "date": "2026-11-03",
     "score": 4,
-    "fetched_at": "2026-11-03T20:28:06.578Z"
+    "fetched_at": "2026-11-03T20:28:06.578Z",
+    "city": "Scarborough",
+    "state": "Maine",
+    "status": "REAL"
   },
   {
     "id": "aw-p-30556fbdfdc6",
@@ -387,7 +439,9 @@
     "source_name": "WPLG Local 10",
     "date": "2026-10-30",
     "score": 3,
-    "fetched_at": "2026-11-03T20:27:50.860Z"
+    "fetched_at": "2026-11-03T20:27:50.860Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Redemption feature, not news or absurdity."
   },
   {
     "id": "aw-p-9c1f5013f123",
@@ -402,7 +456,9 @@
     "source_name": "iHeart",
     "date": "2026-10-28",
     "score": 3,
-    "fetched_at": "2026-11-03T20:27:51.069Z"
+    "fetched_at": "2026-11-03T20:27:51.069Z",
+    "draft_reason": "HARD_REJECT_DEATH_MISSING",
+    "draft_note": "Death, human remains or missing person."
   },
   {
     "id": "aw-p-32424da0c7cb",
@@ -417,7 +473,9 @@
     "source_name": "Atlanta Black Star",
     "date": "2026-11-03",
     "score": 3,
-    "fetched_at": "2026-11-03T20:27:51.190Z"
+    "fetched_at": "2026-11-03T20:27:51.190Z",
+    "draft_reason": "HARD_REJECT_HATE",
+    "draft_note": "Threats against a Jewish community / racial incident."
   },
   {
     "id": "aw-p-23610fb490a2",
@@ -432,7 +490,9 @@
     "source_name": "FOX 13 Seattle",
     "date": "2026-11-03",
     "score": 5,
-    "fetched_at": "2026-11-03T09:16:45.684Z"
+    "fetched_at": "2026-11-03T09:16:45.684Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-ac50c2cbe028",
@@ -447,7 +507,9 @@
     "source_name": "WBKO",
     "date": "2026-11-03",
     "score": 4,
-    "fetched_at": "2026-11-03T09:16:41.696Z"
+    "fetched_at": "2026-11-03T09:16:41.696Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-c6dd4be714a7",
@@ -462,7 +524,9 @@
     "source_name": "Idaho News 6",
     "date": "2026-11-03",
     "score": 4,
-    "fetched_at": "2026-11-03T09:16:45.812Z"
+    "fetched_at": "2026-11-03T09:16:45.812Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-272da62ef8e6",
@@ -477,7 +541,9 @@
     "source_name": "The Times of India",
     "date": "2026-11-02",
     "score": 3,
-    "fetched_at": "2026-11-03T09:16:41.810Z"
+    "fetched_at": "2026-11-03T09:16:41.810Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Deed-fraud victim story via a foreign reprint."
   },
   {
     "id": "aw-p-588675ae652a",
@@ -492,7 +558,9 @@
     "source_name": "Asianet Newsable",
     "date": "2026-11-02",
     "score": 5,
-    "fetched_at": "2026-11-02T22:40:18.496Z"
+    "fetched_at": "2026-11-02T22:40:18.496Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-149a502695ae",
@@ -507,7 +575,9 @@
     "source_name": "Glasgow News 1",
     "date": "2026-11-02",
     "score": 4,
-    "fetched_at": "2026-11-02T22:40:07.033Z"
+    "fetched_at": "2026-11-02T22:40:07.033Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-a0dce8bc956a",
@@ -522,7 +592,9 @@
     "source_name": "Facebook",
     "date": "2026-11-02",
     "score": 4,
-    "fetched_at": "2026-11-02T22:40:07.262Z"
+    "fetched_at": "2026-11-02T22:40:07.262Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-e9b317cb0a56",
@@ -537,7 +609,9 @@
     "source_name": "cbs19.tv",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-11-02T22:40:07.649Z"
+    "fetched_at": "2026-11-02T22:40:07.649Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-e507394701ea",
@@ -552,7 +626,9 @@
     "source_name": "Environmental Protection Online",
     "date": "2026-11-02",
     "score": 4,
-    "fetched_at": "2026-11-02T22:40:11.623Z"
+    "fetched_at": "2026-11-02T22:40:11.623Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-c1c17c580051",
@@ -567,7 +643,9 @@
     "source_name": "UPI Odd News",
     "date": "2026-11-02",
     "score": 4,
-    "fetched_at": "2026-11-02T22:40:24.340Z"
+    "fetched_at": "2026-11-02T22:40:24.340Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-f632fd92e6e3",
@@ -582,7 +660,9 @@
     "source_name": "UPI Odd News",
     "date": "2026-11-02",
     "score": 4,
-    "fetched_at": "2026-11-02T22:40:24.341Z"
+    "fetched_at": "2026-11-02T22:40:24.341Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-7b72626f345f",
@@ -597,7 +677,9 @@
     "source_name": "1819 News",
     "date": "2026-11-02",
     "score": 3,
-    "fetched_at": "2026-11-02T22:40:07.455Z"
+    "fetched_at": "2026-11-02T22:40:07.455Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-2e56192b1ead",
@@ -612,7 +694,9 @@
     "source_name": "Patriots.com",
     "date": "2026-11-02",
     "score": 9,
-    "fetched_at": "2026-11-02T09:10:50.512Z"
+    "fetched_at": "2026-11-02T09:10:50.512Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-a51bcd97cf9c",
@@ -627,7 +711,9 @@
     "source_name": "Van Nuys News Press",
     "date": "2026-11-02",
     "score": 3,
-    "fetched_at": "2026-11-02T09:10:40.451Z"
+    "fetched_at": "2026-11-02T09:10:40.451Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-599e3ae7886c",
@@ -642,7 +728,9 @@
     "source_name": "Monroe Local News",
     "date": "2026-11-02",
     "score": 3,
-    "fetched_at": "2026-11-02T09:10:44.590Z"
+    "fetched_at": "2026-11-02T09:10:44.590Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-337ccaaeead6",
@@ -657,7 +745,9 @@
     "source_name": "SURFER Magazine",
     "date": "2026-11-01",
     "score": 5,
-    "fetched_at": "2026-11-01T18:49:10.119Z"
+    "fetched_at": "2026-11-01T18:49:10.119Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-4a089b0aa62c",
@@ -672,7 +762,9 @@
     "source_name": "West Orlando News",
     "date": "2026-11-01",
     "score": 4,
-    "fetched_at": "2026-11-01T18:48:59.905Z"
+    "fetched_at": "2026-11-01T18:48:59.905Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-193b6bc89347",
@@ -687,7 +779,9 @@
     "source_name": "KCJJ",
     "date": "2026-11-01",
     "score": 4,
-    "fetched_at": "2026-11-01T18:49:00.171Z"
+    "fetched_at": "2026-11-01T18:49:00.171Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-65e5464170d6",
@@ -702,7 +796,9 @@
     "source_name": "myfoxzone.com",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-11-01T18:49:00.471Z"
+    "fetched_at": "2026-11-01T18:49:00.471Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-ba78a2216c43",
@@ -717,7 +813,9 @@
     "source_name": "Beinsure",
     "date": "2026-11-01",
     "score": 3,
-    "fetched_at": "2026-11-01T18:49:00.029Z"
+    "fetched_at": "2026-11-01T18:49:00.029Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-c82a088060f3",
@@ -732,7 +830,9 @@
     "source_name": "West Orlando News",
     "date": "2026-11-01",
     "score": 3,
-    "fetched_at": "2026-11-01T18:49:00.308Z"
+    "fetched_at": "2026-11-01T18:49:00.308Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-499c9e1fecb1",
@@ -747,7 +847,9 @@
     "source_name": "KING5.com",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-11-01T08:58:23.941Z"
+    "fetched_at": "2026-11-01T08:58:23.941Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-671fef16136c",
@@ -762,7 +864,9 @@
     "source_name": "New York Post",
     "date": "2026-11-01",
     "score": 4,
-    "fetched_at": "2026-11-01T08:58:44.856Z"
+    "fetched_at": "2026-11-01T08:58:44.856Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-7e386ffd5c61",
@@ -777,7 +881,9 @@
     "source_name": "FOX 13 Tampa Bay",
     "date": "2026-10-29",
     "score": 3,
-    "fetched_at": "2026-11-01T08:58:23.756Z"
+    "fetched_at": "2026-11-01T08:58:23.756Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-29d645cadbef",
@@ -792,7 +898,9 @@
     "source_name": "New York Post",
     "date": "2026-10-31",
     "score": 4,
-    "fetched_at": "2026-10-31T23:14:53.573Z"
+    "fetched_at": "2026-10-31T23:14:53.573Z",
+    "draft_reason": "HARD_REJECT_HATE",
+    "draft_note": "Threats against a Jewish community / racial incident."
   },
   {
     "id": "aw-p-d577116e18fc",
@@ -807,22 +915,27 @@
     "source_name": "Yahoo News UK",
     "date": "2026-10-27",
     "score": 8,
-    "fetched_at": "2026-10-31T08:14:23.168Z"
+    "fetched_at": "2026-10-31T08:14:23.168Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-32626e692d33",
     "seen_id": "src-32626e692d33",
-    "title": "TSA officers find bizarre weapon with ‘Wolverine-style claws, Freddy Krueger blades’ at Seattle airport",
-    "comment": "",
+    "title": "TSA finds Wolverine-style claws in a carry-on at Sea-Tac",
+    "comment": "TSA officers at Seattle-Tacoma International Airport spotted a three-bladed set of Wolverine-style claws on the X-ray and pulled it out of a carry-on bag. Asked whether anything sharp was packed, the passenger was not sure, then remembered the claws once they were on the table and left them behind.",
     "excerpt": "TSA officers find bizarre weapon with ‘Wolverine-style claws, Freddy Krueger blades’ at Seattle airport New York Post",
     "category": "crime-weird",
-    "source_url": "",
+    "source_url": "https://komonews.com/news/local/tsa-officers-seatac-airport-prohibited-item-seize-wolverine-style-claws-and-freddy-krueger-blades-marvel-at-sea-tac-airport-superhero-horror",
     "external_url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPX2paTFdmV05ZOERzaWhLOUlzeW1EbHg4VXR1aFl6UnFWM2FWekMxbTVSSjlTRjVVTm1VcDV1cDE4dThRal9pS1A0N2NuT2NUOC1rQ3lDM1RwaUVhNkZmVTd0LVpfNkF6d29vWURHY285X19lRFVDY3lOeERXRlN0TV9aeWctdWtmdk1kdzA0cDRDcUVoQ3k2Z09na3RKTmt5cmZXdU9oSE1FTWEySGVmZ1NjaGlZMFNQWldIVTczLU1WV1gyVnRF?oc=5",
     "source_domain": "nypost.com",
-    "source_name": "New York Post",
+    "source_name": "KOMO News",
     "date": "2026-10-29",
     "score": 5,
-    "fetched_at": "2026-10-31T08:14:11.415Z"
+    "fetched_at": "2026-10-31T08:14:11.415Z",
+    "city": "SeaTac",
+    "state": "Washington",
+    "status": "REAL"
   },
   {
     "id": "aw-p-1f3ddd68b518",
@@ -837,7 +950,9 @@
     "source_name": "Hoodline",
     "date": "2026-10-31",
     "score": 3,
-    "fetched_at": "2026-10-31T08:14:01.092Z"
+    "fetched_at": "2026-10-31T08:14:01.092Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-866337ad9969",
@@ -852,7 +967,9 @@
     "source_name": "Inc.com",
     "date": "2026-10-30",
     "score": 6,
-    "fetched_at": "2026-10-30T23:33:00.214Z"
+    "fetched_at": "2026-10-30T23:33:00.214Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-62401b3666dd"
   },
   {
     "id": "aw-p-6e531f5ce4e1",
@@ -867,22 +984,27 @@
     "source_name": "KTIV",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T23:32:52.151Z"
+    "fetched_at": "2026-10-30T23:32:52.151Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-1f0f6240c92a",
     "seen_id": "src-1f0f6240c92a",
-    "title": "Woodside neighbors' dispute over horse permit inspires town to take new look at its equestrian rules",
-    "comment": "",
+    "title": "A neighbor's appeal over a second horse sends Woodside's equestrian rules back for review",
+    "comment": "Woodside requires an acre of land for two horses, so a resident on 0.45 acres needed a stable exception for his second horse, and a neighbor appealed it all the way to the town council. The council let both horses stay and asked for easier rules, after hearing that some residents keep renewing horse permits for horses they no longer have.",
     "excerpt": "Woodside neighbors' dispute over horse permit inspires town to take new look at its equestrian rules The Almanac",
     "category": "bureaucracy",
-    "source_url": "",
+    "source_url": "https://www.almanacnews.com/woodside/2026/10/30/woodside-neighbors-dispute-over-horse-permit-inspires-town-to-take-new-look-at-its-equestrian-rules/",
     "external_url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxQT2t2QTVURDlaaVE1bUFTSGZoMzBZV0FDZHNvN0dCVzdwYWtiWVc3bTVnaWJvRFhBNF9IVzYwaTdKSmRhbFQzTDZMaVVzSmZIbHctOVREOHJkNE1NNFBXODhIUkhMaWs1R2V4S3QwNnY4UzQtQUNVaGlaQnBMTEVwdEpHUENRVFEyOUY4Rzh5OTVIdUwtYlhETDczN2tOSmcyQVZCMnB2dmFVQ2F4TXdhODVrVTNFRzFSbEVKU01sRFI5TzZqR211Zmc5WktCTzdqaEh2SklVcFNjMjBHTG84VGln?oc=5",
     "source_domain": "almanacnews.com",
     "source_name": "The Almanac",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T23:33:11.531Z"
+    "fetched_at": "2026-10-30T23:33:11.531Z",
+    "city": "Woodside",
+    "state": "California",
+    "status": "REAL"
   },
   {
     "id": "aw-p-761281791add",
@@ -897,7 +1019,9 @@
     "source_name": "WBRC",
     "date": "2026-10-30",
     "score": 3,
-    "fetched_at": "2026-10-30T23:32:48.012Z"
+    "fetched_at": "2026-10-30T23:32:48.012Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-dda0d4987eda",
@@ -912,7 +1036,9 @@
     "source_name": "Treasure Coast News",
     "date": "2026-10-30",
     "score": 3,
-    "fetched_at": "2026-10-30T23:32:48.131Z"
+    "fetched_at": "2026-10-30T23:32:48.131Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-d13f67824a90",
@@ -927,7 +1053,9 @@
     "source_name": "RiverBender.com",
     "date": "2026-10-30",
     "score": 6,
-    "fetched_at": "2026-10-30T19:05:47.410Z"
+    "fetched_at": "2026-10-30T19:05:47.410Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-62401b3666dd"
   },
   {
     "id": "aw-p-adc00ba97064",
@@ -942,7 +1070,9 @@
     "source_name": "West Virginia Press Association",
     "date": "2026-10-24",
     "score": 5,
-    "fetched_at": "2026-10-30T19:05:38.776Z"
+    "fetched_at": "2026-10-30T19:05:38.776Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-563261d0e45d",
@@ -957,7 +1087,9 @@
     "source_name": "WGCU",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T19:05:32.829Z"
+    "fetched_at": "2026-10-30T19:05:32.829Z",
+    "draft_reason": "HARD_REJECT_HATE",
+    "draft_note": "Threats against a Jewish community / racial incident."
   },
   {
     "id": "aw-p-4af159b1b972",
@@ -972,7 +1104,9 @@
     "source_name": "WPLG Local 10",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T19:05:33.023Z"
+    "fetched_at": "2026-10-30T19:05:33.023Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Redemption feature, not news or absurdity."
   },
   {
     "id": "aw-p-94da18a1f758",
@@ -987,7 +1121,9 @@
     "source_name": "10TV",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-10-30T19:05:33.911Z"
+    "fetched_at": "2026-10-30T19:05:33.911Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-0629e02f7d6a",
@@ -1002,7 +1138,9 @@
     "source_name": "Hoodline",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T19:05:34.111Z"
+    "fetched_at": "2026-10-30T19:05:34.111Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-9c2b54a9abf2",
@@ -1017,7 +1155,9 @@
     "source_name": "VINnews",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T19:05:34.523Z"
+    "fetched_at": "2026-10-30T19:05:34.523Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-bddaec3288e3",
@@ -1032,7 +1172,9 @@
     "source_name": "KTIV",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T19:05:38.572Z"
+    "fetched_at": "2026-10-30T19:05:38.572Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-d763d12a2b54",
@@ -1047,7 +1189,9 @@
     "source_name": "UPI Odd News",
     "date": "2026-10-30",
     "score": 4,
-    "fetched_at": "2026-10-30T19:05:51.017Z"
+    "fetched_at": "2026-10-30T19:05:51.017Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Record set by a British collector on a UK flight (UPI)."
   },
   {
     "id": "aw-p-789dcc7f8fbc",
@@ -1062,7 +1206,9 @@
     "source_name": "WVUA 23",
     "date": "2026-10-30",
     "score": 3,
-    "fetched_at": "2026-10-30T19:05:33.239Z"
+    "fetched_at": "2026-10-30T19:05:33.239Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-b68610125ee6",
@@ -1077,7 +1223,9 @@
     "source_name": "FOX8 WGHP",
     "date": "2026-10-29",
     "score": 3,
-    "fetched_at": "2026-10-30T19:05:33.472Z"
+    "fetched_at": "2026-10-30T19:05:33.472Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Man hit by a truck during a roadside TikTok stunt: injury, not comedy."
   },
   {
     "id": "aw-p-03c46e47d2e7",
@@ -1092,7 +1240,9 @@
     "source_name": "WPLG Local 10",
     "date": "2026-10-30",
     "score": 3,
-    "fetched_at": "2026-10-30T19:05:33.701Z"
+    "fetched_at": "2026-10-30T19:05:33.701Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Redemption feature, not news or absurdity."
   },
   {
     "id": "aw-p-4f26e1dbff5f",
@@ -1107,22 +1257,25 @@
     "source_name": "WPTV",
     "date": "2026-10-29",
     "score": 3,
-    "fetched_at": "2026-10-30T19:05:34.299Z"
+    "fetched_at": "2026-10-30T19:05:34.299Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-62401b3666dd",
     "seen_id": "src-62401b3666dd",
-    "title": "FTC, states sue Toast over fees, deceptive subscription practices",
-    "comment": "",
+    "title": "FTC and eight states sue Toast over hidden fees and hard-to-cancel plans",
+    "comment": "The FTC and eight states say restaurant software company Toast advertised hardware and software for $0 a month, then made it back through poorly disclosed fees, pricier card processing and surprise early termination charges for restaurants trying to leave. The complaint also questions the promised round-the-clock support, which owners say was hard to reach at any hour.",
     "excerpt": "FTC, states sue Toast over fees, deceptive subscription practices Reuters",
     "category": "fine-print",
-    "source_url": "",
+    "source_url": "https://www.reuters.com/world/ftc-states-sue-toast-over-fees-deceptive-subscription-practices-2026-10-29/",
     "external_url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQT2UzYkpGc2gtZmFOZmRxbzNEQmRXbFFGQzEwdmthNHRDWHgySllYUFljMzY3M2xhdFhUcDNDemlfd0c3X1hocFlveTczSVVQV19ucGZ3QVB2QkJyTlBSVVFvM1h4aks2WlpNNURxZ1ZaRmlpS25TWnF5MjY5SXk0UWRWV19tOGF5cmNobFFVaXZoQzItT0JTOUh6bmVPSE9BLThBMklGUUw?oc=5",
     "source_domain": "reuters.com",
     "source_name": "Reuters",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-30T08:24:31.717Z"
+    "fetched_at": "2026-10-30T08:24:31.717Z",
+    "status": "REAL"
   },
   {
     "id": "aw-p-9be25efe5a05",
@@ -1137,7 +1290,9 @@
     "source_name": "Colorado Attorney General (.gov)",
     "date": "2026-10-29",
     "score": 9,
-    "fetched_at": "2026-10-29T23:52:18.571Z"
+    "fetched_at": "2026-10-29T23:52:18.571Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-62401b3666dd"
   },
   {
     "id": "aw-p-2cf54c8f70bf",
@@ -1152,7 +1307,9 @@
     "source_name": "KTLO",
     "date": "2026-10-29",
     "score": 6,
-    "fetched_at": "2026-10-29T23:52:09.761Z"
+    "fetched_at": "2026-10-29T23:52:09.761Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-833e5f257622",
@@ -1167,7 +1324,9 @@
     "source_name": "PYMNTS.com",
     "date": "2026-10-29",
     "score": 6,
-    "fetched_at": "2026-10-29T23:52:18.704Z"
+    "fetched_at": "2026-10-29T23:52:18.704Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-62401b3666dd"
   },
   {
     "id": "aw-p-6cc8600cbce8",
@@ -1182,22 +1341,27 @@
     "source_name": "The Sun Malaysia",
     "date": "2026-10-14",
     "score": 5,
-    "fetched_at": "2026-10-29T23:52:16.434Z"
+    "fetched_at": "2026-10-29T23:52:16.434Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-d83afc5cc11b",
     "seen_id": "src-d83afc5cc11b",
-    "title": "Georgia family puts HOA dispute on Halloween sign as $25-a-day garden fines pile up",
-    "comment": "",
+    "title": "Acworth HOA fines family $25 a day over its front-yard vegetable garden",
+    "comment": "An Acworth HOA has fined a family $25 a day since late September over the steel trough beds of peppers, tomatoes and herbs in their front yard, a daily rate reporters could not find in any published fine schedule. The family answered with a Halloween banner mourning the garden, and the board answered by asking the homeowner, one of its own members, to stay away from its meetings.",
     "excerpt": "Georgia family puts HOA dispute on Halloween sign as $25-a-day garden fines pile up Yahoo",
     "category": "hoa-housing",
-    "source_url": "",
+    "source_url": "https://www.atlantanewsfirst.com/2026/10/22/they-grow-food-feed-their-kids-their-hoa-calls-it-unsightly/",
     "external_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQMEIteTd6Q0Y0aUFtbzNqTGRHRnJtS2dqYjhxendOTkZfWlFraEhuRlVQQmVCMnU4SVB6TWxaZFBqc0txVUFBVkpKZ2oyaXlEV1BkMnJJMjdUa0ZsaDNFdEh4aF9VbThPWUFPUFhpT0k1LWJBUUFiakZmbVFER0tnMlk5MjMyN05JV0FzQ013?oc=5",
     "source_domain": "yahoo.com",
-    "source_name": "Yahoo",
-    "date": "2026-10-29",
+    "source_name": "Atlanta News First",
+    "date": "2026-10-22",
     "score": 5,
-    "fetched_at": "2026-10-29T23:52:29.959Z"
+    "fetched_at": "2026-10-29T23:52:29.959Z",
+    "city": "Acworth",
+    "state": "Georgia",
+    "status": "REAL"
   },
   {
     "id": "aw-p-02d27f4c6450",
@@ -1212,7 +1376,9 @@
     "source_name": "FOX 35 Orlando",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T23:52:04.505Z"
+    "fetched_at": "2026-10-29T23:52:04.505Z",
+    "draft_reason": "HARD_REJECT_HATE",
+    "draft_note": "Threats against a Jewish community / racial incident."
   },
   {
     "id": "aw-p-24d4b451f857",
@@ -1227,7 +1393,9 @@
     "source_name": "CBS News",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T23:52:04.726Z"
+    "fetched_at": "2026-10-29T23:52:04.726Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-bc36c16aa8bd",
@@ -1242,7 +1410,9 @@
     "source_name": "Facebook",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T23:52:04.841Z"
+    "fetched_at": "2026-10-29T23:52:04.841Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-67ce63f18ed2",
@@ -1257,7 +1427,9 @@
     "source_name": "CBS News",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T23:52:04.970Z"
+    "fetched_at": "2026-10-29T23:52:04.970Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-9bef3af11e23",
@@ -1272,7 +1444,9 @@
     "source_name": "The Dink Pickleball",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T23:52:05.095Z"
+    "fetched_at": "2026-10-29T23:52:05.095Z",
+    "draft_reason": "UNVERIFIABLE",
+    "draft_note": "Single niche pickleball site citing an unlocated report; also a shove of a woman."
   },
   {
     "id": "aw-p-7fe582a6ac96",
@@ -1287,7 +1461,9 @@
     "source_name": "True Crime News",
     "date": "2026-10-26",
     "score": 3,
-    "fetched_at": "2026-10-29T23:52:05.219Z"
+    "fetched_at": "2026-10-29T23:52:05.219Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-5dfd12e56dde"
   },
   {
     "id": "aw-p-8daffa440540",
@@ -1302,7 +1478,9 @@
     "source_name": "WBZT",
     "date": "2026-10-28",
     "score": 3,
-    "fetched_at": "2026-10-29T23:52:05.326Z"
+    "fetched_at": "2026-10-29T23:52:05.326Z",
+    "draft_reason": "HARD_REJECT_DEATH_MISSING",
+    "draft_note": "Death, human remains or missing person."
   },
   {
     "id": "aw-p-982ebc12491d",
@@ -1317,7 +1495,9 @@
     "source_name": "We Got This Covered",
     "date": "2026-10-29",
     "score": 3,
-    "fetched_at": "2026-10-29T23:52:05.447Z"
+    "fetched_at": "2026-10-29T23:52:05.447Z",
+    "draft_reason": "UNVERIFIABLE",
+    "draft_note": "Tabloid/aggregator only; no reliable original report."
   },
   {
     "id": "aw-p-0fb0eb5c49fc",
@@ -1332,7 +1512,9 @@
     "source_name": "CBS News",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T19:28:38.852Z"
+    "fetched_at": "2026-10-29T19:28:38.852Z",
+    "draft_reason": "HARD_REJECT_DEATH_MISSING",
+    "draft_note": "Death, human remains or missing person."
   },
   {
     "id": "aw-p-a11a83787240",
@@ -1347,7 +1529,9 @@
     "source_name": "NewsNation",
     "date": "2026-10-29",
     "score": 3,
-    "fetched_at": "2026-10-29T19:28:38.973Z"
+    "fetched_at": "2026-10-29T19:28:38.973Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Man hit by a truck during a roadside TikTok stunt: injury, not comedy."
   },
   {
     "id": "aw-p-791874285b4e",
@@ -1362,7 +1546,9 @@
     "source_name": "Treasure Coast News",
     "date": "2026-10-29",
     "score": 3,
-    "fetched_at": "2026-10-29T19:28:39.107Z"
+    "fetched_at": "2026-10-29T19:28:39.107Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-e7fea22f0238",
@@ -1377,7 +1563,9 @@
     "source_name": "coastside buzz",
     "date": "2026-10-29",
     "score": 5,
-    "fetched_at": "2026-10-29T08:16:38.473Z"
+    "fetched_at": "2026-10-29T08:16:38.473Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-d19d14e32b78",
@@ -1392,7 +1580,9 @@
     "source_name": "5newsonline.com",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-10-29T08:16:34.309Z"
+    "fetched_at": "2026-10-29T08:16:34.309Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-a4966d56e1e8",
@@ -1407,7 +1597,9 @@
     "source_name": "WRNJ Radio",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T08:16:38.301Z"
+    "fetched_at": "2026-10-29T08:16:38.301Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-f667b1346c5e",
@@ -1422,7 +1614,9 @@
     "source_name": "Community News",
     "date": "2026-10-29",
     "score": 4,
-    "fetched_at": "2026-10-29T08:16:38.623Z"
+    "fetched_at": "2026-10-29T08:16:38.623Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-0aa4dc3db8e2",
@@ -1437,7 +1631,9 @@
     "source_name": "FOX 13 Tampa Bay",
     "date": "2026-10-28",
     "score": 3,
-    "fetched_at": "2026-10-28T23:57:08.740Z"
+    "fetched_at": "2026-10-28T23:57:08.740Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Man hit by a truck during a roadside TikTok stunt: injury, not comedy."
   },
   {
     "id": "aw-p-75f9bbe27978",
@@ -1452,7 +1648,9 @@
     "source_name": "KFBK",
     "date": "2026-10-28",
     "score": 3,
-    "fetched_at": "2026-10-28T23:57:08.943Z"
+    "fetched_at": "2026-10-28T23:57:08.943Z",
+    "draft_reason": "HARD_REJECT_DEATH_MISSING",
+    "draft_note": "Death, human remains or missing person."
   },
   {
     "id": "aw-p-7391102fdcf6",
@@ -1467,7 +1665,9 @@
     "source_name": "Daily Hive",
     "date": "2026-10-28",
     "score": 3,
-    "fetched_at": "2026-10-28T23:57:28.587Z"
+    "fetched_at": "2026-10-28T23:57:28.587Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-41919e1b4d25",
@@ -1482,7 +1682,9 @@
     "source_name": "AOL.com",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-28T19:24:40.985Z"
+    "fetched_at": "2026-10-28T19:24:40.985Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-0bb9493cd96a",
@@ -1497,7 +1699,9 @@
     "source_name": "New York Post",
     "date": "2026-10-09",
     "score": 5,
-    "fetched_at": "2026-10-28T19:24:41.071Z"
+    "fetched_at": "2026-10-28T19:24:41.071Z",
+    "draft_reason": "ALREADY_PUBLISHED",
+    "draft_note": "Follow-up to the NYC manhole spree already published as aw-0036."
   },
   {
     "id": "aw-p-f4c9b2199521",
@@ -1512,7 +1716,9 @@
     "source_name": "FOX 35 Orlando",
     "date": "2026-10-28",
     "score": 4,
-    "fetched_at": "2026-10-28T19:24:31.221Z"
+    "fetched_at": "2026-10-28T19:24:31.221Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Man hit by a truck during a roadside TikTok stunt: injury, not comedy."
   },
   {
     "id": "aw-p-ad3fca13ad23",
@@ -1527,7 +1733,9 @@
     "source_name": "Insurance Business",
     "date": "2026-10-28",
     "score": 4,
-    "fetched_at": "2026-10-28T19:24:31.321Z"
+    "fetched_at": "2026-10-28T19:24:31.321Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-fe2fe9a0afa1",
@@ -1542,7 +1750,9 @@
     "source_name": "KLFY.com",
     "date": "2026-10-28",
     "score": 3,
-    "fetched_at": "2026-10-28T19:24:31.412Z"
+    "fetched_at": "2026-10-28T19:24:31.412Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-71793253e352",
@@ -1557,7 +1767,9 @@
     "source_name": "L’Express Franchise",
     "date": "2026-10-28",
     "score": 3,
-    "fetched_at": "2026-10-28T19:24:50.394Z"
+    "fetched_at": "2026-10-28T19:24:50.394Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-f669ca76ac04",
@@ -1572,7 +1784,9 @@
     "source_name": "kare11.com",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-10-28T08:08:57.379Z"
+    "fetched_at": "2026-10-28T08:08:57.379Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-fa2878f407b5",
@@ -1587,7 +1801,9 @@
     "source_name": "The Commercial Review",
     "date": "2026-10-28",
     "score": 4,
-    "fetched_at": "2026-10-28T08:09:01.544Z"
+    "fetched_at": "2026-10-28T08:09:01.544Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-4dc92e5d84cc",
@@ -1602,7 +1818,9 @@
     "source_name": "wtsp.com",
     "date": "2026-10-27",
     "score": 3,
-    "fetched_at": "2026-10-28T08:08:57.576Z"
+    "fetched_at": "2026-10-28T08:08:57.576Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-411805fc673a",
@@ -1617,7 +1835,9 @@
     "source_name": "Daily Mail",
     "date": "2026-10-27",
     "score": 5,
-    "fetched_at": "2026-10-27T23:39:20.720Z"
+    "fetched_at": "2026-10-27T23:39:20.720Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-55537b1a5edd",
@@ -1632,7 +1852,9 @@
     "source_name": "Crave Online",
     "date": "2026-10-27",
     "score": 5,
-    "fetched_at": "2026-10-27T23:39:20.851Z"
+    "fetched_at": "2026-10-27T23:39:20.851Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-4288f23828ec",
@@ -1647,7 +1869,9 @@
     "source_name": "West Orlando News",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-10-27T23:39:10.820Z"
+    "fetched_at": "2026-10-27T23:39:10.820Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-8c6a8b3c5ca2",
@@ -1662,7 +1886,9 @@
     "source_name": "KGW",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-10-27T23:39:10.955Z"
+    "fetched_at": "2026-10-27T23:39:10.955Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-35fca26bbdc6",
@@ -1677,7 +1903,9 @@
     "source_name": "Tampa Free Press",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-10-27T23:39:11.082Z"
+    "fetched_at": "2026-10-27T23:39:11.082Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-87c6b2540aac",
@@ -1692,7 +1920,9 @@
     "source_name": "Facebook",
     "date": "2026-10-27",
     "score": 6,
-    "fetched_at": "2026-10-27T19:18:40.858Z"
+    "fetched_at": "2026-10-27T19:18:40.858Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-b7653a066cd1",
@@ -1707,7 +1937,9 @@
     "source_name": "GB News",
     "date": "2026-10-26",
     "score": 5,
-    "fetched_at": "2026-10-27T19:18:36.195Z"
+    "fetched_at": "2026-10-27T19:18:36.195Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-3b8f262fe90e",
@@ -1722,7 +1954,9 @@
     "source_name": "Indiatimes",
     "date": "2026-10-26",
     "score": 5,
-    "fetched_at": "2026-10-27T19:18:36.393Z"
+    "fetched_at": "2026-10-27T19:18:36.393Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-5837711485ec",
@@ -1737,7 +1971,9 @@
     "source_name": "Professional Jeweller",
     "date": "2026-10-27",
     "score": 4,
-    "fetched_at": "2026-10-27T19:18:46.881Z"
+    "fetched_at": "2026-10-27T19:18:46.881Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-cb767152c95a",
@@ -1752,7 +1988,9 @@
     "source_name": "FOX 13 Tampa Bay",
     "date": "2026-10-26",
     "score": 3,
-    "fetched_at": "2026-10-27T19:18:25.523Z"
+    "fetched_at": "2026-10-27T19:18:25.523Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-e976347bca19",
@@ -1767,7 +2005,9 @@
     "source_name": "Kinston.com",
     "date": "2026-10-27",
     "score": 3,
-    "fetched_at": "2026-10-27T19:18:25.728Z"
+    "fetched_at": "2026-10-27T19:18:25.728Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-e73ecece0fda",
@@ -1782,7 +2022,9 @@
     "source_name": "QSR Magazine",
     "date": "2026-10-27",
     "score": 3,
-    "fetched_at": "2026-10-27T19:18:46.723Z"
+    "fetched_at": "2026-10-27T19:18:46.723Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-63f0b3100f47",
@@ -1797,7 +2039,9 @@
     "source_name": "WCTI",
     "date": "2026-10-27",
     "score": 3,
-    "fetched_at": "2026-10-27T07:35:53.986Z"
+    "fetched_at": "2026-10-27T07:35:53.986Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-d5b14fe29122",
@@ -1812,7 +2056,9 @@
     "source_name": "People.com",
     "date": "2026-10-27",
     "score": 3,
-    "fetched_at": "2026-10-27T07:35:54.130Z"
+    "fetched_at": "2026-10-27T07:35:54.130Z",
+    "draft_reason": "HARD_REJECT_DEATH_MISSING",
+    "draft_note": "Source: the cheesesteak plea offer came from a defendant in a murder and dismemberment trial."
   },
   {
     "id": "aw-p-6ae7b6dd3f33",
@@ -1827,7 +2073,9 @@
     "source_name": "Florida Today",
     "date": "2026-10-26",
     "score": 3,
-    "fetched_at": "2026-10-26T23:40:05.526Z"
+    "fetched_at": "2026-10-26T23:40:05.526Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-5dfd12e56dde"
   },
   {
     "id": "aw-p-04f9552e857d",
@@ -1842,7 +2090,9 @@
     "source_name": "New York Post",
     "date": "2026-10-26",
     "score": 3,
-    "fetched_at": "2026-10-26T23:40:05.687Z"
+    "fetched_at": "2026-10-26T23:40:05.687Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-5dfd12e56dde"
   },
   {
     "id": "aw-p-ebd366ba6a6e",
@@ -1857,7 +2107,9 @@
     "source_name": "LinkedIn",
     "date": "2026-10-26",
     "score": 3,
-    "fetched_at": "2026-10-26T23:40:25.641Z"
+    "fetched_at": "2026-10-26T23:40:25.641Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-0af908701f29",
@@ -1872,7 +2124,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-23",
     "score": 5,
-    "fetched_at": "2026-10-26T19:48:54.870Z"
+    "fetched_at": "2026-10-26T19:48:54.870Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-84a9da2b5d69",
@@ -1887,7 +2141,9 @@
     "source_name": "KTLA",
     "date": "2026-10-26",
     "score": 5,
-    "fetched_at": "2026-10-26T19:49:01.533Z"
+    "fetched_at": "2026-10-26T19:49:01.533Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-10d3c318e6af",
@@ -1902,7 +2158,9 @@
     "source_name": "Isle of Man Today",
     "date": "2026-10-26",
     "score": 5,
-    "fetched_at": "2026-10-26T19:49:01.653Z"
+    "fetched_at": "2026-10-26T19:49:01.653Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-bdd93536d065",
@@ -1917,22 +2175,27 @@
     "source_name": "Taipei Times",
     "date": "2026-10-26",
     "score": 5,
-    "fetched_at": "2026-10-26T19:49:13.662Z"
+    "fetched_at": "2026-10-26T19:49:13.662Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-5283e5ced146",
     "seen_id": "src-5283e5ced146",
-    "title": "Watch: World s largest pop-up book on display at Los Angeles library",
-    "comment": "",
+    "title": "Los Angeles library unveils the world's largest pop-up book",
+    "comment": "The Los Angeles Public Library marked its centennial with a Guinness-certified pop-up book that opens to 15.41 by 20.01 feet, with scenes rising as high as 11 feet. Turning a single page takes a team of 10 people.",
     "excerpt": "The Los Angeles Public Library is celebrating its centennial anniversary by playing host to an unusual tome: the world s largest pop-up book.",
-    "category": "crime-weird",
-    "source_url": "",
+    "category": "only-in-america",
+    "source_url": "https://www.upi.com/Odd_News/2026/10/26/guinness-world-records-largest-pop-up-book/9571793036865/",
     "external_url": "https://www.upi.com/Odd_News/2026/10/26/guinness-world-records-largest-pop-up-book/9571793036865/",
     "source_domain": "upi.com",
-    "source_name": "UPI Odd News",
+    "source_name": "UPI",
     "date": "2026-10-26",
     "score": 4,
-    "fetched_at": "2026-10-26T19:49:07.287Z"
+    "fetched_at": "2026-10-26T19:49:07.287Z",
+    "city": "Los Angeles",
+    "state": "California",
+    "status": "REAL"
   },
   {
     "id": "aw-p-f4b182a017de",
@@ -1947,7 +2210,9 @@
     "source_name": "The Mary Sue",
     "date": "2026-10-26",
     "score": 3,
-    "fetched_at": "2026-10-26T19:48:50.777Z"
+    "fetched_at": "2026-10-26T19:48:50.777Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Source: battery on a 65+ group-home roommate; punches down."
   },
   {
     "id": "aw-p-b9a4059ba4ae",
@@ -1962,7 +2227,9 @@
     "source_name": "스타뉴스",
     "date": "2026-10-23",
     "score": 5,
-    "fetched_at": "2026-10-26T07:38:30.834Z"
+    "fetched_at": "2026-10-26T07:38:30.834Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-aaa7b8970586",
@@ -1977,7 +2244,9 @@
     "source_name": "Guernsey Press",
     "date": "2026-10-26",
     "score": 4,
-    "fetched_at": "2026-10-26T07:38:24.872Z"
+    "fetched_at": "2026-10-26T07:38:24.872Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-8ede58ed3c49",
@@ -1992,7 +2261,9 @@
     "source_name": "FOX 35 Orlando",
     "date": "2026-10-21",
     "score": 3,
-    "fetched_at": "2026-10-26T07:38:20.916Z"
+    "fetched_at": "2026-10-26T07:38:20.916Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-7d3daafee83e",
@@ -2007,7 +2278,9 @@
     "source_name": "WPEC",
     "date": "2026-10-24",
     "score": 3,
-    "fetched_at": "2026-10-26T07:38:21.015Z"
+    "fetched_at": "2026-10-26T07:38:21.015Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-d2857dcf98d5",
@@ -2022,7 +2295,9 @@
     "source_name": "TipRanks",
     "date": "2026-10-22",
     "score": 6,
-    "fetched_at": "2026-10-25T22:24:08.142Z"
+    "fetched_at": "2026-10-25T22:24:08.142Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Hims & Hers motion to dismiss: a routine court filing covered as finance news."
   },
   {
     "id": "aw-p-1948fb5e9787",
@@ -2037,7 +2312,9 @@
     "source_name": "West Orlando News",
     "date": "2026-10-25",
     "score": 4,
-    "fetched_at": "2026-10-25T22:23:55.999Z"
+    "fetched_at": "2026-10-25T22:23:55.999Z",
+    "draft_reason": "HARD_REJECT_MINOR",
+    "draft_note": "Child harm or offence involving a minor."
   },
   {
     "id": "aw-p-294470e5f65a",
@@ -2052,7 +2329,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-21",
     "score": 4,
-    "fetched_at": "2026-10-25T22:23:56.186Z"
+    "fetched_at": "2026-10-25T22:23:56.186Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-6bc878376f30",
@@ -2067,7 +2346,9 @@
     "source_name": "The New Arab",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-25T17:31:52.799Z"
+    "fetched_at": "2026-10-25T17:31:52.799Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-91b6fe61a9da",
@@ -2082,7 +2363,9 @@
     "source_name": "West Orlando News",
     "date": "2026-10-25",
     "score": 4,
-    "fetched_at": "2026-10-25T17:31:42.772Z"
+    "fetched_at": "2026-10-25T17:31:42.772Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-746ec0124018",
@@ -2097,7 +2380,9 @@
     "source_name": "Yahoo Sports",
     "date": "2026-10-20",
     "score": 4,
-    "fetched_at": "2026-10-25T17:32:04.755Z"
+    "fetched_at": "2026-10-25T17:32:04.755Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-1d069f92fcd7",
@@ -2112,7 +2397,9 @@
     "source_name": "WFLA",
     "date": "2026-10-25",
     "score": 3,
-    "fetched_at": "2026-10-25T17:31:42.626Z"
+    "fetched_at": "2026-10-25T17:31:42.626Z",
+    "draft_reason": "HARD_REJECT_ANIMAL",
+    "draft_note": "Animal cruelty or neglect."
   },
   {
     "id": "aw-p-b82641fbc939",
@@ -2127,7 +2414,9 @@
     "source_name": "Yahoo Finance",
     "date": "2026-10-22",
     "score": 6,
-    "fetched_at": "2026-10-25T07:28:34.158Z"
+    "fetched_at": "2026-10-25T07:28:34.158Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Hims & Hers motion to dismiss: a routine court filing covered as finance news."
   },
   {
     "id": "aw-p-a52616ec73a7",
@@ -2142,7 +2431,9 @@
     "source_name": "wrganews.com",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-25T07:28:32.084Z"
+    "fetched_at": "2026-10-25T07:28:32.084Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-443a559c5ec8",
@@ -2157,7 +2448,9 @@
     "source_name": "Yahoo Sports",
     "date": "2026-10-24",
     "score": 5,
-    "fetched_at": "2026-10-25T07:28:43.820Z"
+    "fetched_at": "2026-10-25T07:28:43.820Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-d703654786ba",
@@ -2172,7 +2465,9 @@
     "source_name": "NonStop Local Billings",
     "date": "2026-10-24",
     "score": 4,
-    "fetched_at": "2026-10-24T22:21:01.559Z"
+    "fetched_at": "2026-10-24T22:21:01.559Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-3581edfe7c97",
@@ -2187,7 +2482,9 @@
     "source_name": "West Orlando News",
     "date": "2026-10-24",
     "score": 4,
-    "fetched_at": "2026-10-24T22:21:01.672Z"
+    "fetched_at": "2026-10-24T22:21:01.672Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-a213ba6daf85",
@@ -2202,7 +2499,9 @@
     "source_name": "Facebook",
     "date": "2026-10-24",
     "score": 4,
-    "fetched_at": "2026-10-24T22:21:01.796Z"
+    "fetched_at": "2026-10-24T22:21:01.796Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-4998402ca9f8",
@@ -2217,7 +2516,9 @@
     "source_name": "Page Six",
     "date": "2026-10-23",
     "score": 5,
-    "fetched_at": "2026-10-24T17:17:49.977Z"
+    "fetched_at": "2026-10-24T17:17:49.977Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-cf17903951d0",
@@ -2232,7 +2533,9 @@
     "source_name": "News and Sentinel",
     "date": "2026-10-24",
     "score": 5,
-    "fetched_at": "2026-10-24T07:04:46.010Z"
+    "fetched_at": "2026-10-24T07:04:46.010Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-06037a203518",
@@ -2247,22 +2550,27 @@
     "source_name": "WILX",
     "date": "2026-10-20",
     "score": 4,
-    "fetched_at": "2026-10-24T07:04:46.182Z"
+    "fetched_at": "2026-10-24T07:04:46.182Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-4e3d27eedb03",
     "seen_id": "src-4e3d27eedb03",
-    "title": "Florida man angry over canceled surgery, smashed doctor's Tesla with hammer, deputies say",
-    "comment": "",
+    "title": "Villages man accused of taking a hammer to his doctor's Tesla after canceled surgeries",
+    "comment": "Deputies say a man from The Villages, upset that his doctor had called off two procedures, one of them because he drank water beforehand, put on a surgical mask and hit the doctor's Tesla windshield twice with a hammer. The car's cameras recorded the entire visit, which made the surgical mask the only precaution that did not work.",
     "excerpt": "Florida man angry over canceled surgery, smashed doctor's Tesla with hammer, deputies say FOX 35 Orlando",
     "category": "florida-man",
-    "source_url": "",
+    "source_url": "https://www.fox35orlando.com/news/florida-man-angry-from-canceled-surgery-smashes-doctors-tesla",
     "external_url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOdEJMVzRTdWlqVXNsb1VkNC1ic3VXcFJMem5STTk0U3ZaYnRTeUlBVXhfZW5ITzItajBqYWhPMW5oQi1ESnBSR19NQWROcDREQUlqeWpEbmlrakVVelVwYlFUQjZ4QVVrX2NoR1BmVnlfdzhVU1FxSmo5ZHYzTlF1RE1LWWFEZmVjWVlDVWc2MFRvVk5qLWp3QTZ5bw?oc=5",
     "source_domain": "fox35orlando.com",
     "source_name": "FOX 35 Orlando",
     "date": "2026-10-22",
     "score": 3,
-    "fetched_at": "2026-10-24T07:04:41.852Z"
+    "fetched_at": "2026-10-24T07:04:41.852Z",
+    "city": "The Villages",
+    "state": "Florida",
+    "status": "REAL"
   },
   {
     "id": "aw-p-0b3d3bdd325f",
@@ -2277,7 +2585,9 @@
     "source_name": "WHAS11",
     "date": "2026-10-23",
     "score": 5,
-    "fetched_at": "2026-10-23T22:58:52.520Z"
+    "fetched_at": "2026-10-23T22:58:52.520Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-5cedd4828e29",
@@ -2292,7 +2602,9 @@
     "source_name": "Tampa Free Press",
     "date": "2026-10-22",
     "score": 4,
-    "fetched_at": "2026-10-23T22:58:48.371Z"
+    "fetched_at": "2026-10-23T22:58:48.371Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-ea1482e823be",
@@ -2307,7 +2619,9 @@
     "source_name": "Benzinga",
     "date": "2026-10-23",
     "score": 6,
-    "fetched_at": "2026-10-23T18:12:30.144Z"
+    "fetched_at": "2026-10-23T18:12:30.144Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Hims & Hers motion to dismiss: a routine court filing covered as finance news."
   },
   {
     "id": "aw-p-0e99c384d987",
@@ -2322,22 +2636,27 @@
     "source_name": "inkl",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-23T18:12:19.439Z"
+    "fetched_at": "2026-10-23T18:12:19.439Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "HOA governance lawsuit over a roof deposit; no absurd hook."
   },
   {
     "id": "aw-p-c4b50dd40df2",
     "seen_id": "src-c4b50dd40df2",
-    "title": "Look: Public works employee rescues stuffed animal from storm drain",
-    "comment": "",
+    "title": "Riverside public works employee rescues a child's stuffed cat from a storm drain",
+    "comment": "A child's stuffed cat fell into a storm drain on the way to school in Riverside, and a public works employee lifted the grate and fished it out with a reaching tool. The city celebrated the rescue online, with the child's mother supplying the photos.",
     "excerpt": "A public works employee in an Ohio city is being praised for an unusual rescue involving a stuffed toy that fell into a storm drain.",
-    "category": "crime-weird",
-    "source_url": "",
+    "category": "only-in-america",
+    "source_url": "https://www.upi.com/Odd_News/2026/10/23/stuffed-animal-rescue-riverside-ohio/2741792775881/",
     "external_url": "https://www.upi.com/Odd_News/2026/10/23/stuffed-animal-rescue-riverside-ohio/2741792775881/",
     "source_domain": "upi.com",
-    "source_name": "UPI Odd News",
+    "source_name": "UPI",
     "date": "2026-10-23",
     "score": 4,
-    "fetched_at": "2026-10-23T18:12:33.864Z"
+    "fetched_at": "2026-10-23T18:12:33.864Z",
+    "city": "Riverside",
+    "state": "Ohio",
+    "status": "REAL"
   },
   {
     "id": "aw-p-ac7fde4d4163",
@@ -2352,7 +2671,9 @@
     "source_name": "News4JAX",
     "date": "2026-10-23",
     "score": 3,
-    "fetched_at": "2026-10-23T18:12:17.233Z"
+    "fetched_at": "2026-10-23T18:12:17.233Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-5dfd12e56dde"
   },
   {
     "id": "aw-p-37839f95ed78",
@@ -2367,7 +2688,9 @@
     "source_name": "TradingView",
     "date": "2026-10-22",
     "score": 6,
-    "fetched_at": "2026-10-23T07:16:22.092Z"
+    "fetched_at": "2026-10-23T07:16:22.092Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Hims & Hers motion to dismiss: a routine court filing covered as finance news."
   },
   {
     "id": "aw-p-884a9af23806",
@@ -2382,7 +2705,9 @@
     "source_name": "Yahoo News Singapore",
     "date": "2026-10-22",
     "score": 5,
-    "fetched_at": "2026-10-23T07:16:19.969Z"
+    "fetched_at": "2026-10-23T07:16:19.969Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-b2f0496e9692",
@@ -2397,7 +2722,9 @@
     "source_name": "The Jerusalem Post",
     "date": "2026-10-23",
     "score": 4,
-    "fetched_at": "2026-10-23T07:16:09.420Z"
+    "fetched_at": "2026-10-23T07:16:09.420Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-323ba22cc872",
@@ -2412,7 +2739,9 @@
     "source_name": "Americus Times-Recorder",
     "date": "2026-10-23",
     "score": 4,
-    "fetched_at": "2026-10-23T07:16:13.780Z"
+    "fetched_at": "2026-10-23T07:16:13.780Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-72724f76bef4",
@@ -2427,7 +2756,9 @@
     "source_name": "WTAW",
     "date": "2026-10-22",
     "score": 4,
-    "fetched_at": "2026-10-23T07:16:27.994Z"
+    "fetched_at": "2026-10-23T07:16:27.994Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-c0f418c61476",
@@ -2442,7 +2773,9 @@
     "source_name": "WPBF",
     "date": "2026-10-23",
     "score": 3,
-    "fetched_at": "2026-10-23T07:16:09.583Z"
+    "fetched_at": "2026-10-23T07:16:09.583Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-4805eec878c7",
@@ -2457,22 +2790,27 @@
     "source_name": "WESH",
     "date": "2026-10-21",
     "score": 3,
-    "fetched_at": "2026-10-23T07:16:09.748Z"
+    "fetched_at": "2026-10-23T07:16:09.748Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Police-misconduct acquittal; serious, not AmericaWhat."
   },
   {
     "id": "aw-p-5dfd12e56dde",
     "seen_id": "src-5dfd12e56dde",
-    "title": "Florida man behind Mall at Millenia’s bizarre jewelry heist found guilty",
-    "comment": "",
+    "title": "Florida jury convicts man who swallowed $769,500 in stolen Tiffany earrings",
+    "comment": "Posing as a representative for an Orlando Magic player, a Houston man walked out of the Tiffany store at the Mall at Millenia with four diamond earrings worth $769,500, then tried to swallow them when he was stopped on Interstate 10. An Orange County jury convicted him of robbery and grand theft, and Tiffany took the earrings back after a thorough cleaning.",
     "excerpt": "Florida man behind Mall at Millenia’s bizarre jewelry heist found guilty WKMG",
     "category": "florida-man",
-    "source_url": "",
+    "source_url": "https://www.clickorlando.com/news/local/2026/10/22/florida-man-behind-mall-at-millenias-bizarre-jewelry-heist-found-guilty/",
     "external_url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNSm1FZ01ILTBfRG9DY3k0YzlSelFoaXZ4ZGhQV3VJU1NWZU5DX0VGaEl5dXhOU3lyZjFxSEpSeGtmYUJ5S2Y4eUtWQUs3bElBY01kZ2IxLTY2NUEyaGNFSUhLdEgzSUxYSmI0UW5zUlc0TmhNazRNaG5EWHl0aUdIcDAyMGx5Nkgxb3d3TnVwWlFkS0QteDBva0QxdDVPQmx3QkRaRW1GbkFjeUMzSWMwUmVSRVFNb2lrS1BzMF9NTVQ?oc=5",
     "source_domain": "clickorlando.com",
-    "source_name": "WKMG",
+    "source_name": "News 6 ClickOrlando",
     "date": "2026-10-22",
     "score": 8,
-    "fetched_at": "2026-10-22T23:08:12.617Z"
+    "fetched_at": "2026-10-22T23:08:12.617Z",
+    "city": "Orlando",
+    "state": "Florida",
+    "status": "REAL"
   },
   {
     "id": "aw-p-ca7925382c49",
@@ -2487,7 +2825,9 @@
     "source_name": "Stocktwits",
     "date": "2026-10-22",
     "score": 6,
-    "fetched_at": "2026-10-22T23:08:25.232Z"
+    "fetched_at": "2026-10-22T23:08:25.232Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Hims & Hers motion to dismiss: a routine court filing covered as finance news."
   },
   {
     "id": "aw-p-022200b3b5c2",
@@ -2502,7 +2842,9 @@
     "source_name": "1News.az",
     "date": "2026-10-22",
     "score": 5,
-    "fetched_at": "2026-10-22T23:08:35.160Z"
+    "fetched_at": "2026-10-22T23:08:35.160Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-6f981babd5f1",
@@ -2517,7 +2859,9 @@
     "source_name": "Floridian Press",
     "date": "2026-10-22",
     "score": 4,
-    "fetched_at": "2026-10-22T23:08:12.741Z"
+    "fetched_at": "2026-10-22T23:08:12.741Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-df5d404a028b",
@@ -2532,7 +2876,9 @@
     "source_name": "Wide Open Country",
     "date": "2026-10-22",
     "score": 3,
-    "fetched_at": "2026-10-22T23:08:12.850Z"
+    "fetched_at": "2026-10-22T23:08:12.850Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Source: jumped through a window fleeing arrest, injured; battery on an officer."
   },
   {
     "id": "aw-p-30386296b7ea",
@@ -2547,7 +2893,9 @@
     "source_name": "Inshorts",
     "date": "2026-10-22",
     "score": 13,
-    "fetched_at": "2026-10-22T18:26:28.800Z"
+    "fetched_at": "2026-10-22T18:26:28.800Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-338fb5bd7926",
@@ -2562,7 +2910,9 @@
     "source_name": "nationalenquirer.com",
     "date": "2026-10-22",
     "score": 5,
-    "fetched_at": "2026-10-22T18:26:17.070Z"
+    "fetched_at": "2026-10-22T18:26:17.070Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-90b23c4d1ab9",
@@ -2577,7 +2927,9 @@
     "source_name": "The Times of India",
     "date": "2026-10-22",
     "score": 5,
-    "fetched_at": "2026-10-22T18:26:28.903Z"
+    "fetched_at": "2026-10-22T18:26:28.903Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-b3b89ee74096",
@@ -2592,7 +2944,9 @@
     "source_name": "AOL.com",
     "date": "2026-10-22",
     "score": 5,
-    "fetched_at": "2026-10-22T18:26:30.975Z"
+    "fetched_at": "2026-10-22T18:26:30.975Z",
+    "draft_reason": "UNVERIFIABLE",
+    "draft_note": "Reddit post retold by an aggregator; no newsroom reporting."
   },
   {
     "id": "aw-p-643c028719dc",
@@ -2607,7 +2961,9 @@
     "source_name": "AOL.com",
     "date": "2026-10-22",
     "score": 4,
-    "fetched_at": "2026-10-22T18:26:06.684Z"
+    "fetched_at": "2026-10-22T18:26:06.684Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-a963b3830e6b",
@@ -2622,7 +2978,9 @@
     "source_name": "WPEC",
     "date": "2026-10-12",
     "score": 4,
-    "fetched_at": "2026-10-22T18:26:06.783Z"
+    "fetched_at": "2026-10-22T18:26:06.783Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-85cb51079eac",
@@ -2637,7 +2995,9 @@
     "source_name": "UPI Odd News",
     "date": "2026-10-22",
     "score": 4,
-    "fetched_at": "2026-10-22T18:26:22.764Z"
+    "fetched_at": "2026-10-22T18:26:22.764Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Mild animal item; too close to recently published animal rescues (aw-0128, aw-0139)."
   },
   {
     "id": "aw-p-4d70be841174",
@@ -2652,7 +3012,9 @@
     "source_name": "WKMG",
     "date": "2026-10-20",
     "score": 5,
-    "fetched_at": "2026-10-22T07:22:38.522Z"
+    "fetched_at": "2026-10-22T07:22:38.522Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "HOA governance lawsuit over a roof deposit; no absurd hook."
   },
   {
     "id": "aw-p-25bcf8723e7b",
@@ -2667,7 +3029,9 @@
     "source_name": "The Standard (HK)",
     "date": "2026-10-21",
     "score": 3,
-    "fetched_at": "2026-10-22T07:22:36.480Z"
+    "fetched_at": "2026-10-22T07:22:36.480Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-61db2584950a",
@@ -2682,7 +3046,9 @@
     "source_name": "WFLA",
     "date": "2026-10-21",
     "score": 4,
-    "fetched_at": "2026-10-21T23:08:07.563Z"
+    "fetched_at": "2026-10-21T23:08:07.563Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-f7fb5fd93831",
@@ -2697,7 +3063,9 @@
     "source_name": "Uprise RI",
     "date": "2026-10-21",
     "score": 6,
-    "fetched_at": "2026-10-21T18:30:30.199Z"
+    "fetched_at": "2026-10-21T18:30:30.199Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-76e6648a721d",
@@ -2712,7 +3080,9 @@
     "source_name": "Fox News",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-21T18:30:36.962Z"
+    "fetched_at": "2026-10-21T18:30:36.962Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-441581bd0aea",
@@ -2727,7 +3097,9 @@
     "source_name": "Police Oracle",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-21T18:30:37.215Z"
+    "fetched_at": "2026-10-21T18:30:37.215Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-bbf600969ffe",
@@ -2742,7 +3114,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-21",
     "score": 4,
-    "fetched_at": "2026-10-21T18:30:26.049Z"
+    "fetched_at": "2026-10-21T18:30:26.049Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-8a02523c47d6",
@@ -2757,7 +3131,9 @@
     "source_name": "The Aviationist",
     "date": "2026-10-21",
     "score": 4,
-    "fetched_at": "2026-10-21T18:30:37.084Z"
+    "fetched_at": "2026-10-21T18:30:37.084Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-faf241c132be",
@@ -2772,7 +3148,9 @@
     "source_name": "Neuse News",
     "date": "2026-10-21",
     "score": 3,
-    "fetched_at": "2026-10-21T18:30:25.785Z"
+    "fetched_at": "2026-10-21T18:30:25.785Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-14af929e50cf",
@@ -2787,7 +3165,9 @@
     "source_name": "WCTI",
     "date": "2026-10-21",
     "score": 3,
-    "fetched_at": "2026-10-21T18:30:25.918Z"
+    "fetched_at": "2026-10-21T18:30:25.918Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-656a62c4ff85",
@@ -2802,7 +3182,9 @@
     "source_name": "WKMG",
     "date": "2026-10-16",
     "score": 3,
-    "fetched_at": "2026-10-21T18:30:26.175Z"
+    "fetched_at": "2026-10-21T18:30:26.175Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-b8ff2dabd5db",
@@ -2817,7 +3199,9 @@
     "source_name": "Pullman Radio",
     "date": "2026-10-21",
     "score": 6,
-    "fetched_at": "2026-10-21T07:22:09.240Z"
+    "fetched_at": "2026-10-21T07:22:09.240Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-5fed7807b4bb",
@@ -2832,7 +3216,9 @@
     "source_name": "Fox News",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-21T07:22:15.559Z"
+    "fetched_at": "2026-10-21T07:22:15.559Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-7f5bcac4b8b3",
@@ -2847,7 +3233,9 @@
     "source_name": "Yahoo News Australia",
     "date": "2026-10-21",
     "score": 5,
-    "fetched_at": "2026-10-21T07:22:27.394Z"
+    "fetched_at": "2026-10-21T07:22:27.394Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-9cb4a9c10a0e",
@@ -2862,7 +3250,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-20",
     "score": 3,
-    "fetched_at": "2026-10-21T07:22:05.186Z"
+    "fetched_at": "2026-10-21T07:22:05.186Z",
+    "draft_reason": "HARD_REJECT_DOMESTIC",
+    "draft_note": "Partner shot / domestic violence."
   },
   {
     "id": "aw-p-1a24fe4091f8",
@@ -2877,7 +3267,9 @@
     "source_name": "KTBS 3",
     "date": "2026-10-20",
     "score": 5,
-    "fetched_at": "2026-10-20T23:04:12.300Z"
+    "fetched_at": "2026-10-20T23:04:12.300Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-1e0b91d828ff",
@@ -2892,7 +3284,9 @@
     "source_name": "LiveNOW from FOX",
     "date": "2026-10-19",
     "score": 3,
-    "fetched_at": "2026-10-20T23:04:08.281Z"
+    "fetched_at": "2026-10-20T23:04:08.281Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-bfed23bac3b4",
@@ -2907,7 +3301,9 @@
     "source_name": "INDIA New England News",
     "date": "2026-10-20",
     "score": 4,
-    "fetched_at": "2026-10-20T18:24:54.393Z"
+    "fetched_at": "2026-10-20T18:24:54.393Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-fd96ecb09930",
@@ -2922,7 +3318,9 @@
     "source_name": "The Palm Beach Post",
     "date": "2026-10-20",
     "score": 3,
-    "fetched_at": "2026-10-20T18:24:50.355Z"
+    "fetched_at": "2026-10-20T18:24:50.355Z",
+    "draft_reason": "HARD_REJECT_ANIMAL",
+    "draft_note": "Animal cruelty or neglect."
   },
   {
     "id": "aw-p-4db6afa4c475",
@@ -2937,7 +3335,9 @@
     "source_name": "Facebook",
     "date": "2026-10-18",
     "score": 4,
-    "fetched_at": "2026-10-20T07:21:52.647Z"
+    "fetched_at": "2026-10-20T07:21:52.647Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-7a047da4cb19",
@@ -2952,7 +3352,9 @@
     "source_name": "WILX",
     "date": "2026-10-20",
     "score": 4,
-    "fetched_at": "2026-10-20T07:21:56.662Z"
+    "fetched_at": "2026-10-20T07:21:56.662Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-292b011b6d6b",
@@ -2967,7 +3369,9 @@
     "source_name": "National Herald",
     "date": "2026-10-20",
     "score": 4,
-    "fetched_at": "2026-10-20T07:21:56.796Z"
+    "fetched_at": "2026-10-20T07:21:56.796Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-46a896df9641",
@@ -2982,7 +3386,9 @@
     "source_name": "LiveNOW from FOX",
     "date": "2026-10-19",
     "score": 3,
-    "fetched_at": "2026-10-20T07:21:52.415Z"
+    "fetched_at": "2026-10-20T07:21:52.415Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-ec8d1a4946b6",
@@ -2997,7 +3403,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-19",
     "score": 3,
-    "fetched_at": "2026-10-20T07:21:52.538Z"
+    "fetched_at": "2026-10-20T07:21:52.538Z",
+    "draft_reason": "HARD_REJECT_DOMESTIC",
+    "draft_note": "Partner shot / domestic violence."
   },
   {
     "id": "aw-p-9833dc171d41",
@@ -3012,7 +3420,9 @@
     "source_name": "Yahoo Sports",
     "date": "2026-10-08",
     "score": 3,
-    "fetched_at": "2026-10-20T07:22:06.735Z"
+    "fetched_at": "2026-10-20T07:22:06.735Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-351df245aff7",
@@ -3027,7 +3437,9 @@
     "source_name": "Realtor.com",
     "date": "2026-10-19",
     "score": 7,
-    "fetched_at": "2026-10-19T23:29:46.787Z"
+    "fetched_at": "2026-10-19T23:29:46.787Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-84cd9c8ca7c8",
@@ -3042,7 +3454,9 @@
     "source_name": "TribalFootball",
     "date": "2026-10-19",
     "score": 5,
-    "fetched_at": "2026-10-19T23:29:54.952Z"
+    "fetched_at": "2026-10-19T23:29:54.952Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-a8aaf0733072",
@@ -3057,7 +3471,9 @@
     "source_name": "Dailysports",
     "date": "2026-10-19",
     "score": 5,
-    "fetched_at": "2026-10-19T23:29:55.130Z"
+    "fetched_at": "2026-10-19T23:29:55.130Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-2ed685f92afc",
@@ -3072,7 +3488,9 @@
     "source_name": "FOX 10 Phoenix",
     "date": "2026-10-19",
     "score": 3,
-    "fetched_at": "2026-10-19T23:29:44.646Z"
+    "fetched_at": "2026-10-19T23:29:44.646Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-7bcef254fed6",
@@ -3087,7 +3505,9 @@
     "source_name": "AOL.com",
     "date": "2026-10-07",
     "score": 9,
-    "fetched_at": "2026-10-19T19:44:27.335Z"
+    "fetched_at": "2026-10-19T19:44:27.335Z",
+    "draft_reason": "ALREADY_PUBLISHED",
+    "draft_note": "Same story as aw-0140 (Washington HOA fence fines)."
   },
   {
     "id": "aw-p-e07c7b0a2b1a",
@@ -3102,7 +3522,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-19",
     "score": 7,
-    "fetched_at": "2026-10-19T19:44:27.133Z"
+    "fetched_at": "2026-10-19T19:44:27.133Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-7ea97117071e",
@@ -3117,7 +3539,9 @@
     "source_name": "Maine Beacon",
     "date": "2026-10-19",
     "score": 4,
-    "fetched_at": "2026-10-19T19:44:29.462Z"
+    "fetched_at": "2026-10-19T19:44:29.462Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-d86261a6dccd",
@@ -3132,7 +3556,9 @@
     "source_name": "TAPinto",
     "date": "2026-10-19",
     "score": 4,
-    "fetched_at": "2026-10-19T19:44:29.639Z"
+    "fetched_at": "2026-10-19T19:44:29.639Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-67d68e9fe095",
@@ -3147,7 +3573,9 @@
     "source_name": "True Crime News",
     "date": "2026-10-19",
     "score": 3,
-    "fetched_at": "2026-10-19T19:44:24.696Z"
+    "fetched_at": "2026-10-19T19:44:24.696Z",
+    "draft_reason": "HARD_REJECT_DOMESTIC",
+    "draft_note": "Partner shot / domestic violence."
   },
   {
     "id": "aw-p-ea7c060f4db9",
@@ -3162,7 +3590,9 @@
     "source_name": "nationalenquirer.com",
     "date": "2026-10-19",
     "score": 3,
-    "fetched_at": "2026-10-19T19:44:24.858Z"
+    "fetched_at": "2026-10-19T19:44:24.858Z",
+    "draft_reason": "HARD_REJECT_DOMESTIC",
+    "draft_note": "Partner shot / domestic violence."
   },
   {
     "id": "aw-p-f3d6c56f205b",
@@ -3177,7 +3607,9 @@
     "source_name": "AOL.com",
     "date": "2026-10-14",
     "score": 9,
-    "fetched_at": "2026-10-19T07:33:57.873Z"
+    "fetched_at": "2026-10-19T07:33:57.873Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-dc11a0d20b77",
@@ -3192,7 +3624,9 @@
     "source_name": "Yahoo Lifestyle Australia",
     "date": "2026-10-16",
     "score": 5,
-    "fetched_at": "2026-10-19T07:33:57.527Z"
+    "fetched_at": "2026-10-19T07:33:57.527Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-c70102577b5e",
@@ -3207,7 +3641,9 @@
     "source_name": "West Orlando News",
     "date": "2026-10-19",
     "score": 3,
-    "fetched_at": "2026-10-19T07:33:46.558Z"
+    "fetched_at": "2026-10-19T07:33:46.558Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-38553707d32c",
@@ -3222,7 +3658,9 @@
     "source_name": "Facebook",
     "date": "2026-10-18",
     "score": 4,
-    "fetched_at": "2026-10-18T22:19:35.621Z"
+    "fetched_at": "2026-10-18T22:19:35.621Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-aa508fc3e044",
@@ -3237,7 +3675,9 @@
     "source_name": "News18",
     "date": "2026-10-18",
     "score": 5,
-    "fetched_at": "2026-10-18T07:07:20.494Z"
+    "fetched_at": "2026-10-18T07:07:20.494Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-f2cdba7427ab",
@@ -3252,7 +3692,9 @@
     "source_name": "On3",
     "date": "2026-10-12",
     "score": 5,
-    "fetched_at": "2026-10-18T07:07:20.596Z"
+    "fetched_at": "2026-10-18T07:07:20.596Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-16fcd7177d12",
@@ -3267,7 +3709,9 @@
     "source_name": "TheGrio",
     "date": "2026-10-17",
     "score": 5,
-    "fetched_at": "2026-10-17T22:06:38.004Z"
+    "fetched_at": "2026-10-17T22:06:38.004Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-d9019fba4711",
@@ -3282,7 +3726,9 @@
     "source_name": "WPEC",
     "date": "2026-10-12",
     "score": 4,
-    "fetched_at": "2026-10-17T22:06:35.888Z"
+    "fetched_at": "2026-10-17T22:06:35.888Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-9a269a509c4b",
@@ -3297,7 +3743,9 @@
     "source_name": "TMZ",
     "date": "2026-10-17",
     "score": 5,
-    "fetched_at": "2026-10-17T16:56:05.483Z"
+    "fetched_at": "2026-10-17T16:56:05.483Z",
+    "draft_reason": "HARD_REJECT_POLITICS",
+    "draft_note": "Named public figure or partisan political content."
   },
   {
     "id": "aw-p-1dd6d3744cf3",
@@ -3312,7 +3760,9 @@
     "source_name": "WKMG",
     "date": "2026-10-17",
     "score": 8,
-    "fetched_at": "2026-10-17T06:47:18.388Z"
+    "fetched_at": "2026-10-17T06:47:18.388Z",
+    "draft_reason": "DUPLICATE",
+    "draft_note": "copy of aw-p-7ba24beb06ce"
   },
   {
     "id": "aw-p-fd37aa85d6a0",
@@ -3327,7 +3777,9 @@
     "source_name": "vijesti.me",
     "date": "2026-10-15",
     "score": 5,
-    "fetched_at": "2026-10-17T06:47:22.332Z"
+    "fetched_at": "2026-10-17T06:47:22.332Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-06e27eb2dc63",
@@ -3342,7 +3794,9 @@
     "source_name": "TwistedSifter",
     "date": "2026-10-16",
     "score": 5,
-    "fetched_at": "2026-10-17T06:47:42.011Z"
+    "fetched_at": "2026-10-17T06:47:42.011Z",
+    "draft_reason": "UNVERIFIABLE",
+    "draft_note": "Reddit post retold by an aggregator; no newsroom reporting."
   },
   {
     "id": "aw-p-34351502216d",
@@ -3357,7 +3811,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-15",
     "score": 5,
-    "fetched_at": "2026-10-16T22:42:24.006Z"
+    "fetched_at": "2026-10-16T22:42:24.006Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-b3431d968a6f",
@@ -3372,7 +3828,9 @@
     "source_name": "San Antonio Express-News",
     "date": "2026-10-16",
     "score": 3,
-    "fetched_at": "2026-10-16T22:42:19.989Z"
+    "fetched_at": "2026-10-16T22:42:19.989Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-83f9cfb5c92d",
@@ -3387,7 +3845,9 @@
     "source_name": "WKRG",
     "date": "2026-10-15",
     "score": 5,
-    "fetched_at": "2026-10-16T17:54:43.992Z"
+    "fetched_at": "2026-10-16T17:54:43.992Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-243f010a419a",
@@ -3402,7 +3862,9 @@
     "source_name": "AOL.com",
     "date": "2026-10-15",
     "score": 5,
-    "fetched_at": "2026-10-16T17:55:02.067Z"
+    "fetched_at": "2026-10-16T17:55:02.067Z",
+    "draft_reason": "UNVERIFIABLE",
+    "draft_note": "Reddit post retold by an aggregator; no newsroom reporting."
   },
   {
     "id": "aw-p-d39e7c9e30ca",
@@ -3417,7 +3879,9 @@
     "source_name": "Informat.ro",
     "date": "2026-10-16",
     "score": 5,
-    "fetched_at": "2026-10-16T17:55:04.251Z"
+    "fetched_at": "2026-10-16T17:55:04.251Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-0e29e4851b87",
@@ -3432,7 +3896,9 @@
     "source_name": "Yahoo Finance",
     "date": "2026-10-16",
     "score": 3,
-    "fetched_at": "2026-10-16T17:54:39.782Z"
+    "fetched_at": "2026-10-16T17:54:39.782Z",
+    "draft_reason": "HARD_REJECT_VULNERABLE_FRAUD",
+    "draft_note": "Jewelry pawned from a grieving widow."
   },
   {
     "id": "aw-p-fbc1e98d7217",
@@ -3447,7 +3913,9 @@
     "source_name": "Smithfield Times",
     "date": "2026-10-16",
     "score": 3,
-    "fetched_at": "2026-10-16T17:54:43.833Z"
+    "fetched_at": "2026-10-16T17:54:43.833Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-79e770acc588",
@@ -3462,7 +3930,9 @@
     "source_name": "The Guardian",
     "date": "2026-10-14",
     "score": 5,
-    "fetched_at": "2026-10-16T06:56:19.299Z"
+    "fetched_at": "2026-10-16T06:56:19.299Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Source: urine damage targeting a student; harassment with a victim, not victimless absurdity."
   },
   {
     "id": "aw-p-e4711b4ecc7a",
@@ -3477,7 +3947,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-15",
     "score": 4,
-    "fetched_at": "2026-10-15T22:58:10.565Z"
+    "fetched_at": "2026-10-15T22:58:10.565Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-0fb5b0038884",
@@ -3492,7 +3964,9 @@
     "source_name": "AOL.com",
     "date": "2026-09-30",
     "score": 5,
-    "fetched_at": "2026-10-14T18:26:32.448Z"
+    "fetched_at": "2026-10-14T18:26:32.448Z",
+    "draft_reason": "UNVERIFIABLE",
+    "draft_note": "Tabloid/aggregator only; no reliable original report."
   },
   {
     "id": "aw-p-851cf972683c",
@@ -3507,7 +3981,9 @@
     "source_name": "FOX 29 Philadelphia",
     "date": "2026-10-13",
     "score": 5,
-    "fetched_at": "2026-10-14T07:22:15.093Z"
+    "fetched_at": "2026-10-14T07:22:15.093Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-713159715d27",
@@ -3522,7 +3998,9 @@
     "source_name": "스포츠조선",
     "date": "2026-10-13",
     "score": 5,
-    "fetched_at": "2026-10-14T07:22:15.447Z"
+    "fetched_at": "2026-10-14T07:22:15.447Z",
+    "draft_reason": "NOT_US",
+    "draft_note": "Story happens outside the United States."
   },
   {
     "id": "aw-p-b3e7463adef7",
@@ -3537,7 +4015,9 @@
     "source_name": "WFLA",
     "date": "2026-10-13",
     "score": 3,
-    "fetched_at": "2026-10-13T20:08:55.404Z"
+    "fetched_at": "2026-10-13T20:08:55.404Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-da996e9bd6b6",
@@ -3552,7 +4032,9 @@
     "source_name": "On3",
     "date": "2026-10-11",
     "score": 5,
-    "fetched_at": "2026-10-11T18:43:46.101Z"
+    "fetched_at": "2026-10-11T18:43:46.101Z",
+    "draft_reason": "ROUTINE",
+    "draft_note": "Routine municipal, business, legal or sports news."
   },
   {
     "id": "aw-p-a644136185f3",
@@ -3567,7 +4049,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-10",
     "score": 4,
-    "fetched_at": "2026-10-10T18:22:53.872Z"
+    "fetched_at": "2026-10-10T18:22:53.872Z",
+    "draft_reason": "HARD_REJECT_VULNERABLE_FRAUD",
+    "draft_note": "Source: charges put on the room of a guest over 60 (Cheeca Lodge); elderly victim."
   },
   {
     "id": "aw-p-5c41c45971ea",
@@ -3582,7 +4066,9 @@
     "source_name": "The Daily Beast",
     "date": "2026-09-25",
     "score": 5,
-    "fetched_at": "2026-10-09T08:47:06.888Z"
+    "fetched_at": "2026-10-09T08:47:06.888Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-f1f67bf90a9e",
@@ -3597,7 +4083,9 @@
     "source_name": "Wide Open Country",
     "date": "2026-10-08",
     "score": 5,
-    "fetched_at": "2026-10-08T19:45:43.889Z"
+    "fetched_at": "2026-10-08T19:45:43.889Z",
+    "draft_reason": "HARD_REJECT_ANIMAL",
+    "draft_note": "Source: caged animals left without heat, food or water in an abandoned truck; one dead."
   },
   {
     "id": "aw-p-f44a958591d1",
@@ -3612,7 +4100,9 @@
     "source_name": "MoneyWise.com",
     "date": "2026-10-08",
     "score": 3,
-    "fetched_at": "2026-10-08T19:45:33.523Z"
+    "fetched_at": "2026-10-08T19:45:33.523Z",
+    "draft_reason": "HARD_REJECT_VULNERABLE_FRAUD",
+    "draft_note": "Source: charges put on the room of a guest over 60 (Cheeca Lodge); elderly victim."
   },
   {
     "id": "aw-p-a5514691da79",
@@ -3627,7 +4117,9 @@
     "source_name": "AOL.com",
     "date": "2026-10-08",
     "score": 3,
-    "fetched_at": "2026-10-08T19:45:33.834Z"
+    "fetched_at": "2026-10-08T19:45:33.834Z",
+    "draft_reason": "HARD_REJECT_VULNERABLE_FRAUD",
+    "draft_note": "Source: charges put on the room of a guest over 60 (Cheeca Lodge); elderly victim."
   },
   {
     "id": "aw-p-42fc067d7aeb",
@@ -3642,7 +4134,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-07",
     "score": 3,
-    "fetched_at": "2026-10-07T19:50:04.242Z"
+    "fetched_at": "2026-10-07T19:50:04.242Z",
+    "draft_reason": "HARD_REJECT_VULNERABLE_FRAUD",
+    "draft_note": "Source: charges put on the room of a guest over 60 (Cheeca Lodge); elderly victim."
   },
   {
     "id": "aw-p-bbad3ae23f2b",
@@ -3657,7 +4151,9 @@
     "source_name": "KVUE",
     "date": "2026-10-06",
     "score": 4,
-    "fetched_at": "2026-10-06T19:22:53.845Z"
+    "fetched_at": "2026-10-06T19:22:53.845Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-d57058dace76",
@@ -3672,7 +4168,9 @@
     "source_name": "Miami Herald",
     "date": "2026-10-04",
     "score": 3,
-    "fetched_at": "2026-10-06T08:48:52.955Z"
+    "fetched_at": "2026-10-06T08:48:52.955Z",
+    "draft_reason": "HARD_REJECT_VULNERABLE_FRAUD",
+    "draft_note": "Source: charges put on the room of a guest over 60 (Cheeca Lodge); elderly victim."
   },
   {
     "id": "aw-p-f9d0ff518c4d",
@@ -3687,7 +4185,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-05",
     "score": 4,
-    "fetched_at": "2026-10-05T21:25:37.809Z"
+    "fetched_at": "2026-10-05T21:25:37.809Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-7f5625d1c5f7",
@@ -3702,7 +4202,9 @@
     "source_name": "WLTX",
     "date": "2026-10-04",
     "score": 4,
-    "fetched_at": "2026-10-05T08:44:50.387Z"
+    "fetched_at": "2026-10-05T08:44:50.387Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-c939ee4e0ce3",
@@ -3717,7 +4219,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-04",
     "score": 3,
-    "fetched_at": "2026-10-05T08:44:50.638Z"
+    "fetched_at": "2026-10-05T08:44:50.638Z",
+    "draft_reason": "HARD_REJECT_VULNERABLE_FRAUD",
+    "draft_note": "Source: charges put on the room of a guest over 60 (Cheeca Lodge); elderly victim."
   },
   {
     "id": "aw-p-b23611eac2fc",
@@ -3732,7 +4236,9 @@
     "source_name": "yahoo.com",
     "date": "2026-10-03",
     "score": 3,
-    "fetched_at": "2026-10-03T17:51:24.225Z"
+    "fetched_at": "2026-10-03T17:51:24.225Z",
+    "draft_reason": "HARD_REJECT_VIOLENCE",
+    "draft_note": "Assault, weapon or threats against people."
   },
   {
     "id": "aw-p-84bd0d1c74fc",
@@ -3747,7 +4253,9 @@
     "source_name": "Oil City News",
     "date": "2026-10-02",
     "score": 4,
-    "fetched_at": "2026-10-02T23:38:57.228Z"
+    "fetched_at": "2026-10-02T23:38:57.228Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Source: DUI (.238) with a near-miss on a homeowner; the Josh Allen quest does not outweigh it."
   },
   {
     "id": "aw-p-f79ef04660c9",
@@ -3762,7 +4270,9 @@
     "source_name": "New York Post",
     "date": "2026-10-01",
     "score": 5,
-    "fetched_at": "2026-10-01T19:22:35.911Z"
+    "fetched_at": "2026-10-01T19:22:35.911Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Ordinary arrest, fraud, drugs, theft or speeding without an AmericaWhat hook."
   },
   {
     "id": "aw-p-5e6917501347",
@@ -3777,7 +4287,9 @@
     "source_name": "UPI Odd News",
     "date": "2026-10-01",
     "score": 4,
-    "fetched_at": "2026-10-01T19:22:41.588Z"
+    "fetched_at": "2026-10-01T19:22:41.588Z",
+    "draft_reason": "OTHER",
+    "draft_note": "Mild animal item; too close to recently published animal rescues (aw-0128, aw-0139)."
   },
   {
     "id": "aw-p-c1703be53d1c",
@@ -3792,7 +4304,9 @@
     "source_name": "Yahoo",
     "date": "2026-10-01",
     "score": 3,
-    "fetched_at": "2026-10-01T19:22:25.669Z"
+    "fetched_at": "2026-10-01T19:22:25.669Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Source: the guest-house owner is back in court for 125 mph speeding; ordinary traffic case."
   },
   {
     "id": "aw-p-fe66868275ec",
@@ -3807,6 +4321,8 @@
     "source_name": "WKMG",
     "date": "2026-09-28",
     "score": 3,
-    "fetched_at": "2026-10-01T08:38:34.192Z"
+    "fetched_at": "2026-10-01T08:38:34.192Z",
+    "draft_reason": "ORDINARY_CRIME",
+    "draft_note": "Late interview follow-up to a June speeding arrest; not news now."
   }
 ]
